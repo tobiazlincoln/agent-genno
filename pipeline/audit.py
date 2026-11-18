@@ -9,7 +9,7 @@ Usage:
   audit.py findings [--target ID]
 """
 
-import argparse, json, os, re, shutil, sqlite3, subprocess, sys, tempfile, urllib.request
+import argparse, json, os, re, shutil, sqlite3, subprocess, sys, tempfile, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,7 +46,7 @@ def add_target(source, ref, url, name, meta):
     c.commit()
 
 def seed_gh(query, limit):
-    rc, out, err = sh(["gh", "api", f"search/repositories?q={urllib.request.quote(query)}&per_page={limit}"])
+    rc, out, err = sh(["gh", "api", f"search/repositories?q={urllib.parse.quote(query)}&per_page={limit}"])
     if rc: sys.exit(f"gh api failed: {err}")
     for r in json.loads(out).get("items", []):
         add_target("github", f"gh:{r['full_name']}", r["html_url"], r["full_name"],
@@ -57,7 +57,7 @@ def seed_gh(query, limit):
 
 def seed_hf(limit):
     url = f"https://huggingface.co/api/models?sort=downloads&direction=-1&limit={limit}"
-    for m in json.loads(urllib.request.urlopen(url).read()):
+    for m in json.loads(urllib.request.urlopen(url, timeout=30).read()):
         mid = m["id"]
         add_target("hf", f"hf:{mid}", f"https://huggingface.co/{mid}", mid,
                    {"downloads": m.get("downloads"), "likes": m.get("likes"),
@@ -70,13 +70,18 @@ def fetch_github(ref, dest):
 def fetch_hf(ref, dest):
     from huggingface_hub import HfApi, hf_hub_download
     api = HfApi()
-    files = api.list_repo_files(ref[3:])
+    repo_id = ref[3:]
+    files = api.list_repo_files(repo_id)
     picked = [f for f in files if re.search(r"\.(pkl|pickle|pt|bin|ckpt|joblib|npy|json|txt|md)$", f, re.I)][:20]
+    try:
+        info = api.repo_info(repo_id, files_metadata=True)
+        sizes = {s.rfilename: (s.size or 0) for s in info.siblings}
+    except Exception:
+        sizes = {}
     got = []
     for f in picked:
         try:
-            info = api.repo_info(ref[3:], files_metadata=True)
-            size = next((s.size for s in info.siblings if s.rfilename == f), 0)
+            size = sizes.get(f, 0)
             if size and size > HF_MAX_FILE_BYTES:
                 continue
             p = hf_hub_download(ref[3:], f, local_dir=dest)

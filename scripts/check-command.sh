@@ -2,7 +2,7 @@
 # PreToolUse hook on `exec`: block destructive commands.
 # stdin: JSON with tool_input.command. Exit 2 = block.
 
-cmd=$(python3 -c 'import sys,json; print(json.load(sys.stdin).get("tool_input",{}).get("command",""))' 2>/dev/null)
+cmd=$(python3 -c 'import sys,json; ti=json.load(sys.stdin).get("tool_input") or {}; print(ti.get("command",""))' 2>/dev/null)
 
 blocked='rm -rf /|rm -rf ~|rm -rf \.|git push --force|git push -f|git reset --hard|git clean -fd|DROP TABLE|DROP DATABASE|mkfs|dd if=|chmod -R 777|sudo rm|>\s*/dev/sd'
 

@@ -10,9 +10,10 @@ export STATE_DIR="$state_dir"
 cat | python3 -c '
 import sys, json, os
 payload = json.load(sys.stdin)
-ti = payload.get("tool_input", {})
+ti = payload.get("tool_input") or {}
+tr = payload.get("tool_response") or {}
 path = ti.get("file_path") or ti.get("notebook_path") or "unknown"
-if payload.get("tool_response", {}).get("success", True):
+if tr.get("success", True):
     with open(os.path.join(os.environ["STATE_DIR"], "pending-edits"), "a") as f:
         f.write(path + "\n")
 '

@@ -7,11 +7,12 @@
 #   taskstate.sh verify <id>
 #   taskstate.sh incomplete   -> prints unfinished subtask ids (exit 1 if none)
 
-STATE="$DEVIN_PROJECT_DIR/state/TASKSTATE.json"
-PY="${DEVIN_PROJECT_DIR}/pipeline/.venv/bin/python3"
+PDIR="${DEVIN_PROJECT_DIR:-$(pwd)}"
+STATE="$PDIR/state/TASKSTATE.json"
+PY="$PDIR/pipeline/.venv/bin/python3"
 [ -x "$PY" ] || PY=python3
 
-mkdir -p "$DEVIN_PROJECT_DIR/state"
+mkdir -p "$PDIR/state"
 [ -f "$STATE" ] || printf '{"goal":"","subtasks":[],"attempts":[],"blockers":[],"verified":[]}' > "$STATE"
 
 case "$1" in
@@ -49,9 +50,13 @@ EOF
     "$PY" - "$STATE" "$2" <<'EOF'
 import json, sys
 s = json.load(open(sys.argv[1]))
-s["verified"].append(sys.argv[2])
+sid = sys.argv[2]
+if not any(t["id"] == sid for t in s["subtasks"]):
+    sys.exit(f"no such subtask: {sid}")
+if sid not in s["verified"]:
+    s["verified"].append(sid)
 for t in s["subtasks"]:
-    if t["id"] == sys.argv[2]: t["status"] = "done"
+    if t["id"] == sid: t["status"] = "done"
 json.dump(s, open(sys.argv[1], "w"), indent=1)
 EOF
     ;;

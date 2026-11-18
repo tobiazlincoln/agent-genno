@@ -11,9 +11,10 @@ payload=$(cat)
 echo "$payload" | STATE_DIR="$state_dir" PDIR="$DEVIN_PROJECT_DIR" python3 -c '
 import sys, json, os, subprocess
 p = json.load(sys.stdin)
-ok = p.get("tool_response", {}).get("success", True)
+tr = p.get("tool_response") or {}
+ok = tr.get("success", True)
 cmd = p.get("tool_input", {}).get("command", "")[:200]
-err = (p.get("tool_response", {}).get("error") or "")[:150]
+err = (tr.get("error") or "")[:150]
 
 subprocess.run([os.path.join(os.environ["PDIR"], "scripts/taskstate.sh"),
                 "record-tool", "exec", "true" if ok else "false",
