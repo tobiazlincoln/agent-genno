@@ -1,0 +1,45 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/session-start.sh" }
+      ]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/session-end.sh" }
+      ]
+    }
+  ],
+  "PreToolUse": [
+    {
+      "matcher": "exec",
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/check-command.sh", "timeout": 10 }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "^(edit|write|apply_patch|notebook_edit)$",
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/post-edit.sh", "timeout": 10 }
+      ]
+    },
+    {
+      "matcher": "^exec$",
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/post-exec.sh", "timeout": 10 }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "hooks": [
+        { "type": "command", "command": "$DEVIN_PROJECT_DIR/scripts/stop-verify.sh", "timeout": 60 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+ "goal": "",
+ "subtasks": [
+  {
+   "id": "s1",
+   "desc": "fix budget bugs",
+   "status": "done"
+  }
+ ],
+ "attempts": [],
+ "blockers": [],
+ "verified": [
+  "s1"
+ ]
+}
