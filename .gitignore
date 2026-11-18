@@ -4,3 +4,4 @@ demo/__pycache__/
 demo/tests/__pycache__/
 pipeline/.venv/
 storage/workdir/
+storage/market/
