@@ -1,0 +1,15 @@
+#!/bin/bash
+# Pre-commit guard: block .env and secret patterns from EVER being committed.
+# Install: git config core.hooksPath .githooks   (or copy to .git/hooks)
+
+FAIL=0
+for f in $(git diff --cached --name-only); do
+  case "$f" in
+    .env|.env.*) echo "BLOCKED: $f is a secrets file"; FAIL=1 ;;
+  esac
+  if git show ":$f" 2>/dev/null | grep -qiE "apk_[a-z0-9]{20,}|PRIVATE_""KEY=0x[0-9a-fA-F]{8,}|Z_AI_API_KEY=""fbdd"; then
+    echo "BLOCKED: secret pattern detected in $f"; FAIL=1
+  fi
+done
+[ $FAIL -ne 0 ] && { echo "COMMIT REJECTED — remove secrets or use --no-verify ONLY with explicit approval"; exit 1; }
+exit 0
