@@ -1,0 +1,30 @@
+# llms.txt — Agent Achievement Badge
+
+Agent Achievement Badge: free soulbound achievement badges for Agent ID
+(.ai) holders on BNB Smart Chain. One badge per wallet per quest; third
+party attestations for portable reputation. No owner, no fees, no
+approvals. Users act through their own agent + Binance Agentic Wallet
+(baw): preview -> user confirms -> execute.
+
+## Docs
+
+- skill: agent-facing instructions (preflight, read calls, claimBadge flow)
+- contract: hackathon/contracts/src/AgentBadge.sol (open source, verified on BscScan at deploy)
+- registry: 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F (SPACE ID Agent ID, immutable ref)
+
+## Contract
+
+- Chain: BNB Smart Chain mainnet (chainId 56)
+- Address: <CONTRACT_ADDRESS> (filled after mainnet deploy)
+- Functions: claimBadge(uint256 questId), attest(uint256 badgeId, string note),
+  view: totalBadges(), uniqueAgents(), questClaimCount(uint256),
+  attestationCount(uint256), handleOfBadgeOwner(uint256)
+
+## Quests
+
+- questId=1: Hackathon Participation (open)
+
+## Compliance
+
+- No Binance/BNB branding; no promised returns; no approvals; no custodial
+  sessions; every asset action confirmed by the user in their wallet.

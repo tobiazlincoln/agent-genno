@@ -8,3 +8,7 @@ storage/market/
 storage/usage.log
 storage/audit.db
 storage/audit.db-*
+hackathon/contracts/out/
+hackathon/contracts/cache/
+hackathon/contracts/state/
+hackathon/contracts/broadcast/

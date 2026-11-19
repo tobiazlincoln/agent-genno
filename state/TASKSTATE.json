@@ -1,1 +1,62 @@
-{"goal":"","subtasks":[],"attempts":[],"blockers":[],"verified":[]}
+{
+ "goal": "",
+ "subtasks": [
+  {
+   "id": "p0-setup",
+   "desc": "Verify tooling: forge/cast, BSC RPC reachable, re-verify registry facts on-chain",
+   "status": "done"
+  },
+  {
+   "id": "p1-contract",
+   "desc": "Foundry project: AgentBadge.sol gated by Agent ID registry, soulbound, attest, counters, events",
+   "status": "done"
+  },
+  {
+   "id": "p1-tests",
+   "desc": "Forge tests: gate, 1-per-wallet-per-quest, soulbound revert, attest, events; fork-test if possible",
+   "status": "done"
+  },
+  {
+   "id": "p1-testnet",
+   "desc": "Deploy BSC testnet (97), dry-run claim flow end-to-end",
+   "status": "in_progress"
+  },
+  {
+   "id": "p2-skill",
+   "desc": "skill.md + llms.txt: baw preflight->preview->confirm->execute; copy-paste prompt",
+   "status": "done"
+  },
+  {
+   "id": "p2-site",
+   "desc": "Static landing: concept, contract addr, prompt, read-only leaderboard, compliance checklist",
+   "status": "done"
+  },
+  {
+   "id": "p3-mainnet",
+   "desc": "HUMAN GATE: mainnet deploy + BscScan verify (needs BNB gas + BSCSCAN_API_KEY)",
+   "status": "pending"
+  },
+  {
+   "id": "p4-distribute",
+   "desc": "HUMAN: submission form, X thread, cross-promo, community survey",
+   "status": "pending"
+  },
+  {
+   "id": "metrics",
+   "desc": "Monitor script: unique .ai interactors vs 30-minimum / Pioneer rank",
+   "status": "done"
+  }
+ ],
+ "attempts": [],
+ "blockers": [
+  "p1-testnet: needs funded PRIVATE_KEY + testnet BNB (faucet) - human dependency; deploy script ready at hackathon/contracts/script/Deploy.s.sol"
+ ],
+ "verified": [
+  "p0-setup",
+  "p1-contract",
+  "p1-tests",
+  "p2-skill",
+  "p2-site",
+  "metrics"
+ ]
+}

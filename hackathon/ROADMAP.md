@@ -2,8 +2,10 @@
 Dibuat 2026-11-19. Deadline: 2026-12-09 08:00 UTC. Sisa 20 hari.
 Target: minimal eligible Innovation (30+ alamat .ai) + competitive Pioneer metrics.
 
-## Prinsip strategi
-- Menang = distribusi + depth, bukan cuma kode. Dua-track paralel: BUILD (agent) dan DISTRIBUTION (manusia).
+## Prinsip strategi (revisi post-research)
+- Menang = distribusi + depth. Dua-track paralel: BUILD (agent) dan DISTRIBUTION (manusia).
+- **Playbook yang terbukti**: free-mint gated `.ai` menarik ribuan interact (GLOOP sold out 3,333); utility app tanpa insentif dapat <10. Maka mechanic kita WAJIB punya insentif interact yang jelas (badge/credential), bukan cuma utility.
+- Target primer: Innovation Award (bar 30 alamat, achievable) + mengejar Pioneer sebagai stretch.
 - GLM mengerjakan: kontrak, skill files, landing page, tests, docs. Manusia mengerjakan: wallet ops, Binance app, submit form, community outreach.
 - Compliance diperlakukan sebagai fitur (immutable, no-owner, zero-approval, zero-promised-return) — ditulis eksplisit di README + submission.
 
@@ -13,12 +15,12 @@ Target: minimal eligible Innovation (30+ alamat .ai) + competitive Pioneer metri
 - [ ] Agent: cek `totalSupply` registry `0x60B9...022F` via BscScan API/RPC → estimate holder base `.ai`.
 - [ ] Agent: baca ABI registry di BscScan → dokumentasikan resolve `.ai`/address.
 - [ ] Agent: install + baca skill resmi `binance-skills-hub/binance-agentic-wallet` — standar format skill kita.
-- [ ] Keputusan: pilih 1 konsep final (default: agent proof-of-work log). Tulis 1-page concept doc.
+- [ ] Keputusan: konsep final — rekomendasi: **Agent Achievement Badge** (soulbound badge + attestation registry + quest mingguan). Tulis 1-page concept doc.
 - Gate: `.ai` claimed, baw signed-in, dev mode on, konsep disetujui user.
 
 ## Phase 1 — MVP kontrak (Hari 2-6, 21-25 Nov)
 - [ ] Foundry project di `hackathon/contracts/`: Solidity 0.8.x, registry immutable di constructor.
-- [ ] Core: `logWork(bytes32 workHash, string tag)` gated `balanceOf(msg.sender) > 0`; events indexed; per-agent log; public counter; streak/day optional untuk tx loop.
+- [ ] Core: `claimBadge(uint questId)` gated `balanceOf(msg.sender) > 0`, 1 per wallet per quest, soulbound (block transfers), events indexed; `attest(agentHandle, badgeId)` untuk third-party attestation; public leaderboard counter.
 - [ ] Tests Foundry: gate enforcement (non-.ai revert), idempotency, event correctness. Fork-test vs mainnet registry.
 - [ ] Deploy testnet dulu (BSC testnet 97) → dry-run flow.
 - [ ] Deploy mainnet → verify BscScan (sourcify/etherscan verify via forge). Open-source repo GitHub public.

@@ -1,0 +1,163 @@
+{
+  "session": {
+    "model": "glm",
+    "mode": "code",
+    "project_dir": ".",
+    "purpose": "Build Binance Wallet x BNB Chain Agent ID Hackathon entry: Agent Achievement Badge dApp on BSC mainnet. Prize pool 60,000 USDC. Submission deadline 2026-12-09 08:00 UTC.",
+    "source_announcement": "https://x.com/BinanceWallet/status/2122973166758945045 -> https://www.binance.com/en/support/announcement/detail/95f5dbe0ea674a48a739b59e046648bf"
+  },
+  "read_first": [
+    "hackathon/RESEARCH.md (verified facts + on-chain measured data + competition landscape)",
+    "hackathon/ROADMAP.md (phase plan, gates, agent tasks vs human tasks)",
+    "AGENTS.md (mandatory workflow rules: explore->plan->implement->verify)"
+  ],
+  "event": {
+    "name": "Agent ID Hackathon (Binance Wallet x BNB Chain)",
+    "prize_pool_usdc": 60000,
+    "timeline_utc": {
+      "submission": "2026-11-18 08:00 -> 2026-12-09 08:00",
+      "internal_review": "2026-12-09 08:00 -> 2026-12-17 08:00",
+      "public_review": "2026-12-17 08:00 -> 2026-12-20 08:00",
+      "rewards_distributed": "within 14 business days after public review"
+    },
+    "submit_via": "official Binance survey form (https://app.binance.com/uni-qr/user-survey/fb26d2bd25e04329b1ba77c7b3811d23) during submission period; no pre-registration needed",
+    "submit_fields": "project name, website, contract address(es), description of Agent ID usage, other materials",
+    "one_project_per_team": true,
+    "one_award_per_project": true,
+    "existing_projects_allowed": "yes, but only metrics during submission period count"
+  },
+  "awards": {
+    "ecosystem_pioneer": {
+      "total_usdc": 29000,
+      "criteria": "ranked by on-chain data during submission period: number of Agent ID holder addresses interacting with submitted contracts + transaction volume/count. ONLY submitted contract addresses counted; interacting addresses MUST hold Agent ID.",
+      "ranks_usdc": {"1": 10000, "2": 6000, "3": 4000, "4": 3000, "5": 2000, "6-10": 800}
+    },
+    "innovation": {
+      "total_usdc": 29000,
+      "min_eligibility": "product LIVE + at least 30 unique Agent ID addresses interacted with submitted contracts during submission period",
+      "judging_panel": "Binance Wallet + BNB Chain + technical fields",
+      "rubric_100pt": {
+        "agent_id_application_depth": "30% - Agent ID in core functionality, real application value",
+        "practicality_feasibility": "25% - real need, reasonable feasible use case",
+        "product_completion": "25% - live, all core features available",
+        "innovation": "20% - new Agent ID use cases, unique value"
+      },
+      "tiebreak": "depth of Agent ID integration + product completion",
+      "ranks_usdc": {"1": 10000, "2": 6000, "3": 4000, "4": 3000, "5": 2000, "6-10": 800}
+    },
+    "community_promotion": {
+      "total_usdc": 2000,
+      "mechanics": "20 winners x 100 USDC for original X posts about hackathon projects using #BinanceWalletHackathon + #AgenticWallet, submitted via campaign survey"
+    },
+    "bonus_for_20_winners": "spot to claim 2-character .ai Agent ID (e.g. ab.ai) + listing on Agentic Wallet ecosystem page + future Agent ID campaigns"
+  },
+  "hard_rules_dq": [
+    "NO web-based QR login for Agentic Wallet; no scanning QR / pairing codes on third-party sites; no storing user login sessions to place orders",
+    "NO prompts that bypass user confirmation for asset actions (transfers, trades, approvals) - users must see and confirm themselves",
+    "NO unauthorized asset transfers: no scheduled collections, auto-transfers to fixed addresses, bundled extra transfers, unlimited approvals without user knowledge",
+    "Contracts MUST be open-source + verified on BscScan with clear documented owner permissions (mint/tax/pause/freeze/withdraw)",
+    "NO impersonating Binance: project names, token names, domain names must not use 'Binance' or 'BNB'",
+    "NO collecting sensitive credentials: seed phrases, private keys, API secrets, pairing codes",
+    "NO promised returns: 'passive income', 'automatic money-making' prohibited; trading products must show risk warnings",
+    "Agent ID must NOT be used to look up other people's wallets by name",
+    "NO manipulation: fake volume, mass account registrations, unusual interaction patterns => disqualification (Agent ID is 1-per-KYC-user anyway)"
+  ],
+  "tech_context": {
+    "chain": "BNB Smart Chain mainnet, chainId 56 (testnet = 97 for dry-run)",
+    "agent_id_registry": {
+      "address": "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F",
+      "name": "SPACE ID Agent ID (symbol AI)",
+      "standard": "ERC-721 soulbound/non-transferable",
+      "deployed_block": 127950748,
+      "gate_check": "balanceOf(addr) > 0 means holder",
+      "resolve_onchain": "ownerOfHandle(string)->address; handleOf(address)->string",
+      "resolve_api": "GET https://agentid.prd.space.id/v1/handles/{handle} | /v1/addresses/{address} (public, rate-limited, cache)",
+      "tokenId": "uint256(keccak256(handle))",
+      "events_for_indexing": "Registered(bytes32,address,string), AdminRegistered(bytes32,address,string)",
+      "metadata": "https://agentid.prd.space.id/metadata/{handle}.json"
+    },
+    "rpc_public": "https://bsc-dataseed.binance.org",
+    "baw_cli": {
+      "install": "npm i -g @binance/agentic-wallet (command: baw)",
+      "auth": "baw auth signin -> QR scan in Binance App; Developer Mode required for tx/sign (7-day expiry)",
+      "write_flow": "contract-call preview -> user confirms -> contract-call execute (requestId only from successful preview; error 351803 = risk-blocked)",
+      "agent_id_check": "baw wallet agent-id",
+      "official_skill": "npx skills add binance/binance-skills-hub --skill binance-agentic-wallet",
+      "never": "agent never holds private key; no seed/private-key flows anywhere"
+    },
+    "erc8004": "Identity Registry BSC testnet 0x8004A818BFB912233c491871b3d84c89A494BD9e (mainnet TBA); bnbagent-sdk, bnbchain-mcp available",
+    "dev_resources": {
+      "agentic_wallet_docs": "https://web3.binance.com/en/dev-docs/products/agentic-wallet/introduction",
+      "skills_hub": "https://github.com/binance/binance-skills-hub/tree/main/skills/binance-web3/binance-agentic-wallet",
+      "binance_mcp": "https://developers.binance.com/en/docs/agent-native/mcp-server/agentic",
+      "bnb_agent_studio": "https://docs.bnbchain.org/developer-kit/bnbchain-studio/",
+      "agent_os": "https://www.binance.com/en/agent-os"
+    }
+  },
+  "market_intel": {
+    "holder_base": "100,000+ .ai claimed (as of 2026-10-26); holders conditioned to use .ai as pass for gated mints",
+    "proven_playbook": "free-mint/gated-claim for .ai holders draws 1000s of interactions (GLOOP sold out 3,333); pure utility apps get <10 unique agents",
+    "competitors": [
+      "GLOOP: free-mint NFT + token + market - Pioneer frontrunner",
+      "Riddle Run: riddle game mint",
+      "Agent Passport (zhuai.online): credit score passport + daily check-in",
+      "iouagents.com: micro-lending USDT + credit record (sophisticated)",
+      "agent-checkin x3 clones: daily streak, 1-9 unique agents on-chain (weak)"
+    ],
+    "distribution_channel": "agent-native UX: skill.md/llms.txt + copy-paste prompts; users' own agents execute via baw; cross-promo with other participants on X/Colony"
+  },
+  "concept": {
+    "name": "Agent Achievement Badge (working title - must NOT contain 'Binance' or 'BNB')",
+    "summary": "Soulbound badge credential for .ai holders: claimBadge(questId) free mint gated by Agent ID registry (1 per wallet per quest), third-party attest() for portable reputation, leaderboard displays .ai handles via handleOf() not raw addresses. Weekly quests drive repeat transactions for Pioneer metrics.",
+    "innovation_rubric_fit": {
+      "depth_30pct": "Agent ID is the subject not a gate: badges bind achievements to .ai identity; names displayed via handleOf(); attestations make .ai reputation portable across dApps",
+      "practicality_25pct": "agents need verifiable track record; other dApps can query badges for trust/access decisions",
+      "completion_25pct": "simple contract + skill.md + leaderboard site - fully shippable in days",
+      "innovation_20pct": "no competitor does open multi-badge attestation registry (closest: single-score passport, lending-only credit)"
+    }
+  },
+  "task_state": {
+    "file": "state/TASKSTATE.json",
+    "cli": "scripts/taskstate.sh",
+    "commands": {
+      "init": "scripts/taskstate.sh init",
+      "add": "scripts/taskstate.sh add-subtask <id> <desc>",
+      "done_verify": "scripts/taskstate.sh verify <id>",
+      "status": "scripts/taskstate.sh status",
+      "incomplete": "scripts/taskstate.sh incomplete"
+    },
+    "init_with": [
+      {"id": "p0-setup", "desc": "Verify tooling: forge/cast installed or install foundry; BSC RPC reachable; re-verify RESEARCH.md registry facts on-chain"},
+      {"id": "p1-contract", "desc": "Foundry project hackathon/contracts: AgentBadge.sol - claimBadge gated by Agent ID registry, soulbound (transfer reverts), attest(), per-quest+unique-agent counters, events indexed"},
+      {"id": "p1-tests", "desc": "Forge tests: gate enforcement (non-.ai revert via mock registry), 1-per-wallet-per-quest, soulbound revert, attest logic, event correctness; fork-test vs mainnet registry if RPC allows"},
+      {"id": "p1-testnet", "desc": "Deploy BSC testnet (97) with mock registry or skip to fork-test; dry-run claim flow end-to-end"},
+      {"id": "p2-skill", "desc": "hackathon/skill.md + llms.txt: agent-native UX preflight (baw wallet status/settings/agent-id) -> preview -> user confirm -> execute; copy-paste user prompt"},
+      {"id": "p2-site", "desc": "hackathon/site/: static landing - concept, contract address placeholder, copy-paste prompt, read-only leaderboard via RPC events + handleOf names; compliance checklist visible"},
+      {"id": "p3-mainnet", "desc": "HUMAN GATE: deploy BSC mainnet + verify source on BscScan (needs BNB gas + BSCSCAN_API_KEY)"},
+      {"id": "p4-distribute", "desc": "HUMAN: submission form, X thread #BinanceWalletHackathon #AgenticWallet, cross-promo with participants, community survey"},
+      {"id": "metrics", "desc": "Script to monitor unique .ai interactors count vs 30-minimum / Pioneer rank"}
+    ]
+  },
+  "human_dependencies": [
+    ".ai claim in Binance App (Wallet > homepage banner > Agent ID)",
+    "npm i -g @binance/agentic-wallet; baw auth signin; Developer Mode ON (renew every 7 days)",
+    "BNB for gas (testnet via faucet; mainnet real)",
+    "BscScan account + API key -> .env as BSCSCAN_API_KEY",
+    "Submission form + X posts + community outreach (distribution is the real bottleneck)"
+  ],
+  "constraints": [
+    "Never commit secrets; .env is gitignored; never print key values",
+    "No 'Binance' or 'BNB' in project name/token/domain",
+    "No promised returns language anywhere",
+    "Contract: prefer no-owner or minimal clearly-documented permissions; immutable registry reference",
+    "No unlimited token approvals; no bundled transfers; user confirms every asset action via baw",
+    "Run scripts/verify.sh and show REAL output before claiming done",
+    "After 2 consecutive failures stop and diagnose per AGENTS.md; hooks enforce this"
+  ],
+  "infra": {
+    "hooks": ".devin/hooks.v1.json auto-enforces: destructive command block, fail-streak detection, stop-gate until subtasks done + verify passes",
+    "subagents": "profiles in .devin/agents/: planner, glm-worker, auditor (use auditor to independently verify claims)",
+    "skills_available": ["oss-audit (use to audit deps/contracts we reuse)", "trading-idea (not needed here)"]
+  },
+  "kickoff_prompt": "You are the GLM agent building the Binance Agent ID Hackathon entry described in this manifest (event/awards/hard_rules_dq/tech_context/concept are the full spec - follow them exactly, do not simplify). First read hackathon/RESEARCH.md, hackathon/ROADMAP.md, AGENTS.md. Then run scripts/taskstate.sh init and add each task_state.init_with item via scripts/taskstate.sh add-subtask. Execute in order: p0-setup -> p1-contract -> p1-tests -> p1-testnet -> p2-skill -> p2-site, marking subtasks done via taskstate.sh verify only with real evidence. Follow Explore->Plan->Implement->Verify per AGENTS.md. Items marked HUMAN GATE are prepared-but-not-executed by you. Begin with p0-setup now."
+}

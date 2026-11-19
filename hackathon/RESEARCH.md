@@ -66,9 +66,32 @@ Tiebreak: depth of integration + completion.
 
 **Temuan kunci**: bahkan project paling rajin baru ~9-30 unique addresses. **Bottleneck kompetisi = distribusi ke holder `.ai`, bukan teknologi.** Holder `.ai` masih niche (early adopters Agentic Wallet). Yang menang = yang paling efektif recruit mereka.
 
-## 5. Implikasi strategis (bukan asumsi — dari data)
+## 5. Temuan on-chain langsung (diukur, bukan di-googling)
 
-1. **30 alamat adalah bar nyata.** Semua kompetitor kesulitan di angka ini. Rencana distribusi sama pentingnya dengan kode.
+- **Holder base `.ai`**: 100.000+ claimed per 26 Okt 2026 (media; verified via API bahwa `heyi` milik co-CEO Binance terdaftar block 128.768.530). Registry deploy block `127950748`. TAM BESAR — masalahnya bukan "siapa yang punya .ai" tapi "cara menjangkau mereka".
+- **Resolve API resmi** (public, no key): `GET https://agentid.prd.space.id/v1/handles/{handle}` dan `/v1/addresses/{address}` — return owner, tokenId, txHash, block. Rate-limited, cache.
+- **On-chain resolve**: `ownerOfHandle(string)` dan `handleOf(address)` di registry — bisa dipakai dApp untuk tampilkan nama agent, bukan cuma gate.
+- **Indexer events**: `Registered(bytes32,address,string)` + `AdminRegistered` — untuk build leaderboard sendiri.
+- **`baw` surface lengkap**: send, swap market/limit order, prediction markets, x402, DeFi stake/LP, approvals mgmt, `contract-call preview/execute` arbitrary contract, `sign-message` EIP-712. Artinya agent user bisa interact kontrak APAPUN via baw — distribusi kita = minta agent mereka preview-execute call ke kontrak kita.
+- **Install skill resmi**: `npx skills add binance/binance-skills-hub --skill binance-agentic-wallet` — begitulah user onboard agent mereka. Skill kita harus kompatibel dengan pola ini.
+- **Per 19 Nov real on-chain**: irwansupian agent-checkin `uniqueAgents()=1`, `totalCheckIns()=1` (counter langsung dibaca dari kontrak). tmzincc clone ~9 (laporan). Check-in projects = traksi LEMAH.
+
+## 5b. Landscape kompetisi v2 — playbook yang TERBUKTI menarik volume
+
+| Project | Mechanic | Traksi sinyal |
+|---|---|---|
+| **GLOOP** | Free-mint 3,333 NFT gated .ai + token fair-launch + built-in market (tiap trade = tx) | **Sold out claim** — jika benar, ribuan unique .ai = frontrunner Pioneer |
+| Riddle Run | Riddle game; agents mint (free riddle / 0.002 BNB instant) | Engagement X tinggi (129 likes) |
+| Agent ID Pioneer (0xFarmers) | Free NFT badge mint, 1 per .ai wallet | Baru launch 19 Nov |
+| Agent Passport (zhuai) | On-chain credit score "passport" + daily check-in naik score | Pesaing langsung ide reputasi — fomome.ai #1 |
+| iouagents | Micro-lending + credit record | Sophisticated; treasury real |
+| Check-in clones (x3) | Streak harian | 1-9 unique agents — lemah |
+
+**Kesimpulan data**: playbook free-mint/gated-claim untuk holder `.ai` MENARIK ribuan interact (holders sudah terkondisi: `.ai` = pass untuk exclusive mint — dari observasi komunitas). Pure utility apps (check-in) lemah karena tidak ada insentif. **Proyek pemenang = mechanic insentif jelas (mint/badge) + Agent ID depth untuk Innovation.**
+
+## 5c. Implikasi strategis (bukan asumsi — dari data)
+
+1. **30 alamat adalah bar mudah untuk mint-playbook, sulit untuk utility-playbook.** GLOOP-style free mint bisa capai ratusan-ribuan interact dalam hari; utility check-in berjuang di angka tunggal.
 2. **Daily-loop mechanics** (check-in, streak) dipakai semua orang karena efektif untuk Pioneer metrics (tx count). Tapi Innovation Award butuh depth — gate tempelan hanya dapat 30% rendah.
 3. **Cross-promotion antar peserta adalah channel distribusi aktual** — thread The Colony, komentar "we'll try yours too". Komunitas `.ai` holder kecil dan saling kenal.
 4. **Skill-file-first distribution**: UX terbaik untuk audience ini = `skill.md` yang agent mereka bisa baca langsung + prompt copy-paste. Website = landing + instructions, bukan wallet-connect.
@@ -84,7 +107,10 @@ Tiebreak: depth of integration + completion.
 | Agent-gated API marketplace (x402) | Sedang-tinggi | Tinggi | Sedang-berat (butuh service nyata) | Sedang | Sedang |
 | Agent-to-agent messaging/handshake | Tinggi | Sedang | Sedang | Tinggi | Sedang |
 
-**Kandidat terkuat**: proof-of-work/reputation log untuk agents ("agent resume on-chain") — Agent ID bukan gate tapi *subject*; tiap agent punya alasan interact berulang (log pekerjaan); berbeda dari semua kompetitor yang cuma gate access; nyambung ke narasi ekosistem (loan gating, hiring agents, airdrop eligibility). Kompetitor terdekat: iouagents (credit score) — kita bedakan: general work attestation, bukan cuma lending.
+**Kandidat terkuat (revisi setelah data kompetisi)**: hybrid —
+**"Agent Achievement Badge"**: soulbound NFT badge untuk holder `.ai` — free mint (1 per wallet, gas only) untuk volume Pioneer, TAPI badge-nya bukan sekadar collectible: badge = **credential proof-of-participation on-chain yang bisa di-attest dan di-query project lain** (badge registry + attestation). Agent ID depth: `.ai` adalah subject identitasnya; badge mengaitkan achievements ke handle `.ai` (resolve `handleOf` untuk display nama, bukan address). Loop harian: badge baru per "quest" mingguan → tx berulang. Diferensiasi vs GLOOP (pure NFT+token): kita bangun reputation layer yang dipakai project lain = narasi infra, bukan collectibles; vs Agent Passport (credit score): kita multi-badge achievement + third-party attest, lebih terbuka.
+
+Catatan jujur: untuk menang Pioneer butuh GLOOP-level traction (ribuan tx) — sulit tanpa token/NFT FOMO. Target realistis: **Innovation Award** (30+ addresses achievable lewat free-badge mint mechanic) sambil tetap compete di Pioneer.
 
 ## 7. Risiko & unknowns yang masih perlu dicek
 

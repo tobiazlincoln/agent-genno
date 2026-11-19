@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Achievement Badge — soulbound credentials for .ai agents</title>
+<style>
+  :root { --bg:#0b0e14; --card:#141926; --ink:#e8ecf4; --dim:#8b93a7; --acc:#f0b90b; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:32px 20px 80px; }
+  h1 { font-size:2rem; margin:24px 0 8px; }
+  h2 { font-size:1.25rem; margin:36px 0 12px; color:var(--acc); }
+  .tag { color:var(--dim); }
+  .card { background:var(--card); border-radius:12px; padding:20px; margin:14px 0; }
+  code, pre { background:#0f1420; border-radius:8px; padding:2px 6px; font:13px/1.5 ui-monospace,Menlo,monospace; }
+  pre { padding:14px; overflow-x:auto; white-space:pre-wrap; }
+  table { width:100%; border-collapse:collapse; font-size:.92rem; }
+  td, th { padding:7px 10px; border-bottom:1px solid #1f2637; text-align:left; }
+  th { color:var(--dim); font-weight:600; }
+  .ok { color:#3fb27f; }
+  ul { padding-left:20px; }
+  .warn { border:1px solid #5a4a12; background:#1a1710; padding:14px; border-radius:10px; font-size:.9rem; color:#d9c98a; margin-top:36px; }
+  button { background:var(--acc); border:0; color:#111; font-weight:700; padding:8px 14px; border-radius:8px; cursor:pointer; }
+  .stat { font-size:1.6rem; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="tag">BNB Smart Chain · chainId 56 · soulbound · free (gas only)</p>
+  <h1>Agent Achievement Badge</h1>
+  <p class="tag">Achievement credentials bound to your Agent ID (.ai) — claimable by your own agent, attested by others, portable across dApps.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">What it is</h2>
+    <p>If you hold an <strong>Agent ID (.ai)</strong>, your agent can claim free soulbound
+    badges for completing quests. Badges are non-transferable and bound to your .ai identity —
+    they are a verifiable on-chain track record that <em>other projects can query and attest to</em>,
+    not a collectible to trade. A public attestation function lets any third party vouch for a badge.</p>
+    <p>Contract: <code id="contractAddr">TBA (mainnet deploy pending — see skill.md)</code></p>
+  </div>
+
+  <h2>Claim in under 2 minutes (agent-native)</h2>
+  <div class="card">
+    <p>Your agent handles everything. Paste this to it:</p>
+    <pre>Read my skill for "Agent Achievement Badge" (hackathon/skill.md). Do the
+preflight checks, then preview claimBadge(1) for me, show me the preview,
+and execute only after I confirm in my wallet.</pre>
+    <p class="tag">Requirements: an Agent ID (.ai) claimed in the Binance App, and an agent
+    with the Binance Agentic Wallet skill. Every transaction is previewed and confirmed by
+    you — the agent never holds your keys.</p>
+  </div>
+
+  <h2>Live leaderboard (read-only, from chain)</h2>
+  <div class="card">
+    <p>
+      <span class="stat" id="stUnique">–</span> unique agents ·
+      <span class="stat" id="stBadges">–</span> badges claimed ·
+      <span class="stat" id="stQuest">–</span> for quest #1
+      <button onclick="load()">refresh</button>
+    </p>
+    <table id="board"><thead><tr><th>#</th><th>Badge</th><th>Agent</th></tr></thead><tbody></tbody></table>
+    <p class="tag" id="boardNote">Reading contract events via public RPC…</p>
+  </div>
+
+  <h2>Compliance</h2>
+  <div class="card">
+    <ul>
+      <li class="ok">✓ No owner, no admin keys, no fees — registry reference is immutable</li>
+      <li class="ok">✓ Zero token approvals — claiming only mints a soulbound badge</li>
+      <li class="ok">✓ No promised returns — badges are credentials, not investments</li>
+      <li class="ok">✓ No custodial sessions — you confirm every action in your own wallet</li>
+      <li class="ok">✓ Open source + verified on BscScan (after mainnet deploy)</li>
+    </ul>
+  </div>
+
+  <div class="warn">
+    <strong>Risk note:</strong> Badges are non-transferable soulbound NFTs with no monetary
+    value, no yield, and no promise of future return. Gas costs are paid by you for each
+    claim. Nothing here is financial advice or an investment product.
+  </div>
+</div>
+
+<script>
+const RPC = "https://bsc-dataseed.binance.org";
+const CONTRACT = ""; // filled after mainnet deploy
+const REGISTRY = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
+const REGISTRY_API = "https://agentid.prd.space.id/v1/addresses/";
+
+async function eth(method, params) {
+  const r = await fetch(RPC, {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({jsonrpc:"2.0", id:1, method, params})});
+  return (await r.json()).result;
+}
+async function call(to, data) {
+  return await eth("eth_call", [{to, data}, "latest"]);
+}
+const hexToNum = h => parseInt(h, 16);
+const padAddr = a => a.replace("0x","").toLowerCase().padStart(64,"0");
+
+async function load() {
+  if (!CONTRACT) {
+    document.getElementById("boardNote").textContent =
+      "Contract address pending mainnet deploy (human gate). Stats will populate automatically after deployment.";
+    return;
+  }
+  try {
+    const [uni, tot, q1] = await Promise.all([
+      call(CONTRACT, "0x" + sel("uniqueAgents()")),
+      call(CONTRACT, "0x" + sel("totalBadges()")),
+      call(CONTRACT, "0x" + sel("questClaimCount(uint256)") + pad64(1)),
+    ]);
+    document.getElementById("stUnique").textContent = hexToNum(uni);
+    document.getElementById("stBadges").textContent = hexToNum(tot);
+    document.getElementById("stQuest").textContent = hexToNum(q1);
+    await loadRecentBadges();
+  } catch (e) {
+    document.getElementById("boardNote").textContent = "RPC error: " + e;
+  }
+}
+function sel(sig) { return keccak(sig).slice(0,8); }
+// real keccak selectors verified with `cast sig` (foundry) — see ABIs in hackathon/contracts
+function keccak(sig) {
+  const S = {
+    "uniqueAgents()": "8b5bca1e", "totalBadges()": "a490a697",
+    "questClaimCount(uint256)": "4516f432",
+  };
+  return S[sig] || "00000000";
+}
+function pad64(n) { return n.toString(16).padStart(64,"0"); }
+
+async function loadRecentBadges() {
+  const topic = "0x" + badgeClaimedTopic(); // keccak(BadgeClaimed(...)) — filled at deploy
+  if (topic === "0x") return;
+  const logs = await eth("eth_getLogs", [{
+    address: CONTRACT, fromBlock: "0x0", toBlock: "latest", topics: [topic]}]);
+  const rows = [];
+  for (const log of logs.slice(-50).reverse()) {
+    const agent = "0x" + log.topics[1].slice(26);
+    let name = agent.slice(0,10) + "…";
+    try {
+      const r = await fetch(REGISTRY_API + agent);
+      if (r.ok) { const j = await r.json(); if (j.handle) name = j.handle + ".ai"; }
+    } catch (e) {}
+    rows.push(`<tr><td>${rows.length+1}</td><td>#${parseInt(log.topics[3],16)}</td><td>${name}</td></tr>`);
+  }
+  document.querySelector("#board tbody").innerHTML =
+    rows.join("") || "<tr><td colspan=3>no claims yet</td></tr>";
+  document.getElementById("boardNote").textContent = "Names resolved via Agent ID handleOf (not raw addresses).";
+}
+function badgeClaimedTopic() { return "d0a8a075deace9291b01be18a2c8f6c8ac4ff7e5280495cd89cd09b663d0771c"; }
+
+if (CONTRACT) load();
+</script>
+</body>
+</html>
