@@ -1,0 +1,31 @@
+I've read both files. Let me analyze the failing tests:
+
+1. `test_largest_expense_returns_the_largest` — expects 200 (largest), but `largest_expense` uses `min`. Bug.
+2. `test_apply_discount_reduces_expense` — expects 80 after 20% discount (i.e. reduce *by* 20%), but code does `amount * pct / 100` = 20. Bug.
+3. `test_summary` — needs new `summary()` method.
+
+Let me fix these.The third edit failed because the second edit already applied. Let me add the `summary()` method now.Now let me run the test suite to verify.All 6 tests pass. Now let me delegate final verification to the auditor subagent.Task complete. The auditor independently verified all changes.
+
+## Summary
+
+Fixed 3 bugs in [budget.py](file:///Users/tobiaz/Desktop/GLMagent/demo/budget.py) and added the requested `summary()` method:
+
+1. **`largest_expense()`** — changed `min` → `max` (it was returning the smallest expense instead of the largest). [budget.py:34-38](file:///Users/tobiaz/Desktop/GLMagent/demo/budget.py)
+2. **`apply_discount()`** — fixed formula from `amount * pct / 100` to `amount * (100 - pct) / 100` (it was reducing *to* pct% of original rather than reducing *by* pct%). [budget.py:40-46](file:///Users/tobiaz/Desktop/GLMagent/demo/budget.py)
+3. **`summary()`** — added new method returning `{"income": ..., "expense": ..., "balance": ...}`. [budget.py:48-55](file:///Users/tobiaz/Desktop/GLMagent/demo/budget.py)
+
+## Verification output
+
+```
+test_apply_discount_leaves_income_alone ... ok
+test_apply_discount_reduces_expense ... ok
+test_balance ... ok
+test_largest_expense_empty ... ok
+test_largest_expense_returns_the_largest ... ok
+test_summary ... ok
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+OK
+```
+
+All 6 tests pass. The auditor subagent independently confirmed the changes are present, correct, and the test suite passes (exit code 0).
