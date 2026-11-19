@@ -25,7 +25,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(SHOTS[0] * 1000)
 
     # Shot 2 — claim steps + copy prompt (s2)
-    page.locator("text=claim in 3 steps").scroll_into_view_if_needed()
+    page.locator("h2:has-text("claim in 3 steps")").scroll_into_view_if_needed()
     page.wait_for_timeout(SHOTS[1] * 1000)
 
     # Shot 3 — agent terminal animation (s3)
@@ -36,11 +36,11 @@ with sync_playwright() as p:
     # Shot 4 — leaderboard (s4)
     page.goto(f"{BASE}/index.html", wait_until="domcontentloaded")
     page.wait_for_timeout(800)
-    page.locator("text=live leaderboard").scroll_into_view_if_needed()
+    page.locator("h2:has-text("live leaderboard")").scroll_into_view_if_needed()
     page.wait_for_timeout(SHOTS[3] * 1000)
 
     # Shot 5 — trust model + risk note (s5)
-    page.locator("text=trust model").scroll_into_view_if_needed()
+    page.locator("h2:has-text("trust model")").scroll_into_view_if_needed()
     page.wait_for_timeout(SHOTS[4] * 1000)
 
     video = page.video
