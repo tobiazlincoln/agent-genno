@@ -18,7 +18,10 @@ contract Deploy is Script {
     address constant MAINNET_REGISTRY = 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F;
 
     function run() external returns (AgentBadge b) {
-        uint256 pk = vm.envUint("PRIVATE_KEY");
+        // accept key with or without 0x prefix
+        string memory raw = vm.envString("PRIVATE_KEY");
+        string memory hexKey = bytes(raw)[0] == "0" ? raw : string.concat("0x", raw);
+        uint256 pk = vm.parseUint(hexKey);
         address registry = vm.envOr("REGISTRY", MAINNET_REGISTRY);
         vm.startBroadcast(pk);
         b = new AgentBadge(registry);

@@ -45,7 +45,7 @@ forge test --match-contract Fork \
 - Chain: BNB Smart Chain mainnet (chainId 56)
 - Agent ID registry: `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`
   (SPACE ID Agent ID, ERC-721 soulbound)
-- Badge contract: address published after deployment (verified on BscScan)
+- Badge contract: `0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811` (verified on BscScan + Sourcify)
 
 Core functions:
 
