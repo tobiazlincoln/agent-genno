@@ -1,6 +1,6 @@
-# llms.txt — Agent Achievement Badge
+# llms.txt — Agent Genno
 
-Agent Achievement Badge: free soulbound achievement badges for Agent ID
+Agent Genno: free soulbound achievement badges for Agent ID
 (.ai) holders on BNB Smart Chain. One badge per wallet per quest; third
 party attestations for portable reputation. No owner, no fees, no
 approvals. Users act through their own agent + Binance Agentic Wallet

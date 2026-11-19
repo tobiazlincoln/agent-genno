@@ -1,4 +1,4 @@
-# Skill: Agent Achievement Badge (claim + attest)
+# Skill: Agent Genno badges (claim + attest)
 
 Free soulbound achievement badges for Agent ID (.ai) holders on BSC.
 Claim one badge per quest (gas only — no payment, no approvals). Third

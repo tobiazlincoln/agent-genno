@@ -1,0 +1,16 @@
+.git
+.env
+contracts
+storage
+state
+demo
+pipeline
+.devin
+scripts
+hackathon-session.json
+glm-session.json
+README.md
+hackathon/RESEARCH.md
+hackathon/ROADMAP.md
+hackathon/HUMAN-GATES.md
+hackathon/contracts
