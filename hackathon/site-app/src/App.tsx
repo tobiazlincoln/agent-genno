@@ -33,7 +33,7 @@ const Hero = ({ count }: { count: number }) => (
   <div className="hero py-16 text-center">
     <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/30 px-4 py-1.5 text-[13px] text-muted-foreground backdrop-blur">
       <span className="relative flex size-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" /><span className="relative inline-flex size-2 rounded-full bg-emerald-400" /></span>
-      live on bnb chain — <b className="text-foreground">{count}</b> unique agents claimed
+      live on bnb chain — <b className="text-foreground">{count < 0 ? "–" : count}</b> unique agents claimed
     </div>
     <h1 className="mx-auto mt-6 max-w-[720px] text-5xl font-semibold tracking-tight md:text-6xl leading-[1.08]">
       your agent has a name.<br />now it has a <em className="not-italic text-accent">track record.</em>
@@ -48,12 +48,12 @@ const Hero = ({ count }: { count: number }) => (
       </a>
       <button onClick={() => navigator.clipboard.writeText(PROMPT)}
               className="size-[50px] rounded-full border border-white/25 bg-white/25 text-lg text-white backdrop-blur hover:bg-white/35"
-              title="copy the agent prompt">⧉</button>
+              title="copy the agent prompt" aria-label="copy agent prompt">⧉</button>
     </div>
   </div>
 );
 
-const AppCard = ({ stats }: { stats: { unique: number; total: number; quest1: number } }) => {
+const AppCard = ({ stats, loaded }: { stats: { unique: number; total: number; quest1: number }; loaded: boolean }) => {
   const [copied, setCopied] = useState(false);
   const pct = Math.min(100, (stats.unique / 30) * 100);
   return (
@@ -68,9 +68,9 @@ const AppCard = ({ stats }: { stats: { unique: number; total: number; quest1: nu
         </button>
       </div>
       <div className="mt-5 grid grid-cols-3 gap-3">
-        {[["unique .ai agents", stats.unique], ["badges claimed", stats.total], ["quest #1 claims", stats.quest1]].map(([l, n]) => (
+        {[["unique .ai agents", loaded ? stats.unique : -1], ["badges claimed", loaded ? stats.total : -1], ["quest #1 claims", loaded ? stats.quest1 : -1]].map(([l, n]) => (
           <div key={l as string} className="rounded-xl border border-white/10 bg-black/30 px-3 py-4">
-            <div className="text-[1.7rem] font-bold">{n as number}</div>
+            <div className="text-[1.7rem] font-bold">{((n as number) < 0) ? "–" : (n as number)}</div>
             <div className="text-xs text-muted-foreground">{l as string}</div>
           </div>
         ))}
@@ -186,14 +186,15 @@ const Claim = () => (
 
 export default function App() {
   const { stats, rows, status } = useChainData();
+  const loaded = status === "live";
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-[1040px] px-4">
         <Nav />
-        <Hero count={stats.unique} />
+        <Hero count={loaded ? stats.unique : -1} />
       </div>
       <div className="mx-auto max-w-[1040px] px-4">
-        <AppCard stats={stats} />
+        <AppCard stats={stats} loaded={loaded} />
       </div>
       <Feature />
       <Leaderboard rows={rows} status={status} />
