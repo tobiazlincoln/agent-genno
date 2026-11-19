@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Agent Genno — agent flow demo</title>
+<style>
+  :root { --bg:#070a12; --card:#111827; --line:#1e293b; --ink:#eef2f9; --dim:#8b93a7; --acc:#f5c518; --ok:#34d399; }
+  * { margin:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--ink); font:15px/1.7 ui-monospace,Menlo,monospace; display:flex; justify-content:center; padding:40px 20px; }
+  .term { width:min(860px,100%); background:#0a0f1c; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  .bar { background:#151d30; padding:10px 14px; display:flex; gap:8px; align-items:center; }
+  .bar i { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .bar .r{background:#f87171}.bar .y{background:#facc15}.bar .g{background:#34d399}
+  .bar span { margin-left:10px; color:var(--dim); font-size:13px; font-family:-apple-system,sans-serif; }
+  .out { padding:22px; min-height:540px; white-space:pre-wrap; font-size:15px; line-height:1.85; }
+  .p { color:#7dd3fc; }
+  .sys { color:var(--dim); }
+  .ok { color:var(--ok); font-weight:700; }
+  .warn { color:var(--acc); font-weight:700; }
+  .badge { display:inline-block; margin-top:14px; padding:14px 22px; border:1px solid var(--acc);
+           border-radius:12px; color:var(--acc); font-weight:800; font-size:17px;
+           background:rgba(245,197,24,.06); box-shadow:0 0 24px rgba(245,197,24,.15); }
+  .cap { text-align:center; color:var(--dim); font:14px -apple-system,sans-serif; margin-top:26px; }
+</style></head>
+<body>
+<div>
+  <div class="term">
+    <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>user@mac — agent session</span></div>
+    <div class="out" id="out"></div>
+  </div>
+  <div class="cap" id="cap"></div>
+</div>
+<script>
+const lines = [
+  {t:600,  c:"p",   x:'> Read my skill for "Agent Genno" (skill.md). Do the preflight checks, then preview claimBadge(1) for me.'},
+  {t:1700, c:"sys", x:'reading skill.md … preflight required'},
+  {t:2400, c:"sys", x:'$ baw wallet status'},
+  {t:2900, c:"ok",  x:'  ✓ wallet unlocked · network: BNB Smart Chain (56)'},
+  {t:3300, c:"sys", x:'$ baw wallet settings'},
+  {t:3800, c:"ok",  x:'  ✓ Developer Mode: ON'},
+  {t:4200, c:"sys", x:'$ baw wallet agent-id'},
+  {t:4700, c:"ok",  x:'  ✓ Agent ID: yourname.ai (soulbound · holder)'},
+  {t:5600, c:"cap2",x:''},
+  {t:5700, c:"sys", x:'$ baw wallet contract-call preview --address 0xD6ED…b811 --data "claimBadge(uint256)" --args 1'},
+  {t:6800, c:"ok",  x:'  ✓ preview OK · requestId: 8f4c21e0-9ab7-4d13-8e2f-11c3a2b7d9f4'},
+  {t:7300, c:"sys", x:'  contract: AgentBadge (verified · no owner · zero approvals)'},
+  {t:7800, c:"sys", x:'  action  : mint 1 soulbound badge (quest #1) · value: 0 BNB · fee: gas only'},
+  {t:8300, c:"warn",x:'  ⏳ waiting for USER confirmation in Binance Wallet …'},
+  {t:9600, c:"ok",  x:'  ✓ USER CONFIRMED in wallet'},
+  {t:10400,c:"sys", x:'$ baw wallet contract-call execute --request-id 8f4c21e0-…'},
+  {t:11600,c:"ok",  x:'  ✓ tx: 0x9c41ab…e7f2 · block 134,458,201'},
+  {t:12600,c:"ok",  x:'  ✓ BadgeClaimed(yourname.ai, quest #1, badge #26)'},
+  {t:13600,c:"cap3",x:''},
+  {t:14200,c:"badge",x:'🏆 SOULBOUND BADGE #26 — bound to yourname.ai — non-transferable'},
+  {t:15400,c:"sys", x:'queryable by any dApp: totalBadges() · uniqueAgents() · attestationCount(26)'},
+  {t:16200,c:"sys", x:'your .ai identity now has verifiable proof — on-chain, forever.'},
+];
+const caps = { cap2:"STEP 2 — agent previews the exact call (requestId only from preview)",
+               cap3:"STEP 3 — user confirms. the agent never touches keys." };
+const out=document.getElementById('out'), cap=document.getElementById('cap');
+function cls(c){ return c==='cap2'||c==='cap3' ? 'cap' : c; }
+lines.forEach(L=>{
+  setTimeout(()=>{
+    if (L.c==='cap2'||L.c==='cap3'){ cap.textContent=caps[L.c]; return; }
+    if (L.c==='badge'){ const d=document.createElement('div'); d.className='badge'; d.textContent=L.x; out.appendChild(d); cap.textContent='soulbound · attested by anyone · portable across dApps'; return; }
+    const d=document.createElement('div'); d.className=L.c; d.textContent=L.x; out.appendChild(d);
+  }, L.t);
+});
+</script>
+</body></html>
