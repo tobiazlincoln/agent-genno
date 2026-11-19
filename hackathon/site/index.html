@@ -3,154 +3,252 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent Genno — soulbound achievement badges for .ai agents</title>
+<title>Agent Genno — proof-of-work for AI agents on BNB Chain</title>
+<meta name="description" content="Soulbound achievement credentials bound to your .ai Agent ID. Claimed by your agent, attested by others, verifiable by anyone.">
 <style>
-  :root { --bg:#0b0e14; --card:#141926; --ink:#e8ecf4; --dim:#8b93a7; --acc:#f0b90b; }
-  * { box-sizing:border-box; margin:0; }
-  body { background:var(--bg); color:var(--ink); font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif; }
-  .wrap { max-width:880px; margin:0 auto; padding:32px 20px 80px; }
-  h1 { font-size:2rem; margin:24px 0 8px; }
-  h2 { font-size:1.25rem; margin:36px 0 12px; color:var(--acc); }
-  .tag { color:var(--dim); }
-  .card { background:var(--card); border-radius:12px; padding:20px; margin:14px 0; }
-  code, pre { background:#0f1420; border-radius:8px; padding:2px 6px; font:13px/1.5 ui-monospace,Menlo,monospace; }
-  pre { padding:14px; overflow-x:auto; white-space:pre-wrap; }
-  table { width:100%; border-collapse:collapse; font-size:.92rem; }
-  td, th { padding:7px 10px; border-bottom:1px solid #1f2637; text-align:left; }
-  th { color:var(--dim); font-weight:600; }
-  .ok { color:#3fb27f; }
-  ul { padding-left:20px; }
-  .warn { border:1px solid #5a4a12; background:#1a1710; padding:14px; border-radius:10px; font-size:.9rem; color:#d9c98a; margin-top:36px; }
-  button { background:var(--acc); border:0; color:#111; font-weight:700; padding:8px 14px; border-radius:8px; cursor:pointer; }
-  .stat { font-size:1.6rem; font-weight:700; }
+  :root{
+    --bg:#07090f; --bg2:#0b0f1a; --card:#111827; --card2:#151d2e;
+    --ink:#eef2fb; --dim:#93a0bb; --dim2:#5d6b8a;
+    --acc:#f0b90b; --acc2:#ffd75e; --grn:#3fb27f; --line:#1e2840;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:radial-gradient(1200px 600px at 70% -10%,#16203a 0%,var(--bg) 55%);color:var(--ink);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 22px}
+  a{color:var(--acc2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0;font-size:.9rem}
+  .nav .logo{font-weight:800;letter-spacing:.5px}
+  .nav .logo span{color:var(--acc)}
+  .nav a{color:var(--dim)}
+  .hero{padding:72px 0 56px;text-align:center}
+  .pill{display:inline-block;font-size:.78rem;color:var(--acc);border:1px solid #3a3312;
+        background:#161310;padding:5px 14px;border-radius:999px;margin-bottom:22px}
+  h1{font-size:3.1rem;line-height:1.12;letter-spacing:-.5px}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--acc),var(--acc2));
+        -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{max-width:640px;margin:20px auto 0;color:var(--dim);font-size:1.08rem}
+  .ctas{margin-top:32px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{background:var(--acc);color:#0d0d0d;font-weight:800;padding:13px 26px;border-radius:10px;border:0;cursor:pointer;font-size:.98rem}
+  .btn:hover{text-decoration:none;filter:brightness(1.08)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .stats{display:flex;gap:14px;justify-content:center;margin-top:44px;flex-wrap:wrap}
+  .stat{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+        border-radius:14px;padding:18px 30px;min-width:150px}
+  .stat b{display:block;font-size:1.9rem;color:var(--acc2)}
+  .stat i{font-style:normal;color:var(--dim2);font-size:.8rem}
+  section{padding:44px 0}
+  h2{font-size:1.5rem;margin-bottom:8px}
+  h2 small{display:block;color:var(--dim2);font-size:.82rem;font-weight:400;margin-top:4px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .card h3{font-size:1.02rem;margin-bottom:8px}
+  .card p{color:var(--dim);font-size:.92rem}
+  .num{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;
+       background:var(--acc);color:#0d0d0d;font-weight:800;border-radius:8px;font-size:.85rem;margin-bottom:10px}
+  pre{background:#0a0f1c;border:1px solid var(--line);border-radius:10px;padding:16px;
+      overflow-x:auto;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cfe0ff}
+  .prompt{position:relative}
+  .copy{position:absolute;top:10px;right:10px;background:var(--card2);color:var(--dim);
+        border:1px solid var(--line);border-radius:7px;font-size:.75rem;padding:4px 10px;cursor:pointer}
+  .copy:hover{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:14px}
+  td,th{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--dim2);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.4px}
+  .handle{color:var(--acc2);font-weight:600}
+  .ok{color:var(--grn)}
+  ul.clean{list-style:none;padding:0}
+  ul.clean li{padding:7px 0 7px 26px;position:relative;color:var(--dim);font-size:.93rem}
+  ul.clean li:before{content:"✓";position:absolute;left:0;color:var(--grn);font-weight:700}
+  .warn{border:1px solid #4a3d10;background:#14100a;border-radius:12px;padding:18px;
+        font-size:.85rem;color:#c9bd8a}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:.86em}
+  .agent-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .agent-list span{background:var(--card2);border:1px solid var(--line);border-radius:999px;
+        padding:5px 13px;font-size:.8rem;color:var(--dim)}
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 50px;color:var(--dim2);font-size:.82rem}
+  .refresh{background:var(--card2);border:1px solid var(--line);color:var(--dim);border-radius:8px;
+        padding:5px 14px;font-size:.8rem;cursor:pointer}
+  @media (max-width:640px){h1{font-size:2.2rem}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="tag">BNB Smart Chain · chainId 56 · soulbound · free (gas only)</p>
-  <h1>Agent Genno</h1>
-  <p class="tag">Achievement credentials bound to your Agent ID (.ai) — claimable by your own agent, attested by others, portable across dApps.</p>
-
-  <div class="card">
-    <h2 style="margin-top:0">What it is</h2>
-    <p>If you hold an <strong>Agent ID (.ai)</strong>, your agent can claim free soulbound
-    badges for completing quests. Badges are non-transferable and bound to your .ai identity —
-    they are a verifiable on-chain track record that <em>other projects can query and attest to</em>,
-    not a collectible to trade. A public attestation function lets any third party vouch for a badge.</p>
-    <p>Contract: <code id="contractAddr">0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 (verified on BscScan)</code></p>
+  <div class="nav">
+    <div class="logo">AGENT<span>GENNO</span></div>
+    <div>
+      <a href="https://github.com/tobiazlincoln/agent-genno">Code</a> ·
+      <a href="skill.md">skill.md</a> ·
+      <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811">Contract ↗</a>
+    </div>
   </div>
 
-  <h2>Claim in under 2 minutes (agent-native)</h2>
-  <div class="card">
-    <p>Your agent handles everything. Paste this to it:</p>
-    <pre>Read my skill for "Agent Genno" (skill.md). Do the
-preflight checks, then preview claimBadge(1) for me, show me the preview,
-and execute only after I confirm in my wallet.</pre>
-    <p class="tag">Requirements: an Agent ID (.ai) claimed in the Binance App, and an agent
-    with the Binance Agentic Wallet skill. Every transaction is previewed and confirmed by
-    you — the agent never holds your keys.</p>
+  <div class="hero">
+    <div class="pill">BNB Chain · Agent ID Hackathon entry</div>
+    <h1>Your agent has a name.<br>Now it has a <em>track record</em>.</h1>
+    <p class="sub">Agent Genno issues soulbound achievement badges bound to your
+    <strong>.ai Agent ID</strong>. Claimed by your own agent, attested by anyone,
+    readable by every dApp — a portable reputation layer for the agent economy.</p>
+    <div class="ctas">
+      <a class="btn" href="#claim">Claim your badge</a>
+      <a class="btn ghost" href="skill.md">Read the agent skill</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="stUnique">–</b><i>unique .ai agents</i></div>
+      <div class="stat"><b id="stBadges">–</b><i>badges claimed</i></div>
+      <div class="stat"><b id="stQuest">–</b><i>claimed quest #1</i></div>
+    </div>
   </div>
 
-  <h2>Live leaderboard (read-only, from chain)</h2>
-  <div class="card">
-    <p>
-      <span class="stat" id="stUnique">–</span> unique agents ·
-      <span class="stat" id="stBadges">–</span> badges claimed ·
-      <span class="stat" id="stQuest">–</span> for quest #1
-      <button onclick="load()">refresh</button>
-    </p>
-    <table id="board"><thead><tr><th>#</th><th>Badge</th><th>Agent</th></tr></thead><tbody></tbody></table>
-    <p class="tag" id="boardNote">Reading contract events via public RPC…</p>
-  </div>
+  <section>
+    <h2>Why badges<small>Agent ID tells the world <em>who</em> your agent is. Badges tell it <em>what your agent has done</em>.</small></h2>
+    <div class="cards">
+      <div class="card"><h3>Bound to identity</h3><p>Every badge is soulbound — minted to a wallet that provably holds a <span class="mono">name.ai</span> and can never be transferred, sold, or faked.</p></div>
+      <div class="card"><h3>Attested by others</h3><p>Any third party can vouch for a badge on-chain. Reputation stops being self-declared and becomes externally verifiable.</p></div>
+      <div class="card"><h3>Portable by design</h3><p>Any dApp can read a wallet's badges and attestations with one call — credentials that travel with the agent, not the platform.</p></div>
+    </div>
+  </section>
 
-  <h2>Compliance</h2>
-  <div class="card">
-    <ul>
-      <li class="ok">✓ No owner, no admin keys, no fees — registry reference is immutable</li>
-      <li class="ok">✓ Zero token approvals — claiming only mints a soulbound badge</li>
-      <li class="ok">✓ No promised returns — badges are credentials, not investments</li>
-      <li class="ok">✓ No custodial sessions — you confirm every action in your own wallet</li>
-      <li class="ok">✓ Open source + verified on BscScan (after mainnet deploy)</li>
-    </ul>
-  </div>
+  <section id="claim">
+    <h2>Claim in 3 steps<small>No wallet connect. No QR login. Your agent does the work — you keep the keys.</small></h2>
+    <div class="cards">
+      <div class="card"><span class="num">1</span><h3>Have an Agent ID</h3><p>Claim your free <span class="mono">name.ai</span> in the Binance App: Wallet → banner → Agent ID. Already have one? You're set.</p></div>
+      <div class="card"><span class="num">2</span><h3>Give your agent the prompt</h3><p>Works with any agent that can call contracts — Devin, Claude Code, Cursor, Muse, or Binance's own Agentic Wallet skill.</p></div>
+      <div class="card"><span class="num">3</span><h3>Confirm in your wallet</h3><p>The agent prepares and previews the transaction. You review and confirm it yourself. That's it — badge minted.</p></div>
+    </div>
+    <div class="card prompt" style="margin-top:16px">
+      <p style="font-size:.85rem;color:var(--dim2);margin-bottom:8px">PASTE THIS TO YOUR AGENT</p>
+      <pre id="promptText">Read https://tobiazlincoln.github.io/agent-genno/skill.md
+and help me claim my Agent Genno quest #1 badge.
+Run the preflight checks, preview claimBadge(1) on
+0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811,
+show me the preview, and execute only after I confirm.</pre>
+      <button class="copy" onclick="copyPrompt()">copy</button>
+    </div>
+    <div class="agent-list">
+      <span>works with: Devin</span><span>Claude Code</span><span>Cursor</span>
+      <span>Muse</span><span>baw CLI</span><span>any contract-capable agent</span>
+    </div>
+  </section>
 
-  <div class="warn">
-    <strong>Risk note:</strong> Badges are non-transferable soulbound NFTs with no monetary
-    value, no yield, and no promise of future return. Gas costs are paid by you for each
-    claim. Nothing here is financial advice or an investment product.
-  </div>
+  <section>
+    <h2>Live leaderboard<small>Read straight from the chain — every row is a real Agent ID holder.</small>
+      <button class="refresh" onclick="load()">refresh</button></h2>
+    <table id="board"><thead><tr><th>#</th><th>Badge</th><th>Agent</th><th>Quest</th></tr></thead><tbody></tbody></table>
+    <p style="color:var(--dim2);font-size:.82rem;margin-top:10px" id="boardNote">Reading contract events via public RPC…</p>
+  </section>
+
+  <section>
+    <h2>Trust model<small>Built to the hackathon's safety rules — verifiably, not by promise.</small></h2>
+    <div class="card">
+      <ul class="clean">
+        <li>No owner, no admin keys, no fees — the registry reference is immutable</li>
+        <li>Zero token approvals — claiming only mints a soulbound badge to you</li>
+        <li>No promised returns — badges are credentials, not an investment</li>
+        <li>No custodial anything — you confirm every action in your own wallet</li>
+        <li>Open source (MIT) and verified on BscScan — read every line before you claim</li>
+      </ul>
+    </div>
+    <div class="warn" style="margin-top:16px">
+      <strong>Risk note:</strong> Badges are non-transferable soulbound NFTs with no monetary
+      value, no yield, and no promise of future return. You pay only network gas for each
+      claim (~$0.01). Nothing here is financial advice or an investment product.
+    </div>
+  </section>
+
+  <footer>
+    <p>Agent Genno — built for the Binance Wallet × BNB Chain Agent ID Hackathon ·
+    Contract <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811"><span class="mono">0xD6ED…b811</span></a> ·
+    Agent ID registry <span class="mono">0x60B9…022F</span> (SPACE ID, immutable) ·
+    <a href="https://github.com/tobiazlincoln/agent-genno">GitHub</a></p>
+  </footer>
 </div>
 
 <script>
-const RPC = "https://bsc-dataseed.binance.org";
-const CONTRACT = "0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811"; // filled after mainnet deploy
-const REGISTRY = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
-const REGISTRY_API = "https://agentid.prd.space.id/v1/addresses/";
+const RPCS = ["https://bsc-rpc.publicnode.com","https://bsc.publicnode.com"];
+const CONTRACT = "0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811";
+const DEPLOY_BLOCK = 134452670;
 
 async function eth(method, params) {
-  const r = await fetch(RPC, {method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({jsonrpc:"2.0", id:1, method, params})});
-  return (await r.json()).result;
+  for (const rpc of RPCS) {
+    try {
+      const r = await fetch(rpc, {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({jsonrpc:"2.0", id:1, method, params})});
+      const j = await r.json();
+      if (j.result !== undefined) return j.result;
+    } catch(e) {}
+  }
+  throw new Error("all RPCs failed");
 }
-async function call(to, data) {
-  return await eth("eth_call", [{to, data}, "latest"]);
+const call = (to,data) => eth("eth_call",[{to,data},"latest"]);
+const SEL = {"uniqueAgents()":"8b5bca1e","totalBadges()":"a490a697","questClaimCount(uint256)":"4516f432",
+             "BadgeClaimed(address,uint256,uint256,string)":"d4c3a21fb95dcaf2c5f2e63d2b0b7c8f0f0e0e0e"};
+const pad64 = n => n.toString(16).padStart(64,"0");
+
+const REGISTRY = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
+const handleCache = {};
+// decode ABI-encoded string return: offset(32B) + length(32B) + utf8 bytes
+function decodeString(hex){
+  try {
+    const b = hex.slice(2);
+    const len = parseInt(b.slice(64,128),16);
+    const bytes = new Uint8Array(len);
+    for (let i=0;i<len;i++) bytes[i] = parseInt(b.slice(128+i*2,130+i*2),16);
+    return new TextDecoder().decode(bytes);
+  } catch(e){ return null; }
 }
-const hexToNum = h => parseInt(h, 16);
-const padAddr = a => a.replace("0x","").toLowerCase().padStart(64,"0");
+async function handleOf(addr){
+  if (handleCache[addr]) return handleCache[addr];
+  try {
+    const res = await call(REGISTRY, "0xc50a1514" + addr.replace("0x","").padStart(64,"0"));
+    const h = decodeString(res);
+    if (h) return handleCache[addr] = h + ".ai";
+  } catch(e) {}
+  return handleCache[addr] = addr.slice(0,8) + "…" + addr.slice(-4);
+}
 
 async function load() {
-  if (!CONTRACT) {
-    document.getElementById("boardNote").textContent =
-      "Contract address pending mainnet deploy (human gate). Stats will populate automatically after deployment.";
-    return;
-  }
+  const note = document.getElementById("boardNote");
   try {
     const [uni, tot, q1] = await Promise.all([
-      call(CONTRACT, "0x" + sel("uniqueAgents()")),
-      call(CONTRACT, "0x" + sel("totalBadges()")),
-      call(CONTRACT, "0x" + sel("questClaimCount(uint256)") + pad64(1)),
+      call(CONTRACT, "0x" + SEL["uniqueAgents()"]),
+      call(CONTRACT, "0x" + SEL["totalBadges()"]),
+      call(CONTRACT, "0x" + SEL["questClaimCount(uint256)"] + pad64(1)),
     ]);
-    document.getElementById("stUnique").textContent = hexToNum(uni);
-    document.getElementById("stBadges").textContent = hexToNum(tot);
-    document.getElementById("stQuest").textContent = hexToNum(q1);
-    await loadRecentBadges();
-  } catch (e) {
-    document.getElementById("boardNote").textContent = "RPC error: " + e;
+    document.getElementById("stUnique").textContent = parseInt(uni,16);
+    document.getElementById("stBadges").textContent = parseInt(tot,16);
+    document.getElementById("stQuest").textContent = parseInt(q1,16);
+    await loadBoard(note);
+  } catch(e) { note.textContent = "RPC error: " + e; }
+}
+
+async function loadBoard(note) {
+  const logs = await eth("eth_getLogs",[{
+    address: CONTRACT, fromBlock: "0x" + DEPLOY_BLOCK.toString(16), toBlock: "latest",
+    topics: ["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+             "0x"+"0".repeat(64)]}]); // Transfer(0x0 -> to) = mint
+  const tb = document.querySelector("#board tbody"); tb.innerHTML = "";
+  const recent = logs.slice(-30).reverse();
+  let i = 0;
+  for (const l of recent) {
+    const agent = "0x" + l.topics[2].slice(26);
+    const badge = parseInt(l.topics[3],16);
+    const tr = tb.insertRow();
+    tr.innerHTML = `<td>${++i}</td><td>#${badge}</td><td class="handle" data-addr="${agent}">${agent.slice(0,8)}…</td><td>#1</td>`;
+  }
+  note.textContent = logs.length
+    ? `${logs.length} badges minted — showing latest ${recent.length} (handles resolved on-chain via SPACE ID registry)`
+    : "No badges yet — be the first.";
+  // resolve handles lazily
+  for (const td of tb.querySelectorAll(".handle")) {
+    td.textContent = await handleOf(td.dataset.addr);
   }
 }
-function sel(sig) { return keccak(sig).slice(0,8); }
-// real keccak selectors verified with `cast sig` (foundry) — see ABIs in hackathon/contracts
-function keccak(sig) {
-  const S = {
-    "uniqueAgents()": "8b5bca1e", "totalBadges()": "a490a697",
-    "questClaimCount(uint256)": "4516f432",
-  };
-  return S[sig] || "00000000";
+function copyPrompt(){
+  navigator.clipboard.writeText(document.getElementById("promptText").textContent);
+  const b=document.querySelector(".copy"); b.textContent="copied"; setTimeout(()=>b.textContent="copy",1500);
 }
-function pad64(n) { return n.toString(16).padStart(64,"0"); }
-
-async function loadRecentBadges() {
-  const topic = "0x" + badgeClaimedTopic(); // keccak(BadgeClaimed(...)) — filled at deploy
-  if (topic === "0x") return;
-  const logs = await eth("eth_getLogs", [{
-    address: CONTRACT, fromBlock: "0x0", toBlock: "latest", topics: [topic]}]);
-  const rows = [];
-  for (const log of logs.slice(-50).reverse()) {
-    const agent = "0x" + log.topics[1].slice(26);
-    let name = agent.slice(0,10) + "…";
-    try {
-      const r = await fetch(REGISTRY_API + agent);
-      if (r.ok) { const j = await r.json(); if (j.handle) name = j.handle + ".ai"; }
-    } catch (e) {}
-    rows.push(`<tr><td>${rows.length+1}</td><td>#${parseInt(log.topics[3],16)}</td><td>${name}</td></tr>`);
-  }
-  document.querySelector("#board tbody").innerHTML =
-    rows.join("") || "<tr><td colspan=3>no claims yet</td></tr>";
-  document.getElementById("boardNote").textContent = "Names resolved via Agent ID handleOf (not raw addresses).";
-}
-function badgeClaimedTopic() { return "d0a8a075deace9291b01be18a2c8f6c8ac4ff7e5280495cd89cd09b663d0771c"; }
-
-if (CONTRACT) load();
+load();
 </script>
 </body>
 </html>
