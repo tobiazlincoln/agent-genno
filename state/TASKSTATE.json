@@ -19,7 +19,7 @@
   {
    "id": "p1-testnet",
    "desc": "Deploy BSC testnet (97), dry-run claim flow end-to-end",
-   "status": "in_progress"
+   "status": "cancelled"
   },
   {
    "id": "p2-skill",
@@ -34,7 +34,7 @@
   {
    "id": "p3-mainnet",
    "desc": "HUMAN GATE: mainnet deploy + BscScan verify (needs BNB gas + BSCSCAN_API_KEY)",
-   "status": "pending"
+   "status": "done"
   },
   {
    "id": "p4-distribute",
@@ -57,6 +57,7 @@
   "p1-tests",
   "p2-skill",
   "p2-site",
-  "metrics"
+  "metrics",
+  "p3-mainnet"
  ]
 }
