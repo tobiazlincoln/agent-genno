@@ -15,7 +15,7 @@ approvals. Users act through their own agent + Binance Agentic Wallet
 ## Contract
 
 - Chain: BNB Smart Chain mainnet (chainId 56)
-- Address: <CONTRACT_ADDRESS> (filled after mainnet deploy)
+- Address: 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 (filled after mainnet deploy)
 - Functions: claimBadge(uint256 questId), attest(uint256 badgeId, string note),
   view: totalBadges(), uniqueAgents(), questClaimCount(uint256),
   attestationCount(uint256), handleOfBadgeOwner(uint256)

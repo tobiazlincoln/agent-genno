@@ -8,7 +8,7 @@ on-chain reputation.
 ## Contract
 
 - Chain: BNB Smart Chain mainnet, chainId **56**
-- Contract: `<CONTRACT_ADDRESS>` (filled after mainnet deploy; see ROADMAP p3)
+- Contract: `0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811` (filled after mainnet deploy; see ROADMAP p3)
 - Registry (immutable reference): `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`
   (SPACE ID Agent ID, ERC-721 soulbound)
 
@@ -26,9 +26,9 @@ If the user has no Agent ID: stop. They can claim one in the Binance App
 ## Read-only calls (no confirmation needed)
 
 ```
-baw wallet contract-call --address <CONTRACT_ADDRESS> --data "totalBadges()"
-baw wallet contract-call --address <CONTRACT_ADDRESS> --data "uniqueAgents()"
-baw wallet contract-call --address <CONTRACT_ADDRESS> --data "questClaimCount(uint256)" --args <questId>
+baw wallet contract-call --address 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 --data "totalBadges()"
+baw wallet contract-call --address 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 --data "uniqueAgents()"
+baw wallet contract-call --address 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 --data "questClaimCount(uint256)" --args <questId>
 ```
 
 Resolve a .ai handle (via registry): `ownerOfHandle(string) -> address`.
@@ -39,7 +39,7 @@ Resolve a .ai handle (via registry): `ownerOfHandle(string) -> address`.
    successful preview:
 
 ```
-baw wallet contract-call preview --address <CONTRACT_ADDRESS> \
+baw wallet contract-call preview --address 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 \
   --data "claimBadge(uint256)" --args <questId>
 ```
 
@@ -58,7 +58,7 @@ to the user.
 ## Attest to someone's badge (write — user MUST confirm)
 
 ```
-baw wallet contract-call preview --address <CONTRACT_ADDRESS> \
+baw wallet contract-call preview --address 0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811 \
   --data "attest(uint256,string)" --args <badgeId> "<short note>"
 baw wallet contract-call execute --request-id <REQUEST_ID>
 ```
