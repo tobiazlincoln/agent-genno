@@ -1,0 +1,74 @@
+{
+  "session": {
+    "model": "glm",
+    "mode": "code",
+    "project_dir": ".",
+    "description": "GLM agent session with full reliability stack: rules, hooks, external task-state, subagents, verification gates."
+  },
+  "rules": {
+    "file": "AGENTS.md",
+    "enforce": [
+      "explore-before-code",
+      "plan-before-implement",
+      "verify-before-done-claim",
+      "no-tool-fabrication",
+      "no-descoping",
+      "stop-and-diagnose-after-2-failures"
+    ]
+  },
+  "hooks": {
+    "file": ".devin/hooks.v1.json",
+    "events": {
+      "SessionStart": "scripts/session-start.sh (init TASKSTATE + context)",
+      "PreToolUse": "scripts/check-command.sh (block destructive commands)",
+      "PostToolUse:exec": "scripts/post-exec.sh (fail-streak: 2x->diagnose, 3x->stop)",
+      "PostToolUse:edit": "scripts/post-edit.sh (log edits)",
+      "Stop": "scripts/stop-verify.sh (block stop until tasks done + tests pass)"
+    }
+  },
+  "task_state": {
+    "file": "state/TASKSTATE.json",
+    "cli": "scripts/taskstate.sh",
+    "commands": ["init", "record", "verify <subtask-id>", "incomplete", "status"],
+    "purpose": "External task memory — GLM never relies on context window for progress"
+  },
+  "subagents": {
+    "dir": ".devin/agents/",
+    "profiles": {
+      "planner": "Decompose task into TASKSTATE subtasks, demand evidence",
+      "glm-worker": "Executor under rules + taskstate workflow",
+      "glm-baseline": "GLM executor without infra (control group for A/B)",
+      "auditor": "Read-only verifier — independently checks claimed results"
+    },
+    "model_pin": ".devin/config.json -> agent.subagent_model = glm"
+  },
+  "skills": {
+    "dir": ".devin/skills/",
+    "available": ["oss-audit", "trading-idea"]
+  },
+  "verification": {
+    "command": "scripts/verify.sh",
+    "gate": "stop blocked unless exit 0 and all subtasks verified"
+  },
+  "experiment": {
+    "task_file": "demo/TASK.md",
+    "buggy_source": "demo/budget.buggy.py",
+    "rubric": "EXPERIMENT.md",
+    "runs": {
+      "A_baseline": "profile glm-baseline, same task",
+      "B_upgraded": "profile glm-worker + auditor verify"
+    }
+  },
+  "storage": {
+    "usage_log": "storage/usage.log",
+    "audit_db": "storage/audit.db",
+    "market_cache": "storage/market/"
+  },
+  "secrets": {
+    "file": ".env (gitignored)",
+    "vars": ["DEVIN_API_KEY", "Z_AI_API_KEY"],
+    "rule": "never print or commit"
+  },
+  "kickoff_prompt": "You are the GLM agent in an upgraded Devin session. Read AGENTS.md first — it is mandatory. Initialize task state with scripts/taskstate.sh init using the task in demo/TASK.md. Follow Explore -> Plan -> Implement -> Verify. Before finishing, run scripts/verify.sh and report real output. You may not stop while state/TASKSTATE.json has incomplete subtasks or verification is failing. Begin now.",
+  "kickoff_prompt_experiment": "Run the GLM A/B experiment per EXPERIMENT.md: (1) RUN A — spawn foreground subagent profile 'glm-baseline' with task 'Complete demo/TASK.md in demo/, report real command output'. (2) Restore demo/budget.py from demo/budget.buggy.py. (3) RUN B — spawn profile 'glm-worker' with same task, then profile 'auditor' to independently verify. Report which EXPERIMENT.md rubric items each run passed/failed."
+}

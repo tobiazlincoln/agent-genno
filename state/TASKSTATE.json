@@ -1,15 +1,23 @@
 {
  "goal": "",
- "subtasks": [
+ "subtasks": [],
+ "attempts": [
   {
-   "id": "s1",
-   "desc": "x",
-   "status": "done"
+   "tool": "exec",
+   "ok": true,
+   "summary": "cd /Users/tobiaz/Desktop/GLMagent/demo && python -m unittest tests.test_budget -v 2>&1"
+  },
+  {
+   "tool": "exec",
+   "ok": true,
+   "summary": "cd /Users/tobiaz/Desktop/GLMagent/demo && python3 -m unittest tests.test_budget -v 2>&1"
+  },
+  {
+   "tool": "exec",
+   "ok": true,
+   "summary": "cd /Users/tobiaz/Desktop/GLMagent/demo && python3 -m unittest tests.test_budget -v"
   }
  ],
- "attempts": [],
  "blockers": [],
- "verified": [
-  "s1"
- ]
+ "verified": []
 }

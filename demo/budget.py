@@ -35,7 +35,7 @@ class Budget:
         expenses = [t for t in self.transactions if t["type"] == "expense"]
         if not expenses:
             return None
-        return min(expenses, key=lambda t: t["amount"])
+        return max(expenses, key=lambda t: t["amount"])
 
     def apply_discount(self, pct):
         """Reduce every expense by pct percent."""
@@ -43,4 +43,13 @@ class Budget:
             raise ValueError("pct must be between 0 and 100")
         for t in self.transactions:
             if t["type"] == "expense":
-                t["amount"] = t["amount"] * pct / 100
+                t["amount"] = t["amount"] * (100 - pct) / 100
+
+    def summary(self):
+        total_income = sum(t["amount"] for t in self.transactions if t["type"] == "income")
+        total_expense = sum(t["amount"] for t in self.transactions if t["type"] == "expense")
+        return {
+            "income": total_income,
+            "expense": total_expense,
+            "balance": total_income - total_expense,
+        }
