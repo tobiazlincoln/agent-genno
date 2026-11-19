@@ -13,9 +13,21 @@ https://tobiazlincoln.github.io/agent-genno/
 ## Source code
 https://github.com/tobiazlincoln/agent-genno (public, MIT)
 
+## X post (Social Media link)
+https://x.com/garrynavv/status/2123370515855548884
+
+## Product demo video (Field 12)
+https://agentgenno.xyz/demo.mp4
+(also attached to the X post above; 75s voice-over walkthrough)
+
 ## Agent-facing docs
 https://tobiazlincoln.github.io/agent-genno/skill.md
 https://tobiazlincoln.github.io/agent-genno/llms.txt
+
+## Traction (live, verifiable on-chain)
+26+ unique .ai holders claimed quest #1 within hours of deployment —
+before any promotion. Every row on the leaderboard resolves to a real
+Agent ID handle via the registry's handleOf().
 
 ## Description of Agent ID usage (for the form — written to the 30% depth rubric)
 
