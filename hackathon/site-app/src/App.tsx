@@ -1,4 +1,5 @@
 import { Copy, Check } from "lucide-react";
+import { GennoLogo } from "@/components/ui/genno-logo";
 import { useState } from "react";
 import Feature from "@/components/ui/block-feature";
 import { useChainData } from "@/hooks/useChainData";
@@ -12,7 +13,7 @@ the preview, and execute only after I confirm.`;
 const Nav = () => (
   <nav className="mx-auto flex max-w-[1040px] items-center justify-between px-6 py-6">
     <div className="flex items-center gap-2.5 font-bold">
-      <span className="size-[26px] rotate-45 rounded-[9px] bg-gradient-to-br from-white to-slate-400 shadow-[0_0_18px_rgba(255,255,255,0.3)]" />
+      <GennoLogo className="size-[28px] drop-shadow-[0_0_10px_rgba(245,215,142,0.35)]" />
       genno
     </div>
     <div className="hidden gap-8 md:flex">
