@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Agent Genno — proof-of-work for AI agents on BNB Chain</title>
-<meta name="description" content="Soulbound achievement credentials bound to your .ai Agent ID. Claimed by your agent, attested by others, verifiable by anyone.">
+<title>agent genno — your agent's track record, on-chain</title>
+<meta name="description" content="soulbound badges your .ai agent id actually earns. claimed by your own agent, attested by anyone, readable by every dapp.">
 <style>
   :root{
     --bg:#07090f; --bg2:#0b0f1a; --card:#111827; --card2:#151d2e;
@@ -21,6 +21,11 @@
   .nav .logo{font-weight:800;letter-spacing:.5px}
   .nav .logo span{color:var(--acc)}
   .nav a{color:var(--dim)}
+  .ghpill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+        background:var(--card);border-radius:999px;padding:6px 14px;font-weight:600;color:var(--ink)!important}
+  .ghpill:hover{border-color:var(--acc);text-decoration:none}
+  .ghpill svg{fill:var(--ink)}
+  .btn .ghico{vertical-align:-2px;margin-right:8px;fill:currentColor}
   .hero{padding:72px 0 56px;text-align:center}
   .pill{display:inline-block;font-size:.78rem;color:var(--acc);border:1px solid #3a3312;
         background:#161310;padding:5px 14px;border-radius:999px;margin-bottom:22px}
@@ -75,23 +80,27 @@
 <body>
 <div class="wrap">
   <div class="nav">
-    <div class="logo">AGENT<span>GENNO</span></div>
-    <div>
-      <a href="https://github.com/tobiazlincoln/agent-genno">Code</a> ·
-      <a href="skill.md">skill.md</a> ·
-      <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811">Contract ↗</a>
+    <div class="logo">agent<span>genno</span></div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <a class="ghpill" href="https://github.com/tobiazlincoln/agent-genno" title="Open source on GitHub (MIT)">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub · MIT
+      </a>
+      <span><a href="skill.md">skill.md</a> ·
+      <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811">contract ↗</a></span>
     </div>
   </div>
 
   <div class="hero">
-    <div class="pill">BNB Chain · Agent ID Hackathon entry</div>
-    <h1>Your agent has a name.<br>Now it has a <em>track record</em>.</h1>
-    <p class="sub">Agent Genno issues soulbound achievement badges bound to your
-    <strong>.ai Agent ID</strong>. Claimed by your own agent, attested by anyone,
-    readable by every dApp — a portable reputation layer for the agent economy.</p>
+    <div class="pill">bnb chain · agent id hackathon entry</div>
+    <h1>your agent has a name.<br>now it has a <em>track record</em>.</h1>
+    <p class="sub">soulbound badges bound to your <strong>.ai agent id</strong>.
+    claimed by your own agent. attested by anyone.
+    readable by every dapp.</p>
     <div class="ctas">
-      <a class="btn" href="#claim">Claim your badge</a>
-      <a class="btn ghost" href="skill.md">Read the agent skill</a>
+      <a class="btn" href="#claim">claim your badge</a>
+      <a class="btn ghost" href="skill.md">read the agent skill</a>
+      <a class="btn ghost" href="https://github.com/tobiazlincoln/agent-genno"><svg class="ghico" width="15" height="15" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>open source on github</a>
     </div>
     <div class="stats">
       <div class="stat"><b id="stUnique">–</b><i>unique .ai agents</i></div>
@@ -101,23 +110,32 @@
   </div>
 
   <section>
-    <h2>Why badges<small>Agent ID tells the world <em>who</em> your agent is. Badges tell it <em>what your agent has done</em>.</small></h2>
+    <h2>the reputation ladder<small>on-chain data (bas index, nov 2026). identity is everywhere. reputation is nowhere.</small></h2>
     <div class="cards">
-      <div class="card"><h3>Bound to identity</h3><p>Every badge is soulbound — minted to a wallet that provably holds a <span class="mono">name.ai</span> and can never be transferred, sold, or faked.</p></div>
-      <div class="card"><h3>Attested by others</h3><p>Any third party can vouch for a badge on-chain. Reputation stops being self-declared and becomes externally verifiable.</p></div>
-      <div class="card"><h3>Portable by design</h3><p>Any dApp can read a wallet's badges and attestations with one call — credentials that travel with the agent, not the platform.</p></div>
+      <div class="card"><h3 style="font-size:1.5rem;color:var(--acc2)">182,040</h3><p>agent ids claimed in three weeks. a soulbound name per user. rung 1: solved.</p></div>
+      <div class="card"><h3 style="font-size:1.5rem;color:var(--acc2)">992 <span style="font-size:.9rem">(0.5%)</span></h3><p>of them run an actual on-chain agent (erc-8004). rung 2: barely climbed.</p></div>
+      <div class="card"><h3 style="font-size:1.5rem;color:#e05c5c">0</h3><p>agents have ever been paid for verified work. rungs 3-4: empty. genno fills them.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>why badges<small>your agent id says <em>who</em> you are. badges say <em>what you've done</em>.</small></h2>
+    <div class="cards">
+      <div class="card"><h3>bound to identity</h3><p>every badge is soulbound — minted to a wallet that provably holds a <span class="mono">name.ai</span>. can't be transferred, sold, or faked.</p></div>
+      <div class="card"><h3>attested by others</h3><p>any third party can vouch for a badge on-chain. reputation stops being self-declared. it becomes verifiable.</p></div>
+      <div class="card"><h3>portable by design</h3><p>any dapp can read your badges and attestations in one call. credentials travel with the agent, not the platform.</p></div>
     </div>
   </section>
 
   <section id="claim">
-    <h2>Claim in 3 steps<small>No wallet connect. No QR login. Your agent does the work — you keep the keys.</small></h2>
+    <h2>claim in 3 steps<small>no wallet connect. no qr. no keys handed over. your agent does the work — you keep the keys.</small></h2>
     <div class="cards">
-      <div class="card"><span class="num">1</span><h3>Have an Agent ID</h3><p>Claim your free <span class="mono">name.ai</span> in the Binance App: Wallet → banner → Agent ID. Already have one? You're set.</p></div>
-      <div class="card"><span class="num">2</span><h3>Give your agent the prompt</h3><p>Works with any agent that can call contracts — Devin, Claude Code, Cursor, Muse, or Binance's own Agentic Wallet skill.</p></div>
-      <div class="card"><span class="num">3</span><h3>Confirm in your wallet</h3><p>The agent prepares and previews the transaction. You review and confirm it yourself. That's it — badge minted.</p></div>
+      <div class="card"><span class="num">1</span><h3>have an agent id</h3><p>claim your free <span class="mono">name.ai</span> in the binance app: wallet → banner → agent id. already have one? you're set.</p></div>
+      <div class="card"><span class="num">2</span><h3>give your agent the prompt</h3><p>works with any agent that can call contracts — devin, claude code, cursor, muse, or baw.</p></div>
+      <div class="card"><span class="num">3</span><h3>confirm in your wallet</h3><p>the agent previews the transaction. you review and confirm it yourself. soulbound badge. minted.</p></div>
     </div>
     <div class="card prompt" style="margin-top:16px">
-      <p style="font-size:.85rem;color:var(--dim2);margin-bottom:8px">PASTE THIS TO YOUR AGENT</p>
+      <p style="font-size:.85rem;color:var(--dim2);margin-bottom:8px">paste this to your agent</p>
       <pre id="promptText">Read https://tobiazlincoln.github.io/agent-genno/skill.md
 and help me claim my Agent Genno quest #1 badge.
 Run the preflight checks, preview claimBadge(1) on
@@ -126,41 +144,64 @@ show me the preview, and execute only after I confirm.</pre>
       <button class="copy" onclick="copyPrompt()">copy</button>
     </div>
     <div class="agent-list">
-      <span>works with: Devin</span><span>Claude Code</span><span>Cursor</span>
-      <span>Muse</span><span>baw CLI</span><span>any contract-capable agent</span>
+      <span>works with: devin</span><span>claude code</span><span>cursor</span>
+      <span>muse</span><span>baw cli</span><span>any contract-capable agent</span>
     </div>
   </section>
 
   <section>
-    <h2>Live leaderboard<small>Read straight from the chain — every row is a real Agent ID holder.</small>
+    <h2>live leaderboard<small>read straight from the chain. every row is a real agent id holder.</small>
       <button class="refresh" onclick="load()">refresh</button></h2>
-    <table id="board"><thead><tr><th>#</th><th>Badge</th><th>Agent</th><th>Quest</th></tr></thead><tbody></tbody></table>
-    <p style="color:var(--dim2);font-size:.82rem;margin-top:10px" id="boardNote">Reading contract events via public RPC…</p>
+    <table id="board"><thead><tr><th>#</th><th>badge</th><th>agent</th><th>quest</th></tr></thead><tbody></tbody></table>
+    <p style="color:var(--dim2);font-size:.82rem;margin-top:10px" id="boardNote">reading contract events via public rpc…</p>
   </section>
 
   <section>
-    <h2>Trust model<small>Built to the hackathon's safety rules — verifiably, not by promise.</small></h2>
+    <h2>not just a badge — a read layer<small>the attestation surface other dapps plug into.</small></h2>
+    <div class="cards">
+      <div class="card"><h3>for other dapps</h3><p>gate access, airdrops, or credit lines on genno badges with one <span class="mono">balanceOf</span>-style read. no sdk. it's a public registry.</p></div>
+      <div class="card"><h3>for other agents</h3><p><span class="mono">attest(badgeId, note)</span> is callable by any agent. lending agents can vouch for repayment. service agents can vouch for work delivered.</p></div>
+      <div class="card"><h3>for humans</h3><p>every badge shows the holder's <span class="mono">.ai</span> name resolved on-chain. a readable directory of agents with track records — not anonymous hex.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>roadmap<small>built to outlive the hackathon.</small></h2>
+    <table>
+      <thead><tr><th>phase</th><th>deliverable</th><th>status</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>contract + skill + site + quest #1 (this submission)</td><td class="ok">live</td></tr>
+        <tr><td>1</td><td>quest seasons — weekly quests for repeat engagement</td><td>planned</td></tr>
+        <tr><td>2</td><td>attestation index — public read api over badges + attestations</td><td>planned</td></tr>
+        <tr><td>3</td><td>dapp integration guide — query genno for access/trust decisions</td><td>planned</td></tr>
+        <tr><td>4</td><td>issuer-scoped badges for partner projects</td><td>exploring</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>trust model<small>built to the hackathon's safety rules. verifiably — not by promise.</small></h2>
     <div class="card">
       <ul class="clean">
-        <li>No owner, no admin keys, no fees — the registry reference is immutable</li>
-        <li>Zero token approvals — claiming only mints a soulbound badge to you</li>
-        <li>No promised returns — badges are credentials, not an investment</li>
-        <li>No custodial anything — you confirm every action in your own wallet</li>
-        <li>Open source (MIT) and verified on BscScan — read every line before you claim</li>
+        <li>no owner, no admin keys, no fees — the registry reference is immutable</li>
+        <li>zero token approvals — claiming only mints a soulbound badge to you</li>
+        <li>no promised returns — badges are credentials, not an investment</li>
+        <li>no custodial anything — you confirm every action in your own wallet</li>
+        <li><a href="https://github.com/tobiazlincoln/agent-genno">open source (mit)</a> and <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811#code">verified on bscscan</a> — read every line before you claim</li>
       </ul>
     </div>
     <div class="warn" style="margin-top:16px">
-      <strong>Risk note:</strong> Badges are non-transferable soulbound NFTs with no monetary
-      value, no yield, and no promise of future return. You pay only network gas for each
-      claim (~$0.01). Nothing here is financial advice or an investment product.
+      <strong>risk note:</strong> badges are non-transferable soulbound nfts with no monetary
+      value, no yield, no promise of future return. you pay only network gas per claim
+      (~$0.01). nothing here is financial advice or an investment product.
     </div>
   </section>
 
   <footer>
-    <p>Agent Genno — built for the Binance Wallet × BNB Chain Agent ID Hackathon ·
-    Contract <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811"><span class="mono">0xD6ED…b811</span></a> ·
-    Agent ID registry <span class="mono">0x60B9…022F</span> (SPACE ID, immutable) ·
-    <a href="https://github.com/tobiazlincoln/agent-genno">GitHub</a></p>
+    <p>agent genno — built for the binance wallet × bnb chain agent id hackathon ·
+    contract <a href="https://bscscan.com/address/0xD6ED0279E381612e32F1Fa9DD7f5329bC1c6b811"><span class="mono">0xD6ED…b811</span></a> ·
+    agent id registry <span class="mono">0x60B9…022F</span> (space id, immutable) ·
+    <a href="https://github.com/tobiazlincoln/agent-genno">github</a></p>
   </footer>
 </div>
 
@@ -219,7 +260,7 @@ async function load() {
     document.getElementById("stBadges").textContent = parseInt(tot,16);
     document.getElementById("stQuest").textContent = parseInt(q1,16);
     await loadBoard(note);
-  } catch(e) { note.textContent = "RPC error: " + e; }
+  } catch(e) { note.textContent = "rpc error: " + e; }
 }
 
 async function loadBoard(note) {
@@ -237,8 +278,8 @@ async function loadBoard(note) {
     tr.innerHTML = `<td>${++i}</td><td>#${badge}</td><td class="handle" data-addr="${agent}">${agent.slice(0,8)}…</td><td>#1</td>`;
   }
   note.textContent = logs.length
-    ? `${logs.length} badges minted — showing latest ${recent.length} (handles resolved on-chain via SPACE ID registry)`
-    : "No badges yet — be the first.";
+    ? `${logs.length} badges minted — showing latest ${recent.length} (handles resolved on-chain via space id registry)`
+    : "no badges yet — be the first.";
   // resolve handles lazily
   for (const td of tb.querySelectorAll(".handle")) {
     td.textContent = await handleOf(td.dataset.addr);
