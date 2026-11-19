@@ -1,0 +1,9 @@
+.env
+hackathon/contracts/lib/
+hackathon/contracts/out/
+hackathon/contracts/cache/
+hackathon/contracts/broadcast/
+hackathon/contracts/state/
+__pycache__/
+node_modules/
+*.log
