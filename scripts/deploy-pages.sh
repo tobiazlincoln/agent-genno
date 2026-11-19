@@ -12,6 +12,12 @@ git read-tree --empty
 
 git update-index --add --cacheinfo "100644,$(git hash-object hackathon/site/index.html),index.html"
 git update-index --add --cacheinfo "100644,$(git hash-object hackathon/site/favicon.svg),favicon.svg"
+for f in hackathon/site/*; do
+  [ -f "$f" ] || continue
+  name=$(basename "$f")
+  [ "$name" = "index.html" ] || [ "$name" = "favicon.svg" ] && continue
+  git update-index --add --cacheinfo "100644,$(git hash-object "$f"),$name"
+done
 for f in hackathon/site/assets/*; do
   name=$(basename "$f")
   git update-index --add --cacheinfo "100644,$(git hash-object "$f"),assets/$name"
