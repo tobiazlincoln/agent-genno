@@ -13,3 +13,8 @@ hackathon/contracts/cache/
 hackathon/contracts/state/
 hackathon/contracts/broadcast/
 .DS_Store
+
+hackathon/site-app/dist/
+hackathon/site-app/node_modules/
+state/*.png
+state/metrics-history.log
