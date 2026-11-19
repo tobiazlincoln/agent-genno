@@ -18,7 +18,4 @@ if tr.get("success", True):
         f.write(path + "\n")
 '
 
-cat <<'EOF'
-{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Edit recorded. Verification is now REQUIRED before you may finish: run the project checks (scripts/verify.sh or the test suite) and report actual output. Claiming completion without a passing verification violates AGENTS.md section 2."}}
-EOF
 exit 0

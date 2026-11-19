@@ -5,3 +5,6 @@ demo/tests/__pycache__/
 pipeline/.venv/
 storage/workdir/
 storage/market/
+storage/usage.log
+storage/audit.db
+storage/audit.db-*

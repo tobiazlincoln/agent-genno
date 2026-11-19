@@ -16,13 +16,19 @@ fi
 
 DEVIN="/Applications/Devin.app/Contents/Resources/app/extensions/windsurf/devin/bin/devin"
 
-# Write credentials in the format the CLI checks
-cat > "$HOME/.local/share/devin/credentials.toml" <<EOF
+# Only write credentials if the CLI is not already authenticated (avoids
+# clobbering a valid login with a stale DEVIN_API_KEY from .env).
+if ! "$DEVIN" auth status > /dev/null 2>&1; then
+  cat > "$HOME/.local/share/devin/credentials.toml" <<EOF
 api_key = "$DEVIN_API_KEY"
 api_url = "https://api.devin.ai"
 webapp_host = "app.devin.ai"
 devin_webapp_host = "app.devin.ai"
 devin_api_url = "https://api.devin.ai"
 EOF
+fi
 
-exec "$DEVIN" -p --model glm --permission-mode dangerous -- "$*"
+# Cost-optimized defaults; override with DEVIN_MODEL / DEVIN_PERMISSION_MODE env.
+MODEL="${DEVIN_MODEL:-swe-2-high}"
+MODE="${DEVIN_PERMISSION_MODE:-accept-edits}"
+exec "$DEVIN" -p --model "$MODEL" --permission-mode "$MODE" --verbosity 0 -- "$*"
