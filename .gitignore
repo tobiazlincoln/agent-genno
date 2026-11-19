@@ -12,3 +12,4 @@ hackathon/contracts/out/
 hackathon/contracts/cache/
 hackathon/contracts/state/
 hackathon/contracts/broadcast/
+.DS_Store
