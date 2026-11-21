@@ -73,11 +73,15 @@ mid-beta. SATU mismatch = daemon sync gagal diam-diam untuk seluruh user.
 → Desain: health check harian (probe circuit version vs repo release), auto-update
   daemon, kill-switch otomatis + notifikasi user saat mismatch, BUKAN mencoba prove.
 
-## T2. Fee reserve: user yang menyetor 100% SOL akan TERJEBAK
-Withdraw tetap butuh SOL untuk fee dari wallet publik. SIMULASI: user deposit semua
-SOLnya → withdraw gagal bayar fee → panik.
-→ Aturan keras: Chaff SELALU menahan buffer fee (mis. 0.05 SOL) di saldo publik,
-  tombol "move to private" menolak amount yang menghabiskan buffer.
+## T2. Fee withdraw TANPA buffer (dikehendaki user; terverifikasi bisa)
+User menolak model buffer. Bukti bahwa buffer tidak perlu: SDK punya "Sponsored fees"
+(feePayer pada transfer/withdraw/split boleh pihak selain owner), dan 413 dari 1.361
+SOL withdraw di mainnet SUDAH memakai pola recipient = fee payer — fee dipotong dari
+jumlah withdraw itu sendiri.
+→ Desain: fee selalu dipotong dari output withdraw (feePayer = recipient). Withdraw
+  dengan amount < fee + dust DITOLAK dengan pesan jelas saat itu juga — bukan
+  ditahan buffernya. Risiko sisa: withdraw sangat kecil jadi tidak ekonomis;
+  itu keputusan user, bukan sistem.
 
 ## T3. Kapasitas nullifier & L-03 (acknowledged Certora)
 Output bisa masuk tree dengan kapasitas nullifier habis → spend TERBLOKIR sementara.

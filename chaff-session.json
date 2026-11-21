@@ -1,0 +1,98 @@
+{
+  "session": {
+    "name": "chaff-gate",
+    "mode": "research-first (gate before build)",
+    "workspace": "/Users/tobiaz/Desktop/GLMagent",
+    "purpose": "Kerjakan gerbang riset Chaff (uji agregat matching) lalu, hanya jika lolos, desain teknis + PoC devnet. Semua keputusan dan angka gerbang sudah dikunci di file ini SEBELUM eksekusi — jangan dilengkungkan.",
+    "data_sources": {
+      "transactions": "BRAIN/research/rings/tx.jsonl (satu JSON per baris: sig, slot, t, err, fee, nsig, keys, sol, tok, ix). ~7.6k deposit/withdraw dari 25k program tx, dikumpulkan dari RPC publik. JANGAN fetch ulang chain — data ini cukup. Refresh hanya via tools/rings-collect.py bila benar-benar perlu.",
+      "collector": "tools/rings-collect.py, tools/rings-analyze.py (punya fungsi flows() untuk mengekstrak dep/wd), tools/rings-behaviour.py (contoh laporan)",
+      "reports": "BRAIN/research/rings/ (LEAK-REPORT.md, BEHAVIOUR.md, DESIGN-INVESTIGATION.md, collect.log)"
+    }
+  },
+
+  "read_first": [
+    "BRAIN/research/rings/DESIGN-INVESTIGATION.md",
+    "BRAIN/research/chaff/RISK-SIMULATION.md",
+    "BRAIN/research/rings/BEHAVIOUR.md",
+    "BRAIN/research/rings/LEAK-REPORT.md",
+    "BRAIN/PRODUCT.md",
+    "BRAIN/research/novelty/VERDICTS.md",
+    "BRAIN/research/novelty/NAMING.md",
+    "BRAIN/research/deep/zolana-ts-sdk-README.md"
+  ],
+
+  "product": {
+    "one_liner": "Chaff = wallet privat dengan autopilot: menjaga jumlah (BERAPA) tetap tersembunyi di tepi publik Solana Privacy Rings.",
+    "is_not": [
+      "bukan alat anonimitas (alamat terlihat — yang disembunyikan jumlah)",
+      "bukan mixer (tidak menyentuh dana orang lain, user menandatangani sendiri)",
+      "bukan token/investasi (software dengan biaya pemakaian)",
+      "bukan protokol baru (di atas Helius Rings; kalau Rings mati, Chaff mati — tulis terbuka)",
+      "bukan pelarian compliance"
+    ],
+    "fee_model": "TANPA BUFFER. Fee withdraw dipotong dari jumlah withdraw itu sendiri (feePayer = recipient, pola 'Sponsored fees' di SDK — feePayer boleh != owner). Terbukti dipakai 413 dari 1.361 SOL withdraw di mainnet. Withdraw dengan amount < fee + dust ditolak dengan pesan jelas, bukan ditahan buffernya."
+  },
+
+  "verified_facts": [
+    {"fact": "median gap deposit->withdraw sama alamat: 137 detik; 15,4% withdraw adalah round-trip ke alamat depositnya", "source": "BRAIN/research/rings/BEHAVIOUR.md"},
+    {"fact": "median fee tx 87.532 lamports; rent nullifier PDA ~706.120 lamports (dikembalikan forester)", "source": "BRAIN/research/rings/tx.jsonl"},
+    {"fact": "413/1.361 SOL withdraw mainnet: recipient == fee payer (fee dipotong dari output)", "source": "BRAIN/research/rings/tx.jsonl"},
+    {"fact": "SDK @heliuslabs/zolana: buildDepositTransaction / buildTransferTransaction (multi-recipient) / buildWithdrawalTransaction / merge; feePayer bisa sponsor lain ('Sponsored fees')", "source": "BRAIN/research/deep/zolana-ts-sdk-README.md"},
+    {"fact": "hosted prover TEE menerima private witness (amount) — Certora eksplisit; local proving tersedia (web/mobile SDK)", "source": "BRAIN/research/rings/DESIGN-INVESTIGATION.md"},
+    {"fact": "risiko protokol: program upgradeable (authority CuZ42Bso...), pause 2-of-5 (klaim Rings.run, belum diverifikasi); zkSec #00/#01 fix belum diverifikasi independen", "source": "BRAIN/research/rings/DESIGN-INVESTIGATION.md, VERDICTS.md"},
+    {"fact": "kompetitor: privacy hygiene tooling kosong; leak-meter/sealed-bid/payroll/proof-of-funds/agent-pay sudah ada yang bangun", "source": "BRAIN/research/novelty/VERDICTS.md"}
+  ],
+
+  "gate": {
+    "name": "K1 — uji agregat matching (PRE-REGISTERED: angka ini dikunci sebelum komputasi; jangan disesuaikan ke hasil)",
+    "method": {
+      "baseline": "Untuk tiap pasangan (depositor A, recipient B) lintas alamat dan window W: jumlahkan deposit A dan withdraw B dalam W. Match jika |sumA - sumB| <= tol, sumA > 0. Hitung: (a) unique-match rate = fraksi withdraw yang cocok dengan TEPAT SATU kandidat A; (b) any-match rate. Windows: 24h, 7d. Toleransi: 1%.",
+      "null_model": "200 permutasi: shuffle amount deposit ANTAR depositor dalam aset yang sama (waktu tetap), seed 7. Laporkan mean + p95.",
+      "chaff_simulation": "Ambil withdraw yang sama, apply simulasi Chaff: pecah jadi 3-5 bagian, ukuran acak non-bulat (total dipertahankan +- dust), jeda acak uniform 1-72 jam antar bagian. Hitung ulang aggregate-match rate pada withdraw hasil pecahan."
+    },
+    "pass_rule": "Gerbang LOLOS hanya jika KEDUANYA terpenuhi di window 7d, tol 1%: (1) simulasi Chaff menurunkan unique aggregate-match rate >= 50% dari baseline real; (2) menurunkan unique one-to-one match rate >= 80% (one-to-one = metode LEAK-REPORT, satu deposit vs satu withdraw).",
+    "on_fail": "Tulis verdict jujur di AGGREGATE-REPORT.md ('premise fails'), berhenti. JANGAN lanjut task_2. Kerugian diakui: hanya waktu riset."
+  },
+
+  "task_1": {
+    "goal": "Gerbang K1. Deliverable: tools/rings-aggregate.py (reusable, baca tx.jsonl, tanpa network) + BRAIN/research/rings/AGGREGATE-REPORT.md",
+    "spec": [
+      "import flows()/load() dari tools/rings-analyze.py via importlib (nama file pakai hyphen)",
+      "tabel: real vs null(mean,p95) vs chaff-sim, per window x toleransi",
+      "pisahkan same-address vs cross-address; catat jumlah pasangan unik (A,B)",
+      "pre-registered cells dinyatakan eksplisit: 7d/1% (primary), 24h/1% (secondary)",
+      "seksi batasan: tidak ada ground truth; partial data <1%; pool baru 3 minggu (tester-heavy); agregat window panjang bisa saling tumpang tindih",
+      "verdict akhir: PASS/FAIL terhadap pass_rule, ditulis terakhir"
+    ],
+    "done_when": "AGGREGATE-REPORT.md memuat tabel real/null/chaff-sim + angka gerbang + verdict"
+  },
+
+  "task_2": {
+    "condition": "HANYA jika gate PASS",
+    "goal": "Deliverable: BRAIN/research/chaff/TECH-DESIGN.md + PoC devnet di folder chaff/ (TypeScript, @heliuslabs/zolana)",
+    "spec": [
+      "TECH-DESIGN.md: arsitektur daemon lokal, local prover default + fallback TEE dengan disclosure eksplisit, fee-cut-from-withdrawal (feePayer = recipient, TANPA buffer), version probe SDK harian, pre-check kapasitas nullifier, policy engine (cap harian, payee list, kill switch), visibility meter (heuristik tools/rings-*.py)",
+      "PoC devnet, urutan wajib: register private wallet -> deposit -> private transfer -> withdraw dengan fee dipotong dari jumlah (feePayer = recipient) -> print semua tx signature",
+      "JANGAN pakai contoh unaudited (escrow/swap privacy-ring-examples) dengan dana nyata",
+      "JANGAN commit secret/private key; devnet keypair di chaff/.devnet-key.json masuk .gitignore",
+      "selesai = semua langkah PoC menghasilkan signature devnet nyata yang tertulis di output"
+    ]
+  },
+
+  "hard_rules": [
+    "honest completion: 'done' hanya dengan evidence (output nyata); selain itu tulis UNVERIFIED",
+    "jangan fetch chain berlebihan: tx.jsonl adalah sumber; refresh hanya tools/rings-collect.py",
+    "jangan mengubah file riset yang ada kecuali menambah AGGREGATE-REPORT.md / TECH-DESIGN.md baru",
+    "jangan commit secret; cek git status sebelum commit; pre-commit hook akan menolak .env",
+    "2x gagal pada langkah yang sama -> berhenti, diagnosis, lapor ke user; jangan loop",
+    "angka pass_rule di section gate TIDAK boleh diubah setelah komputasi dimulai"
+  ],
+
+  "verification": {
+    "task_1": "AGGREGATE-REPORT.md berisi tabel real vs null vs chaff-sim untuk minimal windows {24h, 7d} x tol 1%, angka gerbang (>=50% / >=80%) dievaluasi eksplisit, verdict PASS/FAIL",
+    "task_2": "output run PoC berisi tx signature devnet nyata untuk: register, deposit, transfer, withdraw (fee-cut)"
+  },
+
+  "kickoff_prompt": "Read chaff-session.json in the workspace root — it is your complete plan. Follow read_first in order, then execute task_1 exactly as specified in section task_1, using the gate rules in section gate (they are pre-registered: compute, compare, report pass/fail without adjusting thresholds). Do NOT start task_2 unless the gate passes. Work from BRAIN/research/rings/tx.jsonl; do not re-fetch the chain. Report evidence for every claim; write UNVERIFIED for anything you cannot check."
+}
