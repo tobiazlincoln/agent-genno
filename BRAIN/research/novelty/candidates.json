@@ -1,0 +1,74 @@
+[
+  {
+    "id": "leak-meter",
+    "title": "Privacy leak meter: measure how linkable Privacy Rings deposits/withdrawals really are, per wallet",
+    "pitch": "Deposits and withdrawals are public. Score each wallet's linkability from amount/timing and tell the user what leaked.",
+    "queries": ["privacy rings linkability solana", "zolana anonymity set", "shielded pool deanonymization solana", "solana privacy score wallet linkability", "tornado cash anonymity set analysis heuristics"],
+    "npm": ["privacy score solana"],
+    "coins": [],
+    "builder_keywords": ["linkab", "anonymity", "leak", "privacy score", "heuristic", "deanonym", "analy"]
+  },
+  {
+    "id": "hygiene",
+    "title": "Privacy autopilot: schedule deposits/withdrawals (split, delay, round amounts) so they cannot be matched",
+    "pitch": "Client-side scheduler that removes the amount/timing fingerprint the leak meter detects.",
+    "queries": ["privacy rings scheduler split delay withdraw", "shielded withdrawal timing obfuscation solana", "zolana decoy amount rounding"],
+    "npm": [],
+    "coins": [],
+    "builder_keywords": ["schedul", "delay", "split", "decoy", "hygiene", "autopilot", "mixer"]
+  },
+  {
+    "id": "proof-of-funds",
+    "title": "ZK proof of funds from a shielded balance (prove balance >= X without revealing it)",
+    "pitch": "Attestation over your own UTXOs for OTC, lending, allowlists.",
+    "queries": ["proof of funds zolana", "zero knowledge proof of funds solana shielded", "private proof of solvency solana", "proof of balance privacy rings"],
+    "npm": ["zk proof of funds solana"],
+    "coins": ["proof of funds"],
+    "builder_keywords": ["proof of funds", "proof-of-funds", "solvency", "proof of balance", "attest"]
+  },
+  {
+    "id": "view-ledger",
+    "title": "Accounting / tax export and selective disclosure reports from a viewing key",
+    "pitch": "Explorers and tax tools cannot read private balances; a viewing-key ledger makes them reportable.",
+    "queries": ["viewing key tax export solana", "zolana viewing key accounting", "privacy rings transaction history export csv", "shielded balance tax report solana"],
+    "npm": ["viewing key accounting solana"],
+    "coins": [],
+    "builder_keywords": ["tax", "accounting", "ledger", "export", "report", "explorer", "history", "disclos"]
+  },
+  {
+    "id": "inheritance",
+    "title": "Private inheritance / dead-man's switch on a shielded balance",
+    "pitch": "Timelock escrow releases a private balance to heirs after inactivity.",
+    "queries": ["dead man switch solana shielded", "private inheritance zolana", "crypto inheritance solana timelock escrow privacy"],
+    "npm": [],
+    "coins": ["inheritance"],
+    "builder_keywords": ["inherit", "dead man", "deadman", "will", "heir", "recovery"]
+  },
+  {
+    "id": "sealed-bid",
+    "title": "Sealed-bid auctions / sealed token sales with private bid amounts",
+    "pitch": "Bids locked in private escrow, revealed only at close.",
+    "queries": ["sealed bid auction zolana", "sealed-bid auction solana privacy rings", "private auction solana shielded escrow"],
+    "npm": [],
+    "coins": ["sealed bid"],
+    "builder_keywords": ["auction", "sealed", "bid", "launch"]
+  },
+  {
+    "id": "payroll",
+    "title": "Private payroll / vesting / contributor payouts",
+    "pitch": "Pay a team without publishing salaries.",
+    "queries": ["private payroll solana privacy rings", "zolana payroll", "confidential vesting solana shielded"],
+    "npm": [],
+    "coins": [],
+    "builder_keywords": ["payroll", "vesting", "salary", "payout", "stream"]
+  },
+  {
+    "id": "agent-pay",
+    "title": "Private payments for AI agents (x402)",
+    "pitch": "Known to exist (Doei, musebook) — included as a control that the method detects prior work.",
+    "queries": ["x402 privacy rings agent", "confidential agent payments solana x402", "zolana x402"],
+    "npm": ["x402 privacy rings"],
+    "coins": [],
+    "builder_keywords": ["agent", "x402", "mcp"]
+  }
+]

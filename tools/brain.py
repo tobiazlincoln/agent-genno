@@ -25,6 +25,9 @@ TOPICS = {
                 'research/docs-privacy-all.txt'], None, 'python3 tools/scan-helius.py all'),
     'audit': (r'\b(audit|certora|zksecurity|ottersec|finding|severity|vulnerab\w+|soundness|trusted setup)\b',
               ['research/deep/zksecurity-audit.txt', 'research/deep/certora-audit.txt'], None, None),
+    'novelty': (r'\b(first.?mover|novel\w*|ide|idea|kompetitor|competitor|siapa yang (sudah )?build|belum ada|original)\b',
+                ['research/novelty/VERDICTS.md', 'research/novelty/BUILDERS.md', 'research/novelty/LEDGER.md'], 72,
+                'python3 tools/novelty-check.py builders --refresh && python3 tools/novelty-check.py ideas --refresh'),
     'hooks': (r'(hook failed|exit(ed)? with code 127|check-command|post-exec|hookrun|hooks\.v1)',
               [], None, 'python3 .devin/hookrun.py doctor --fix'),
 }
@@ -68,7 +71,7 @@ def hook():
 
 def files():
     for cur, dirs, names in os.walk(BRAIN):
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d != 'raw']
         for n in sorted(names):
             p = os.path.join(cur, n)
             if n.endswith(TEXT) and n != 'INDEX.md' and os.path.getsize(p) < 2_000_000:
