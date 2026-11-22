@@ -631,6 +631,13 @@ def main():
         return
     if cmd == 'selftest':
         sys.exit(cmd_selftest())
+    if cmd == 'agent':
+        sys.path.insert(0, HERE)
+        try:
+            from agent import run as agent_run
+        except ImportError as e:
+            die(f'agent module missing: {e}')
+        sys.exit(agent_run(args, HERE))
     if cmd == 'show':
         if not args:
             die('show butuh nama file contoh, mis: blueprint-solana.json (lihat: ls examples/)')

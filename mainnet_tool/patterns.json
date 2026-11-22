@@ -1,0 +1,19 @@
+{
+  "_comment": "Registry pola code untuk agent.py — pola-pola dari code yang SUDAH dibangun di workspace ini (template mainnet_tool + chaff PoC + tools riset). Semua deteksi berbasis regex dengan bukti file:baris. Tambah pola: key baru, tanpa edit kode.",
+  "patterns": [
+    {"id": "solana-client", "regex": "@solana/web3\\.js|getBalance\\(|getSlot\\(", "label": "client Solana RPC", "dimension": "backend", "note": "template solana mainnet_tool"},
+    {"id": "privacy-rings-sdk", "regex": "@heliuslabs/(zolana|spr)", "label": "Privacy Rings SDK (zolana/spr)", "dimension": "framework", "note": "chaff PoC mainnet"},
+    {"id": "fee-cut-withdraw", "regex": "feePayer.*recipient|withdrawFeeCut", "label": "withdraw dengan fee dipotong dari jumlah (tanpa buffer)", "dimension": "fitur-berfungsi", "note": "keputusan user: tanpa buffer"},
+    {"id": "evm-chain-guard", "regex": "EXPECTED_CHAIN_ID|eth_chainId", "label": "network guard EVM (tolak salah chain)", "dimension": "workflow"},
+    {"id": "solidity", "regex": "pragma solidity", "label": "smart contract Solidity", "dimension": "backend"},
+    {"id": "evm-lib", "regex": "from ['\"](viem|ethers)", "label": "library EVM (viem/ethers)", "dimension": "framework"},
+    {"id": "node-test", "regex": "node:test", "label": "test node:test", "dimension": "backtest"},
+    {"id": "pytest", "regex": "import unittest|import pytest", "label": "test python", "dimension": "backtest"},
+    {"id": "ci-github-actions", "regex": "actions/checkout", "label": "CI GitHub Actions", "dimension": "workflow"},
+    {"id": "docker-image", "regex": "FROM node|FROM nginx|FROM python", "label": "Docker image", "dimension": "docker"},
+    {"id": "env-config", "regex": "process\\.env\\.|os\\.environ", "label": "konfigurasi via environment variable", "dimension": "api-kebutuhan"},
+    {"id": "evidence-print", "regex": "console\\.log\\(.(balance|chainId|tx|slot)|print\\(.(balance|chainId)", "label": "output evidence (bukan klaim kosong)", "dimension": "implementasi"},
+    {"id": "subprocess-guard", "regex": "shell=True", "label": "eksekusi shell subprocess", "dimension": "workflow", "note": "cek apakah sudah ada proteksi pola destruktif di pemanggilnya"},
+    {"id": "gitignore-env", "regex": "^\\.env$", "label": ".env diabaikan git", "dimension": "workflow"}
+  ]
+}

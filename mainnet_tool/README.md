@@ -98,6 +98,21 @@ tinggal menambah yang spesifik project:
 `UNVERIFIED` tidak bisa dicek mesin / manual · `N/A` artefak memang tidak diharapkan.
 Exit code 1 kalau ada BROKEN — cocok untuk CI.
 
+## AI agent deterministik
+
+```bash
+python3 mainnet.py agent "pola code" --project <dir-project>       # deteksi pola code + bukti file:baris
+python3 mainnet.py agent "status" --blueprint <blueprint>.json     # kutipan laporan audit
+python3 mainnet.py agent "kenapa broken" --project <dir>           # analisa BROKEN + next actions
+python3 mainnet.py agent "chain elysium"                            # fakta jaringan terverifikasi
+python3 mainnet.py agent "cara pakai"                              # panduan dari README
+```
+
+Aturan konstruksinya: **no crash** (semua error jadi pesan jelas), **no halu** (setiap klaim
+dikutip dari sumber path:baris — pertanyaan tanpa data dijawab "TIDAK ADA DATA", bukan
+tebakan), dan **pola code dikenali dari registry** `patterns.json` — team menambah pola
+baru tanpa edit kode.
+
 ## Perilaku audit pada scaffold baru (disengaja)
 
 Scaffold yang baru di-`init` akan menunjukkan BROKEN di beberapa dimensi — itu fitur, bukan bug:
