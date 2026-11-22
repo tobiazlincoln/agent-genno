@@ -1,0 +1,9 @@
+{
+  "_comment": "Registry jaringan bawaan. Semua chainId diverifikasi LIVE via eth_chainId/getHealth (22 Nov 2026). Tambah jaringan EVM lain: cari dulu dengan `mainnet.py networks --find <nama>`, lalu salin entrinya ke sini.",
+  "solana":    {"family": "solana", "rpc": "https://api.mainnet-beta.solana.com", "currency": "SOL", "explorer": "https://solscan.io"},
+  "eth":       {"family": "evm", "rpc": "https://ethereum-rpc.publicnode.com", "chain_id": 1, "currency": "ETH", "explorer": "https://etherscan.io"},
+  "bsc":       {"family": "evm", "rpc": "https://bsc-rpc.publicnode.com", "chain_id": 56, "currency": "BNB", "explorer": "https://bscscan.com"},
+  "robinhood": {"family": "evm", "rpc": "https://rpc.mainnet.chain.robinhood.com", "chain_id": 4663, "currency": "ETH", "explorer": "https://robinhoodchain.blockscout.com", "note": "public RPC rate-limited & menolak UA python (tool pakai UA browser); produksi via Alchemy"},
+  "elysium":   {"family": "evm", "rpc": "https://rpc.elysiumchain.tech", "chain_id": 1339, "currency": "LAVA", "explorer": "https://blockscout.elysiumchain.tech", "note": "chainid.network mencatat currency PYR; docs Vulcan Forged bilang LAVA — verifikasi di explorer sebelum signing"},
+  "evm":       {"family": "evm", "note": "generic: build.vars wajib RPC_URL + CHAIN_ID. Untuk chain EVM lain: networks --find <nama>"}
+}

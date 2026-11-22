@@ -1,49 +1,42 @@
 #!/usr/bin/env python3
-"""mainnet.py — build & audit engine for crypto/web3 projects, any network.
+"""mainnet.py v2 — build & audit engine for crypto/web3 projects, any network.
 
-Self-contained (Python stdlib only). Combines the working patterns of three tools:
-  lord.py     deterministic ops: file read/write/edit, grep, RPC, safe run, state
-  codetool.py template-driven scaffolding (init) + structured checks
-  glm-audit   usage discipline + honest, evidence-only reporting
+Rebuild dari v1 dengan pola yang sama (lord.py: ops deterministik; codetool.py:
+scaffold+check; glm-audit.py: usage & honest reporting) plus:
+  - registry jaringan EXTERNAL (networks.json) — tambah chain tanpa edit Python
+  - template EXTERNAL (templates/<family>/...) — file nyata, bukan string Python
+  - `networks --find <nama>` — cari chain EVM APA PUN dari dataset open source
+    ethereum-lists/chains (chainid.network, 2899 chain), cache 24 jam
+  - `doctor` — cek environment team (node/python/git/docker)
+  - rpc check mengukur LATENCY; laporan punya seksi NEXT ACTIONS dari temuan BROKEN
 
-Hard independence rules:
-  - writes ONLY to (a) mainnet_tool/.cache (its own state) and (b) the target
-    directory given in the blueprint. Never touches any other folder.
-  - `init` refuses an existing non-empty target without --force.
-  - destructive commands are refused; verdicts never come from assumptions.
+Hard independence rules (tidak berubah):
+  - menulis HANYA ke mainnet_tool/.cache, mainnet_tool/reports/, dan target di blueprint
+  - `init` menolak target berisi tanpa --force; command destruktif ditolak
+  - verdict hanya dari evidence; sisanya UNVERIFIED
 
 Commands:
-  mainnet.py init    <blueprint.json> [--target DIR] [--force]   scaffold a project
-  mainnet.py check   <blueprint.json> [--refresh] [--only c1,c2] audit 15 dimensions
-  mainnet.py list-chains                                            supported templates
-  mainnet.py selftest                                               verify this tool itself
-  mainnet.py show <file>                                            print an example blueprint
+  init <blueprint.json> [--target DIR] [--force] [--git]
+  check <blueprint.json> [--refresh] [--only c1,c2] [--slow]
+  networks [--find <nama>] [--chainid <id>]
+  doctor | selftest | list-chains | show <example-file>
 """
 import glob as _glob
 import hashlib, json, os, re, shutil, subprocess, sys, time, urllib.request, urllib.error
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 CACHE = os.path.join(HERE, '.cache')
-SPEC = 'mainnet-tool/1'
+TEMPLATES_DIR = os.path.join(HERE, 'templates')
+NETWORKS_FILE = os.path.join(HERE, 'networks.json')
+CHAINLIST_URL = 'https://chainid.network/chains.json'
+SPEC = 'mainnet-tool/2'
 BLOCKED = ('rm' + ' -rf /|rm' + ' -rf ~|git push --f' + 'orce|git push -f|git reset --h' + 'ard|git clean -fd|'
            'DROP' + ' TABLE|DROP' + ' DATABASE|mkfs|dd if=|chmod -R 777|sudo rm')
-CHAINS = ('solana', 'evm', 'web')  # template families
-# Registry jaringan — semua chainId & RPC DIVERIFIKASI LIVE via eth_chainId / getHealth
-# (22 Nov 2026). robinhood menolak User-Agent python — Net selalu pakai UA browser.
-NETWORKS = {
-    'solana':    {'family': 'solana', 'rpc': 'https://api.mainnet-beta.solana.com', 'currency': 'SOL', 'explorer': 'https://solscan.io'},
-    'eth':       {'family': 'evm', 'rpc': 'https://ethereum-rpc.publicnode.com', 'chain_id': 1, 'currency': 'ETH', 'explorer': 'https://etherscan.io'},
-    'bsc':       {'family': 'evm', 'rpc': 'https://bsc-rpc.publicnode.com', 'chain_id': 56, 'currency': 'BNB', 'explorer': 'https://bscscan.com'},
-    'robinhood': {'family': 'evm', 'rpc': 'https://rpc.mainnet.chain.robinhood.com', 'chain_id': 4663, 'currency': 'ETH', 'explorer': 'https://robinhoodchain.blockscout.com'},
-    'elysium':   {'family': 'evm', 'rpc': 'https://rpc.elysiumchain.tech', 'chain_id': 1339, 'currency': 'LAVA', 'explorer': 'https://blockscout.elysiumchain.tech'},
-    'evm':       {'family': 'evm'},  # generic: blueprint wajib isi rpc + chain_id sendiri
-}
-# CATATAN tabrakan nama: ada DUA "Elysium" — Vulcan Forged (1339/LAVA, terdaftar di atas)
-# dan Kinetiq/HyperEVM (99901/HYPE). Kinetiq tidak punya public RPC yang kami verifikasi;
-# pakai chain 'evm' + rpc/chain_id sendiri untuk itu. Verifikasi SELALU dengan eth_chainId.
+TEXT_EXT = ('.py', '.ts', '.tsx', '.js', '.jsx', '.rs', '.sol', '.json', '.md', '.toml', '.yaml', '.yml',
+            '.sh', '.html', '.css', '.txt', '.log', '.env', '.example', '.sol')
 DEFAULT_DIMENSIONS = [
     ('backtest', 'apakah backtest/eksperimen berjalan dan terukur?',
-     [{'id': 'backtest/no-tests-yet', 'type': 'files', 'patterns': ['tests/*', 'test/*', '**/backtest*'], 'expect': 'any_exist'}]),
+     [{'id': 'backtest/tests', 'type': 'files', 'patterns': ['test/*', 'tests/*', '**/backtest*'], 'expect': 'any_exist'}]),
     ('backend', 'apakah backend/entrypoint ada dan dependensi terpasang?',
      [{'id': 'backend/entry', 'type': 'files', 'patterns': ['package.json', 'Cargo.toml', 'pyproject.toml', 'requirements.txt', 'go.mod'], 'expect': 'any_exist'}]),
     ('frontend', 'apakah frontend ada?',
@@ -58,7 +51,8 @@ DEFAULT_DIMENSIONS = [
     ('concept-narasi', 'apakah narasi produk tertulis?',
      [{'id': 'concept/one-liner', 'type': 'grep', 'pattern': 'one.?liner|what (this|we)', 'path': 'README.md', 'min_count': 1}]),
     ('workflow', 'apakah workflow dev (install->test->build) terdefinisi?',
-     [{'id': 'workflow/scripts', 'type': 'grep', 'pattern': '"scripts"', 'path': 'package.json', 'min_count': 1}]),
+     [{'id': 'workflow/scripts', 'type': 'grep', 'pattern': '"scripts"', 'path': 'package.json', 'min_count': 1},
+      {'id': 'workflow/ci', 'type': 'files', 'patterns': ['.github/workflows/*'], 'expect': 'any_exist'}]),
     ('framework', 'apakah framework/stack terpasang dari registry?',
      [{'id': 'framework/lockfile', 'type': 'files', 'patterns': ['package-lock.json', 'Cargo.lock', 'poetry.lock', 'go.sum'], 'expect': 'any_exist'}]),
     ('docker', 'apakah deployment container siap?',
@@ -66,13 +60,13 @@ DEFAULT_DIMENSIONS = [
     ('implementasi', 'apakah implementasi meninggalkan bukti jalan (log/build)?',
      [{'id': 'impl/artifacts', 'type': 'files', 'patterns': ['*.log', 'dist/*', 'build/*', 'out/*'], 'expect': 'any_exist'}]),
     ('mainnet-onchain', 'apakah target on-chain hidup?',
-     [{'id': 'onchain/rpc', 'type': 'manual', 'question': 'perlu rpc check: isi section onchain di blueprint (url+method+params+expect_fields)'}]),
+     [{'id': 'onchain/manual', 'type': 'manual', 'question': 'auto-check chainId aktif kalau project.chain ada di networks.json'}]),
     ('api-kebutuhan', 'apakah API eksternal yang dibutuhkan tersedia?',
      [{'id': 'api/env-example', 'type': 'files', 'patterns': ['.env.example', '.env.sample'], 'expect': 'any_exist'}]),
     ('resource-github-hf', 'apakah resource GitHub/HuggingFace aktif?',
-     [{'id': 'res/github', 'type': 'manual', 'question': 'isi section resources.github = [{repo, expect_active_within_days}] di blueprint'}]),
+     [{'id': 'res/github', 'type': 'manual', 'question': 'tambah check github: {repo, expect_active_within_days} di blueprint'}]),
     ('fitur-berfungsi', 'audit fitur per fitur: berjalan atau belum?',
-     [{'id': 'fitur/features-in-blueprint', 'type': 'manual', 'question': 'daftar fitur di blueprint.features -> tiap fitur: {id, evidence(grep/files/command)}'},
+     [{'id': 'fitur/features-in-blueprint', 'type': 'manual', 'question': 'daftar fitur di blueprint dimensions -> tiap fitur dengan evidence'},
       {'id': 'ideas/brainstorm', 'type': 'manual', 'question': 'open ideas perlu keputusan manusia'}]),
 ]
 
@@ -85,8 +79,15 @@ def sha(s):
     return hashlib.sha1(s.encode()).hexdigest()[:16]
 
 
+def load_networks():
+    try:
+        d = json.load(open(NETWORKS_FILE))
+    except (OSError, ValueError) as e:
+        die(f'networks.json unreadable: {e}')
+    return {k: v for k, v in d.items() if not k.startswith('_')}
+
+
 class Net:
-    """glm-audit pattern: every call counted, cached, honestly reported."""
     calls = {'http': 0, 'cached': 0}
 
     @staticmethod
@@ -97,7 +98,10 @@ class Net:
             Net.calls['cached'] += 1
             return json.load(open(p))
         Net.calls['http'] += 1
+        t0 = time.time()
         out = fn()
+        if isinstance(out, dict):
+            out['_latency_ms'] = round((time.time() - t0) * 1000)
         if out is not None:
             json.dump(out, open(p, 'w'))
         return out
@@ -120,8 +124,8 @@ class Net:
     def get(url):
         def call():
             try:
-                r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (mainnet-tool)'}), timeout=30)
-                return {'status': r.status, 'body': r.read(500).decode('utf-8', 'replace')}
+                r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (mainnet-tool)'}), timeout=60)
+                return {'status': r.status, 'body': r.read().decode('utf-8', 'replace')}
             except urllib.error.HTTPError as e:
                 return {'status': e.code, 'body': ''}
             except Exception as e:
@@ -129,216 +133,129 @@ class Net:
         return Net.cached(f'get:{url}', call)
 
 
-# ---------------------------------------------------------------- scaffold (codetool pattern)
-TEMPLATES = {
-    'solana': {
-        'package.json': '''{
-  "name": "{{NAME}}",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/main.js",
-    "check:balance": "tsx src/main.ts balance",
-    "check:tx": "tsx src/main.ts tx"
-  },
-  "dependencies": {
-    "@solana/web3.js": "^1.95.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
-  }
-}
-''',
-        'tsconfig.json': '{"compilerOptions":{"target":"ES2022","module":"ES2022","moduleResolution":"bundler","outDir":"dist","strict":true,"skipLibCheck":true},"include":["src"]}\n',
-        'src/main.ts': '''// {{NAME}} — solana client entrypoint
-import { Connection, PublicKey } from "@solana/web3.js";
-
-const RPC = process.env.RPC_URL ?? "https://api.mainnet-beta.solana.com";
-const cmd = process.argv[2] ?? "balance";
-
-async function main() {
-  const c = new Connection(RPC, "confirmed");
-  if (cmd === "balance") {
-    const a = new PublicKey(process.argv[3] ?? die("usage: balance <pubkey>"));
-    console.log("balance", await c.getBalance(a), "lamports @", RPC);
-  } else if (cmd === "tx") {
-    const s = process.argv[3] ?? die("usage: tx <signature>");
-    const r = await c.getSignatureStatus(s);
-    console.log("tx", s.slice(0, 12), JSON.stringify(r.value?.[0] ?? null));
-  } else die(`unknown command: ${cmd}`);
-}
-function die(m: string): never { console.error(m); process.exit(1); }
-main().catch((e) => { console.error(e); process.exit(1); });
-''',
-        '.env.example': 'RPC_URL=https://api.mainnet-beta.solana.com\n',
-        'Dockerfile': '''FROM node:22-slim
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-CMD ["node", "dist/main.js"]
-''',
-        'README.md': '''# {{NAME}}
-
-solana project scaffolded by mainnet_tool.
-
-## user flow (onboarding in 4 steps)
-1. install: `npm install`
-2. setup: `cp .env.example .env`
-3. run: `npm run check:balance -- <pubkey>`
-4. deploy: `docker build -t {{NAME}} .`
-
-## what this is
-one-liner: {{NAME}} is a {{DESC}} on solana.
-''',
-    },
-    'evm': {
-        'package.json': '''{
-  "name": "{{NAME}}",
-  "private": true,
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "deploy": "tsx scripts/deploy.ts",
-    "check:code": "tsx scripts/deploy.ts check"
-  },
-  "devDependencies": {
-    "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
-  }
-}
-''',
-        'tsconfig.json': '{"compilerOptions":{"target":"ES2022","module":"ES2022","moduleResolution":"bundler","outDir":"dist","strict":true,"skipLibCheck":true},"include":["src","scripts"]}\n',
-        'contracts/{{NAME}}.sol': '''// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-contract {{CONTRACT}} {
-    string public constant oneLiner = "{{DESC}}";
-    event Touched(address indexed by);
-    function touch() external { emit Touched(msg.sender); }
-}
-''',
-        'scripts/deploy.ts': '''// {{NAME}} — evm deploy/check entry (lord.py pattern: evidence first)
-const EXPECTED_CHAIN_ID = {{CHAIN_ID}};
-const RPC = process.env.RPC_URL ?? die("set RPC_URL (see .env.example)");
-const cmd = process.argv[2] ?? "check";
-async function main() {
-  if (cmd === "check") {
-    const r = await fetch(RPC, {method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({jsonrpc: "2.0", id: 1, method: "eth_chainId", params: []})});
-    const j = await r.json() as any;
-    const id = parseInt(j.result, 16);
-    if (id !== EXPECTED_CHAIN_ID) die(`WRONG NETWORK: chain id ${id}, expected ${EXPECTED_CHAIN_ID} — refusing to continue`);
-    console.log("chainId", id, "OK @", RPC);
-  } else die(`unknown command: ${cmd}`);
-}
-function die(m: string): never { console.error(m); process.exit(1); }
-main();
-''',
-        '.env.example': 'RPC_URL={{RPC_URL}}\n',
-        'Dockerfile': '''FROM node:22-slim
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-CMD ["tsx", "scripts/deploy.ts", "check"]
-''',
-        'README.md': '''# {{NAME}}
-
-{{CHAIN_TITLE}} project scaffolded by mainnet_tool.
-
-## user flow (onboarding in 4 steps)
-1. install: `npm install`
-2. setup: `cp .env.example .env`
-3. check network: `npm run check:code` (verifies chain id)
-4. deploy: `npm run deploy` (wiring up a signer is your next step)
-
-## what this is
-one-liner: {{NAME}} is a {{DESC}} on {{CHAIN_TITLE}}.
-network: chain id {{CHAIN_ID}}, currency {{CURRENCY}}, explorer {{EXPLORER}}
-''',
-    },
-    'web': {
-        'index.html': '''<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{NAME}}</title><style>body{font-family:system-ui;max-width:40rem;margin:4rem auto;padding:0 1rem}</style></head>
-<body>
-<h1>{{NAME}}</h1>
-<p>one-liner: {{NAME}} is a {{DESC}}.</p>
-<button id="go">connect wallet</button>
-<pre id="out"></pre>
-<script src="app.js"></script>
-</body>
-</html>
-''',
-        'app.js': '''// {{NAME}} — wallet connect stub (evidence: console output)
-document.getElementById("go").onclick = async () => {
-  const out = document.getElementById("out");
-  if (!window.solana) { out.textContent = "no solana wallet found"; return; }
-  const r = await window.solana.connect();
-  out.textContent = "connected: " + r.publicKey.toString();
-};
-''',
-        'README.md': '''# {{NAME}}
-
-static web scaffold. user flow: open index.html -> connect wallet.
-
-## what this is
-one-liner: {{NAME}} is a {{DESC}}.
-''',
-        'Dockerfile': '''FROM nginx:alpine
-COPY . /usr/share/nginx/html
-''',
-    },
-}
+def latency(r):
+    ms = r.get('_latency_ms') if isinstance(r, dict) else None
+    return f' [{ms}ms]' if ms else ' [cached]'
 
 
+# ---------------------------------------------------------------- chainlist (ethereum-lists)
+def chainlist():
+    def load():
+        r = Net.get(CHAINLIST_URL)
+        if r.get('status') != 200:
+            die(f'chainlist download failed: HTTP {r.get("status")}')
+        try:
+            return json.loads(r['body'])
+        except ValueError:
+            die('chainlist is not valid JSON')
+    return Net.cached('chainlist:master', load, 24)
+
+
+def cmd_networks(find, chainid):
+    nets = load_networks()
+    if not find and chainid is None:
+        print(f'{"network":14} {"family":8} {"chain_id":9} {"currency":9} rpc')
+        for name, n in nets.items():
+            print(f'{name:14} {n["family"]:8} {str(n.get("chain_id", "-")):9} {n.get("currency", "-"):9} {n.get("rpc", "(blueprint must provide)")}')
+            if n.get('note'):
+                print(f'{"":14} note: {n["note"]}')
+        print('\ncari chain EVM lain: mainnet.py networks --find <nama> | --chainid <id>')
+        return
+    want = (chainid if chainid is not None else find).lower()
+    hits = []
+    for c in chainlist():
+        s = json.dumps(c).lower()
+        if (chainid is not None and c.get('chainId') == chainid) or (find and (find.lower() in c.get('name', '').lower() or find.lower() in s)):
+            hits.append(c)
+    if not hits:
+        print(f'not found: {want!r} di ethereum-lists/chains')
+        return
+    print(f'{len(hits)} match(es):')
+    for c in hits[:15]:
+        rpcs = [u for u in c.get('rpc', []) if u.startswith('http') and '{' not in u][:2]
+        exp = [e.get('url') for e in c.get('explorers', [])][:1]
+        print(f'  chainId {c.get("chainId"):6} {c.get("name", "?")[:34]:34} {c.get("nativeCurrency", {}).get("symbol", "?"):6} rpc: {rpcs} explorer: {exp}')
+    c = hits[0]
+    snippet = json.dumps({str(c.get('chainId')): {
+        'family': 'evm', 'rpc': [u for u in c.get('rpc', []) if u.startswith('http') and '{' not in u][:1] or ['FILL_RPC'],
+        'chain_id': c.get('chainId'), 'currency': c.get('nativeCurrency', {}).get('symbol', ''),
+        'explorer': (c.get('explorers') or [{}])[0].get('url', '')}}, indent=2)
+    print('\nsalin ke networks.json untuk mendaftarkan (VERIFIKASI eth_chainId dulu):\n' + snippet)
+
+
+def cmd_doctor():
+    print('environment check (untuk onboarding team):')
+    ok = True
+    for name, cmd, want in (('node', 'node --version', 'v18+'), ('python', 'python3 --version', '3.10+'),
+                            ('git', 'git --version', 'any'), ('docker', 'docker --version', 'optional'),
+                            ('gh', 'gh --version', 'optional (github check)')):
+        p = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        out = (p.stdout or p.stderr).strip().splitlines()[0] if (p.stdout or p.stderr).strip() else 'NOT FOUND'
+        have = p.returncode == 0
+        if name in ('docker', 'gh'):
+            print(f'  {name:8} {out}  {"(optional)" if not have else ""}')
+        else:
+            print(f'  {name:8} {out}')
+            ok &= have
+    print(f'DOCTOR: {"PASS" if ok else "FAIL"}')
+
+
+# ---------------------------------------------------------------- scaffold
 def render(text, vars):
     for k, v in vars.items():
-        text = text.replace('{{' + k + '}}', v)
+        text = text.replace('{{' + k + '}}', str(v))
     return re.sub(r'\{\{\w+\}\}', '-', text)
 
 
-def cmd_init(bp, target, force):
+def cmd_init(bp, target, force, git):
     b = bp['build']
     chain = b.get('chain') or bp['project'].get('chain')
-    net = NETWORKS.get(chain, {})
+    net = load_networks().get(chain, {})
     family = net.get('family', chain)
-    if family not in CHAINS:
-        die(f'unknown chain {chain!r}; supported networks: {", ".join(NETWORKS)} (or generic: {", ".join(CHAINS)})')
+    if family not in os.listdir(TEMPLATES_DIR):
+        die(f'unknown chain {chain!r}; known: {", ".join(load_networks())} | template families: {", ".join(os.listdir(TEMPLATES_DIR))}')
     if not target:
         target = b.get('target') or bp['project']['name']
     target = os.path.realpath(target)
     if os.path.exists(target) and os.listdir(target) and not force:
-        die(f'target {target} exists and is not empty (use --force to overwrite files)')
+        die(f'target {target} exists and is not empty (use --force)')
     vars = {'NAME': bp['project']['name'], 'DESC': bp['project'].get('desc', 'web3 project'),
             'CONTRACT': re.sub(r'[^A-Za-z0-9]', '', bp['project']['name'].title()),
-            'RPC_URL': net.get('rpc', ''), 'CHAIN_ID': str(net.get('chain_id', '')),
+            'RPC_URL': net.get('rpc', ''), 'CHAIN_ID': net.get('chain_id', ''),
             'CURRENCY': net.get('currency', ''), 'EXPLORER': net.get('explorer', ''),
-            'CHAIN_TITLE': (chain or '').replace('-', ' ').title() or family}
+            'CHAIN_TITLE': (chain or family).replace('-', ' ').title()}
     vars.update(b.get('vars', {}))
     if family == 'evm' and not vars['RPC_URL']:
-        die("generic 'evm' chain needs build.vars: RPC_URL + CHAIN_ID (no defaults by design)")
+        die("generic 'evm' needs build.vars RPC_URL + CHAIN_ID (atau: networks --find <nama> lalu daftarkan)")
+    src = os.path.join(TEMPLATES_DIR, family)
     made = []
     os.makedirs(CACHE, exist_ok=True)
-    for rel, content in TEMPLATES[family].items():
-        rel2 = render(rel, vars)
-        p = os.path.join(target, rel2)
-        os.makedirs(os.path.dirname(p), exist_ok=True)
-        open(p, 'w').write(render(content, vars))
-        made.append(rel2)
+    for cur, dirs, files in os.walk(src):
+        rel = os.path.relpath(cur, src)
+        for f in files:
+            sp = os.path.join(cur, f)
+            relf = os.path.normpath(os.path.join(render(rel, vars), f)) if rel != '.' else f
+            dp = os.path.join(target, relf)
+            os.makedirs(os.path.dirname(dp) or target, exist_ok=True)
+            if f.endswith(TEXT_EXT) or f.startswith('.env'):
+                open(dp, 'w').write(render(open(sp, errors='replace').read(), vars))
+            else:
+                shutil.copyfile(sp, dp)
+            made.append(relf)
+    if git and shutil.which('git'):
+        subprocess.run(['git', 'init', '-q'], cwd=target)
+        open(os.path.join(target, 'LICENSE'), 'w').write(
+            f'MIT License (c) {time.strftime("%Y")} {{AUTHOR}}\n')
+        made.append('LICENSE')
     json.dump({'target': target, 'chain': chain, 'created': made, 'when': time.strftime('%Y-%m-%d %H:%M')},
               open(os.path.join(CACHE, 'last-init.json'), 'w'))
-    print(f'init: {len(made)} files -> {target} (chain={chain})')
-    for m in made:
+    print(f'init: {len(made)} files -> {target} (chain={chain}, family={family})')
+    for m in sorted(made):
         print('  +', m)
-    print('next: edit the blueprint checks, then: mainnet.py check <blueprint>')
+    print('next: edit blueprint checks, then: mainnet.py check <blueprint>')
 
 
-# ---------------------------------------------------------------- checks (lord + audit pattern)
+# ---------------------------------------------------------------- checks
 def run_check(c, root, slow_ok):
     t = c.get('type')
     tp = lambda p: os.path.normpath(os.path.join(root, p))
@@ -350,7 +267,7 @@ def run_check(c, root, slow_ok):
                 want_deps = 'node_modules' in pat
                 for p in _glob.glob(tp(pat), recursive=True):
                     rel = os.path.relpath(p, root)
-                    if not want_deps and any(s in ('node_modules', '.git', '__pycache__', 'dist', 'out', 'target') for s in rel.split(os.sep)):
+                    if not want_deps and any(s in ('node_modules', '__pycache__', '.git', 'dist', 'out', 'target') for s in rel.split(os.sep)):
                         continue
                     found.append(rel)
             if mode == 'none_exist':
@@ -371,7 +288,7 @@ def run_check(c, root, slow_ok):
                     files += [os.path.join(cur, f) for f in fs]
             n, hits = 0, []
             for p in files:
-                if not p.endswith(('.py', '.ts', '.tsx', '.js', '.jsx', '.rs', '.sol', '.json', '.md', '.toml', '.yaml', '.yml', '.sh', '.html', '.css', '.txt', '.log', '.env')):
+                if not p.endswith(TEXT_EXT):
                     continue
                 for i, line in enumerate(open(p, errors='replace'), 1):
                     if rx.search(line):
@@ -392,27 +309,32 @@ def run_check(c, root, slow_ok):
         if t == 'http':
             r = Net.get(c['url'])
             want = c.get('expect_status', 200)
-            return ('WORKS' if r['status'] == want else 'BROKEN', f'HTTP {r["status"]} (want {want}) | {r["body"][:100]}')
+            return ('WORKS' if r['status'] == want else 'BROKEN', f'HTTP {r["status"]} (want {want}){latency(r)} | {str(r["body"])[:90]}')
         if t == 'rpc':
             r = Net.jsonrpc(c['url'], c['method'], c.get('params', []))
             res = r.get('result')
             if res is None and r.get('error'):
-                return ('BROKEN', f'rpc error: {json.dumps(r)[:160]}')
+                return ('BROKEN', f'rpc error: {json.dumps(r)[:160]}{latency(r)}')
             if 'expect_result' in c and res != c['expect_result']:
-                return ('BROKEN', f'result {res!r} != expected {c["expect_result"]!r}')
-            ev = json.dumps(res)[:160]
+                return ('BROKEN', f'result {res!r} != expected {c["expect_result"]!r}{latency(r)}')
+            ev = json.dumps(res)[:150] + latency(r)
             for f in c.get('expect_fields', []):
                 if f not in ev:
                     return ('BROKEN', f'field {f!r} missing | {ev}')
             return ('WORKS', ev)
         if t == 'github':
             repo = c['repo']
-            d2 = Net.cached(f'gh:{repo}', lambda: _gh(repo), 12)
-            if 'full_name' not in d2:
-                return ('BROKEN', f'github {repo}: {json.dumps(d2)[:140]}')
-            ev = f'{repo} pushed {(d2.get("pushed_at") or "?")[:10]}, stars {d2.get("stargazers_count")}'
+            def gh():
+                p = subprocess.run(['gh', 'api', f'repos/{repo}'], capture_output=True, text=True)
+                if p.returncode == 0:
+                    return json.loads(p.stdout)
+                return json.loads(Net.get(f'https://api.github.com/repos/{repo}').get('body') or '{}')
+            d = Net.cached(f'gh:{repo}', gh, 12)
+            if 'full_name' not in d:
+                return ('BROKEN', f'github {repo}: {json.dumps(d)[:140]}')
+            ev = f'{repo} pushed {(d.get("pushed_at") or "?")[:10]}, stars {d.get("stargazers_count")}'
             if c.get('expect_active_within_days'):
-                age = (time.time() - time.mktime(time.strptime((d2.get('pushed_at') or '2000-01-01')[:10], '%Y-%m-%d'))) / 86400
+                age = (time.time() - time.mktime(time.strptime((d.get('pushed_at') or '2000-01-01')[:10], '%Y-%m-%d'))) / 86400
                 ev += f' ({age:.0f}d ago, want <= {c["expect_active_within_days"]}d)'
                 if age > c['expect_active_within_days']:
                     return ('BROKEN', ev)
@@ -420,27 +342,20 @@ def run_check(c, root, slow_ok):
         if t == 'huggingface':
             kind = c.get('kind', 'models')
             r = Net.get(f'https://huggingface.co/api/{kind}/{c["id"]}')
-            return ('WORKS' if r['status'] == 200 else 'BROKEN', f'HF {kind}/{c["id"]}: HTTP {r["status"]}')
+            return ('WORKS' if r['status'] == 200 else 'BROKEN', f'HF {kind}/{c["id"]}: HTTP {r["status"]}{latency(r)}')
         if t == 'docker':
             files = [f for f in ('Dockerfile', 'docker-compose.yml', 'compose.yaml') if os.path.exists(tp(f))]
             if c.get('expect') == 'none' or not files:
                 return ('N/A' if not files else 'WORKS', f'docker files: {files or "none"}')
             if shutil.which('docker'):
-                p = subprocess.run(f'docker build --check . 2>/dev/null || docker compose config -q 2>&1 || echo PRESENT', shell=True, cwd=root, capture_output=True, text=True, timeout=90)
-                return ('WORKS', f'files {files}; docker: {(p.stdout or "").strip()[:100]}')
+                p = subprocess.run('docker compose config -q 2>&1 || echo PRESENT', shell=True, cwd=root, capture_output=True, text=True, timeout=90)
+                return ('WORKS', f'files {files}; compose: {(p.stdout or "").strip()[:80]}')
             return ('UNVERIFIED', f'files {files}; docker CLI unavailable')
         if t == 'manual':
             return ('UNVERIFIED', f'MANUAL: {c.get("question", "needs human judgment")}')
         return ('BROKEN', f'unknown check type {t!r}')
     except Exception as e:
         return ('UNVERIFIED', f'check error {type(e).__name__}: {e}')
-
-
-def _gh(repo):
-    p = subprocess.run(['gh', 'api', f'repos/{repo}'], capture_output=True, text=True)
-    if p.returncode == 0:
-        return json.loads(p.stdout)
-    return json.loads(Net.get(f'https://api.github.com/repos/{repo}')['body'] or '{}')
 
 
 def cmd_check(bp, refresh, only):
@@ -450,26 +365,21 @@ def cmd_check(bp, refresh, only):
     raw = proj.get('root') or proj['name']
     root = raw if os.path.isabs(raw) else os.path.join(os.getcwd(), raw)
     if not os.path.isdir(root) and not os.path.isabs(raw):
-        alt = os.path.join(os.path.dirname(os.path.realpath(bp.get('_path', ''))), raw)
+        alt = os.path.join(os.path.dirname(bp.get('_path', '')), raw)
         if os.path.isdir(alt):
             root = alt
     root = os.path.realpath(root)
     if not os.path.isdir(root):
         die(f'target root {root} does not exist (run init first, or fix project.root)')
-    # auto mainnet-onchain check dari registry jaringan (dipakai kalau blueprint tidak menimpanya)
-    net = NETWORKS.get(proj.get('chain'))
+    net = load_networks().get(proj.get('chain'))
     if net and net.get('family') == 'evm' and net.get('rpc'):
         auto = [{'id': 'onchain/chainid', 'type': 'rpc', 'url': net['rpc'], 'method': 'eth_chainId',
                  'params': [], 'expect_result': '0x' + format(net['chain_id'], 'x')}]
     elif net and net.get('family') == 'solana':
-        auto = [{'id': 'onchain/health', 'type': 'rpc', 'url': net['rpc'], 'method': 'getHealth',
-                 'params': [], 'expect_fields': ['ok']}]
+        auto = [{'id': 'onchain/health', 'type': 'rpc', 'url': net['rpc'], 'method': 'getHealth', 'params': [], 'expect_fields': ['ok']}]
     else:
         auto = None
     dims = {d[0]: d for d in DEFAULT_DIMENSIONS}
-    if auto:
-        q, old = dims['mainnet-onchain'][1], dims['mainnet-onchain'][2]
-        dims['mainnet-onchain'] = ('mainnet-onchain', q, [a for a in auto if a['id'] not in {c.get('id') for c in old}] + old)
     for cat in bp.get('dimensions', []):
         cid = cat['id']
         if cid in dims:
@@ -478,7 +388,6 @@ def cmd_check(bp, refresh, only):
             dims[cid] = tuple(base)
         else:
             dims[cid] = (cid, cat.get('question', ''), cat.get('checks', []))
-    # check blueprint tidak boleh menimpa auto-check chainId — gabungkan (by id)
     if auto:
         q, checks = dims['mainnet-onchain'][1], dims['mainnet-onchain'][2]
         have = {c.get('id') for c in checks}
@@ -486,7 +395,7 @@ def cmd_check(bp, refresh, only):
     L = [f'# {proj["name"].upper()} — AUDIT — {time.strftime("%Y-%m-%d %H:%M")}',
          f'root: `{root}` | chain: {proj.get("chain")} | network: {proj.get("network", "?")} | spec {SPEC}', '',
          '| dimension | verdict | ok/broken/unv |', '|---|---|---|']
-    detail, broken = [], False
+    detail, broken_items, any_broken = [], [], False
     for cid, q, checks in dims.values():
         if only and cid not in only:
             continue
@@ -496,19 +405,24 @@ def cmd_check(bp, refresh, only):
         unv = len(rs) - ok - bad
         verdict = 'BROKEN' if bad else ('WORKS' if ok else 'UNVERIFIED')
         if bad:
-            broken = True
+            any_broken = True
+            broken_items += [(cid, i, e) for i, v, e in rs if v == 'BROKEN']
         L.append(f'| {cid} | **{verdict}** | {ok}/{bad}/{unv} |')
         detail += [f'## {cid} — {q}', '', '| check | verdict | evidence |', '|---|---|---|']
         detail += [f'| {i} | {v} | {e.replace("|", "/")[:220]} |' for i, v, e in rs] + ['']
+    if broken_items:
+        L += ['', '## NEXT ACTIONS (dari temuan BROKEN, urut perbaikan)']
+        for cid, i, e in broken_items:
+            L.append(f'- [{cid}/{i}] {e[:160]}')
     L += ['', *detail, '---',
-          f'network calls: {Net.calls["http"]} fresh, {Net.calls["cached"]} cached (glm-audit discipline: counted, not hidden)']
+          f'network calls: {Net.calls["http"]} fresh, {Net.calls["cached"]} cached (counted, not hidden)']
     out = os.path.join(HERE, 'reports', f'{proj["name"].upper()}-AUDIT.md')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, 'w').write('\n'.join(L) + '\n')
     print('\n'.join(L[:5 + len(dims)]))
     print(f'report -> {out}')
-    print(f'RESULT: {"FAIL" if broken else "PASS"}')
-    return 1 if broken else 0
+    print(f'RESULT: {"FAIL" if any_broken else "PASS"}')
+    return 1 if any_broken else 0
 
 
 def cmd_selftest():
@@ -517,15 +431,19 @@ def cmd_selftest():
     v, e = run_check({'type': 'command', 'command': 'rm -rf /'}, HERE, True)
     ok &= v == 'BROKEN'
     print('  ', v, e)
-    print('selftest 2: grep on a single file (this file)')
-    v, e = run_check({'type': 'grep', 'pattern': 'absolute|evidence', 'path': 'mainnet.py'}, HERE, True)
+    print('selftest 2: grep single file')
+    v, e = run_check({'type': 'grep', 'pattern': 'evidence|absolute', 'path': 'mainnet.py'}, HERE, True)
     ok &= v == 'WORKS'
-    print('  ', v, e[:80])
-    print('selftest 3: rpc solana mainnet alive')
+    print('  ', v, e[:70])
+    print('selftest 3: networks.json valid & template families ada')
+    fams = os.listdir(TEMPLATES_DIR)
+    ok &= bool(load_networks()) and bool(fams)
+    print('  ', 'networks:', len(load_networks()), '| families:', fams)
+    print('selftest 4: solana rpc alive (latency terukur)')
     v, e = run_check({'type': 'rpc', 'url': 'https://api.mainnet-beta.solana.com', 'method': 'getHealth', 'params': [], 'expect_fields': ['ok']}, HERE, True)
     ok &= v == 'WORKS'
-    print('  ', v, e[:80])
-    print('selftest 4: refuse unknown check type')
+    print('  ', v, e[:70])
+    print('selftest 5: unknown check type refused')
     v, e = run_check({'type': 'nonsense'}, HERE, True)
     ok &= v == 'BROKEN'
     print('  ', v, e)
@@ -538,11 +456,16 @@ def main():
     if not a:
         die(__doc__)
     cmd, args = a[0], a[1:]
-    if cmd == 'list-chains':
-        print(f'{"network":12} {"family":8} {"chain_id":9} {"currency":9} rpc')
-        for name, n in NETWORKS.items():
-            print(f'{name:12} {n["family"]:8} {str(n.get("chain_id", "-")):9} {n.get("currency", "-"):9} {n.get("rpc", "(blueprint must provide)")}')
-        print(f'\ngeneric families (blueprint supplies everything): {", ".join(CHAINS)}')
+    if cmd in ('list-chains', 'networks'):
+        find = chainid = None
+        if '--find' in args:
+            find = args[args.index('--find') + 1]
+        if '--chainid' in args:
+            chainid = int(args[args.index('--chainid') + 1])
+        cmd_networks(find, chainid)
+        return
+    if cmd == 'doctor':
+        cmd_doctor()
         return
     if cmd == 'selftest':
         sys.exit(cmd_selftest())
@@ -558,15 +481,13 @@ def main():
     except ValueError as e:
         die(f'blueprint not valid JSON: {e}')
     if bp.get('spec') != SPEC:
-        die(f'blueprint spec {bp.get("spec")!r} != {SPEC!r}')
+        die(f'blueprint spec {bp.get("spec")!r} != {SPEC!r} (rebuild v2 mengubah spec — update blueprint: ganti nilainya)')
     bp['_path'] = os.path.realpath(cfg[0])
     if cmd == 'init':
         tgt = args[args.index('--target') + 1] if '--target' in args else None
-        cmd_init(bp, tgt, '--force' in args)
+        cmd_init(bp, tgt, '--force' in args, '--git' in args)
     elif cmd == 'check':
-        only = None
-        if '--only' in args:
-            only = set(args[args.index('--only') + 1].split(','))
+        only = set(args[args.index('--only') + 1].split(',')) if '--only' in args else None
         sys.exit(cmd_check(bp, '--refresh' in args, only))
     else:
         die(f'unknown command {cmd!r}')

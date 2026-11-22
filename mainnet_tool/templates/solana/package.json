@@ -1,0 +1,19 @@
+{
+  "name": "{{NAME}}",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "test": "tsx --test test/*.test.ts",
+    "check:balance": "tsx src/main.ts balance",
+    "check:tx": "tsx src/main.ts tx"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

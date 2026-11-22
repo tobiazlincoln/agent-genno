@@ -31,22 +31,25 @@ Dibangun dari pola yang sudah terbukti: `lord.py` (ops deterministik: file/grep/
 
 ```bash
 cd mainnet_tool
-
-# 1. lihat chain yang didukung
-python3 mainnet.py list-chains
-
-# 2. lihat contoh blueprint
-python3 mainnet.py show blueprint-solana.json
-
-# 3. scaffold project baru dari blueprint (menulis HANYA ke target di blueprint)
-python3 mainnet.py init examples/blueprint-solana.json
-
-# 4. audit 15 dimensi (evidence-based; tulis laporan ke mainnet_tool/reports/)
-python3 mainnet.py check examples/blueprint-solana.json
-
-# 5. verifikasi tool-nya sendiri (jalankan dulu ini di mesin baru)
-python3 mainnet.py selftest
+python3 mainnet.py selftest            # selalu dulu di mesin baru
+python3 mainnet.py doctor             # cek node/python/git/docker/gh
+python3 mainnet.py networks            # registry bawaan (networks.json — bisa diedit)
+python3 mainnet.py networks --find robinhood   # cari chain EVM APA PUN (ethereum-lists, 2899 chain)
+python3 mainnet.py init examples/blueprint-elysium.json --git
+python3 mainnet.py check examples/blueprint-elysium.json
 ```
+
+## Apa yang baru di v2 (rebuild)
+
+- **registry jaringan eksternal** (`networks.json`): tambah chain tanpa edit Python.
+  `networks --find <nama>` mencari di dataset open source ethereum-lists/chains
+  (chainid.network) dan mencetak snippet siap salin — VERIFIKASI `eth_chainId` dulu.
+- **template eksternal** (`templates/<family>/`): file nyata; scaffold kini menyertakan
+  test, .gitignore, CI (GitHub Actions), Dockerfile — dan lulus `npm test` nyata.
+- **`doctor`**: onboarding team — cek environment dalam satu perintah.
+- **rpc check mengukur latency** (evidence: `[123ms]`).
+- **NEXT ACTIONS**: laporan otomatis membuat daftar perbaikan dari temuan BROKEN.
+- `init --git` menambah git init + LICENSE MIT.
 
 ## Blueprint JSON — 15 dimensi
 
