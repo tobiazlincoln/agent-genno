@@ -1,0 +1,310 @@
+{
+  "spec": "mainnet-tool/2",
+  "project": {
+    "name": "chaff",
+    "chain": "solana",
+    "network": "mainnet",
+    "desc": "wallet privat dengan autopilot — menjaga jumlah tetap tersembunyi di tepi publik Solana Privacy Rings",
+    "root": "chaff"
+  },
+  "build": {
+    "chain": "solana",
+    "scaffold": false,
+    "note": "scaffold TIDAK dipakai — chaff sudah dibangun; blueprint ini untuk AUDIT saja. JANGAN jalankan init pada project ini."
+  },
+  "dimensions": [
+    {
+      "id": "backtest",
+      "question": "apakah eksperimen riset chaff jalan dan verdict gerbangnya jujur?",
+      "checks": [
+        {
+          "id": "gate/summary-valid",
+          "type": "command",
+          "command": "python3 -c \"import json; d=json.load(open('research/gate-summary.json')); print(d['verdict'], d['consequence'][:80])\"",
+          "cwd": ".",
+          "expect_exit": 0
+        },
+        {
+          "id": "gate/pre-registered",
+          "type": "grep",
+          "pattern": "pre_registered|PRE-REGISTERED",
+          "path": "research",
+          "min_count": 2
+        },
+        {
+          "id": "backtest/tools",
+          "type": "files",
+          "patterns": [
+            "tools/rings-aggregate.py",
+            "tools/rings-grid-v2.py"
+          ],
+          "expect": "all_exist"
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "question": "apakah PoC executor ada dan dependensi terpasang?",
+      "checks": [
+        {
+          "id": "poc/code",
+          "type": "files",
+          "patterns": [
+            "poc/run-poc.ts",
+            "poc/package.json"
+          ],
+          "expect": "all_exist"
+        },
+        {
+          "id": "poc/deps",
+          "type": "files",
+          "patterns": [
+            "poc/node_modules/@heliuslabs/zolana/package.json"
+          ],
+          "expect": "any_exist"
+        }
+      ]
+    },
+    {
+      "id": "concept-narasi",
+      "question": "apakah poros filosofi konsisten di semua artefak?",
+      "checks": [
+        {
+          "id": "philosophy/exists",
+          "type": "files",
+          "patterns": [
+            "PHILOSOPHY.md",
+            "README.md",
+            "TECH-DESIGN.md"
+          ],
+          "expect": "all_exist"
+        },
+        {
+          "id": "philosophy/poros",
+          "type": "grep",
+          "pattern": "visibilitas tanpa legibilitas|winnow|sekam",
+          "path": "PHILOSOPHY.md",
+          "min_count": 3
+        },
+        {
+          "id": "philosophy/readme-consistent",
+          "type": "grep",
+          "pattern": "visibilitas tanpa legibilitas|Winnow nothing",
+          "path": "README.md",
+          "min_count": 2
+        },
+        {
+          "id": "concept/one-liner",
+          "type": "grep",
+          "pattern": "sekam|tak terbedakan|jumlah",
+          "path": "README.md",
+          "min_count": 3
+        }
+      ]
+    },
+    {
+      "id": "workflow",
+      "question": "apakah status gerbang dan override tercatat jujur?",
+      "checks": [
+        {
+          "id": "workflow/gate-fail-recorded",
+          "type": "command",
+          "command": "python3 -c \"import json; d=json.load(open('research/gate-summary.json')); exit(0 if d['verdict']=='FAIL' else 1)\"",
+          "cwd": ".",
+          "expect_exit": 0
+        },
+        {
+          "id": "workflow/override-documented",
+          "type": "grep",
+          "pattern": "OVERRIDE",
+          "path": "MEGA-PLAN.md",
+          "min_count": 1
+        },
+        {
+          "id": "workflow/claims-bounded",
+          "type": "grep",
+          "pattern": "klaim dibatasi|re-run wajib|batas jujur",
+          "path": "MEGA-PLAN.md",
+          "min_count": 1
+        }
+      ]
+    },
+    {
+      "id": "implementasi",
+      "question": "apakah PoC meninggalkan bukti mainnet nyata?",
+      "checks": [
+        {
+          "id": "impl/poc-log-sigs",
+          "type": "grep",
+          "pattern": "withdrawFeeCut|\"transfer\"",
+          "path": "poc/poc-run.log",
+          "min_count": 2
+        },
+        {
+          "id": "impl/readme-sigs",
+          "type": "grep",
+          "pattern": "[1-9A-HJ-NP-Za-km-z]{40,}",
+          "path": "README.md",
+          "min_count": 2
+        },
+        {
+          "id": "impl/no-unrendered-vars",
+          "type": "grep",
+          "pattern": "\\{\\{",
+          "path": "poc",
+          "min_count": 0,
+          "max_count": 0
+        },
+        {
+          "id": "impl/no-template-literal-names",
+          "type": "files",
+          "patterns": [
+            "**/{{*"
+          ],
+          "expect": "none_exist"
+        }
+      ]
+    },
+    {
+      "id": "mainnet-onchain",
+      "checks": [
+        {
+          "id": "onchain/poc-transfer-verifiable",
+          "type": "rpc",
+          "url": "https://api.mainnet-beta.solana.com",
+          "method": "getSignatureStatuses",
+          "params": [
+            [
+              "2vKKud2t2Gt8CqxELm6PnH9p63dcca4aWvxXRZGBCUDNYVRbuWhzYNpYaP7YaD6ooH3xpJaYDWCQtZKhpfLvTCKn"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "api-kebutuhan",
+      "checks": [
+        {
+          "id": "api/env-template",
+          "type": "files",
+          "patterns": [
+            "poc/.env.example",
+            "poc/.env"
+          ],
+          "expect": "any_exist"
+        },
+        {
+          "id": "api/prover-cached",
+          "type": "files",
+          "patterns": [
+            "poc/last-prover-response.json",
+            "poc/last-indexer-response.json"
+          ],
+          "expect": "any_exist"
+        }
+      ]
+    },
+    {
+      "id": "resource-github-hf",
+      "checks": [
+        {
+          "id": "res/upstream-sdk",
+          "type": "github",
+          "repo": "helius-labs/privacy-rings",
+          "expect_active_within_days": 7
+        },
+        {
+          "id": "res/sdk-dist-tag",
+          "type": "registry",
+          "ecosystem": "npm",
+          "package": "@heliuslabs/zolana",
+          "dist_tag": "alpha",
+          "min_version": "0.8"
+        }
+      ]
+    },
+    {
+      "id": "fitur-berfungsi",
+      "question": "audit fitur per fitur chaff: jalan, desain, atau belum?",
+      "checks": [
+        {
+          "id": "fitur/fee-cut",
+          "type": "grep",
+          "pattern": "feePayer.*recipient|withdrawFeeCut",
+          "path": "poc/run-poc.ts",
+          "min_count": 2
+        },
+        {
+          "id": "fitur/fee-cut-no-buffer",
+          "type": "grep",
+          "pattern": "feeBuffer|bufferFee|SOL_BUFFER|reserveBuffer",
+          "path": "poc/run-poc.ts",
+          "max_count": 0
+        },
+        {
+          "id": "fitur/visibility-meter-belum",
+          "type": "manual",
+          "question": "visibility meter masih BELUM di PoC (per MEGA-PLAN #7) — jangan dihitung WORKS dari klaim"
+        },
+        {
+          "id": "fitur/policy-engine-desain",
+          "type": "grep",
+          "pattern": "policy|kill.?switch|cap harian",
+          "path": "TECH-DESIGN.md",
+          "min_count": 3
+        },
+        {
+          "id": "fitur/poc-mainnet-only",
+          "type": "manual",
+          "question": "PoC hanya membuktikan jalur mainnet dasar (register/deposit/transfer/withdraw fee-cut); planner split/delay belum — cek MEGA-PLAN tabel fitur"
+        }
+      ]
+    },
+    {
+      "id": "ideas-brainstorm",
+      "question": "apakah arah lanjutan terdokumentasi dan jujur terhadap gate FAIL?",
+      "checks": [
+        {
+          "id": "ideas/risk-file",
+          "type": "files",
+          "patterns": [
+            "BRAIN/research/chaff/RISK-SIMULATION.md"
+          ],
+          "expect": "all_exist"
+        },
+        {
+          "id": "ideas/gate-honest-in-philosophy",
+          "type": "grep",
+          "pattern": "angin kalah, saringan halus tidak|K1 aggregate FAIL",
+          "path": "PHILOSOPHY.md",
+          "min_count": 2
+        },
+        {
+          "id": "ideas/open-decision",
+          "type": "manual",
+          "question": "keputusan besar terbuka: apakah lanjut planner split/delay dengan desain window >72h, atau pivot — butuh keputusan manusia, bukan agent"
+        }
+      ]
+    },
+    {
+      "id": "framework",
+      "checks": [
+        {
+          "id": "framework/lockfile",
+          "type": "files",
+          "patterns": [
+            "poc/package-lock.json"
+          ],
+          "expect": "all_exist"
+        },
+        {
+          "id": "framework/sdk-pin",
+          "type": "grep",
+          "pattern": "@heliuslabs/zolana",
+          "path": "poc/package.json",
+          "min_count": 1
+        }
+      ]
+    }
+  ]
+}

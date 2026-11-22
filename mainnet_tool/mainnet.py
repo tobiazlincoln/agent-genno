@@ -255,6 +255,8 @@ def render(text, vars):
 
 def cmd_init(bp, target, force, git):
     b = bp['build']
+    if b.get('scaffold') is False:
+        die('blueprint ini AUDIT-ONLY (build.scaffold=false) — init ditolak supaya project tidak tertimpa scaffold')
     chain = b.get('chain') or bp['project'].get('chain')
     net = load_networks().get(chain, {})
     family = net.get('family', chain)
@@ -371,7 +373,7 @@ def run_check(c, root, slow_ok):
                         n += 1
                         if len(hits) < 4:
                             hits.append(f'{os.path.relpath(p, root)}:{i}: {line.strip()[:90]}')
-            mn, mx = c.get('min_count', 1), c.get('max_count', float('inf'))
+            mn, mx = c.get('min_count', 0 if 'max_count' in c else 1), c.get('max_count', float('inf'))
             return ('WORKS' if mn <= n <= mx else 'BROKEN', f'{n} matches (want {mn}..{mx}) | ' + ' | '.join(hits)[:200])
         if t == 'command':
             if c.get('slow') and not slow_ok:
