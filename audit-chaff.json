@@ -1,0 +1,223 @@
+{
+  "spec": "project-audit/1",
+  "target": {
+    "name": "chaff",
+    "root": ".",
+    "type": "web3-app",
+    "chain": "solana",
+    "report_dir": "BRAIN/research/audit"
+  },
+  "absolute_mode": {
+    "evidence_required": true,
+    "unverified_marker": "UNVERIFIED",
+    "cache_ttl_hours": 24,
+    "max_command_timeout": 180
+  },
+  "categories": [
+    {
+      "id": "backtest",
+      "question": "apakah backtest/eksperimen berjalan, terukur, dan verdict-nya jujur?",
+      "features": [
+        {
+          "id": "backtest/tool",
+          "checks": [
+            { "id": "aggregate-tool", "type": "files", "patterns": ["chaff/tools/rings-aggregate.py", "chaff/tools/rings-grid-v2.py"], "expect": "all_exist" },
+            { "id": "tool-runs", "type": "command", "command": "python3 chaff/tools/rings-aggregate.py --help 2>&1 | head -3", "expect_exit": 0, "cwd": "." }
+          ]
+        },
+        {
+          "id": "backtest/report",
+          "checks": [
+            { "id": "report-exists", "type": "files", "patterns": ["chaff/research/AGGREGATE-REPORT.md"], "expect": "all_exist" },
+            { "id": "gate-summary-valid", "type": "command", "command": "python3 -c \"import json;d=json.load(open('chaff/research/gate-summary.json'));print(d['verdict'])\"", "expect_exit": 0 },
+            { "id": "null-model-present", "type": "grep", "pattern": "null|shuffle", "path": "chaff/research/AGGREGATE-REPORT.md", "min_count": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "question": "apakah backend/executor PoC ada dan dependensinya terpasang?",
+      "features": [
+        {
+          "id": "backend/code",
+          "checks": [
+            { "id": "poc-code", "type": "files", "patterns": ["chaff/poc/run-poc.ts", "chaff/poc/package.json"], "expect": "all_exist" },
+            { "id": "node-modules", "type": "files", "patterns": ["chaff/poc/node_modules/@heliuslabs/zolana/package.json"], "expect": "any_exist" },
+            { "id": "diag-scripts", "type": "files", "patterns": ["chaff/poc/diag-*.ts"], "expect": "any_exist" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "frontend",
+      "question": "apakah ada frontend? (PoC CLI: belum diharapkan)",
+      "features": [
+        { "id": "frontend/presence", "checks": [
+          { "id": "no-frontend-expected", "type": "files", "patterns": ["chaff/poc/**/*.html", "chaff/poc/src/**/*.tsx"], "expect": "none_exist" }
+        ] }
+      ]
+    },
+    {
+      "id": "ui-ux",
+      "question": "apakah UI/UX sudah dibuat dan diuji? (manual — belum ada UI di PoC)",
+      "features": [
+        { "id": "uiux/manual", "checks": [
+          { "id": "ui-mock", "type": "manual", "question": "apakah ada mockup/UI untuk 3 layar (saldo, kirim+visibility meter, autopilot toggle)? butuh judgment manusia atau file desain" },
+          { "id": "ui-spec-documented", "type": "grep", "pattern": "layar|screen|ui|meter", "path": "chaff/TECH-DESIGN.md", "min_count": 3 }
+        ] }
+      ]
+    },
+    {
+      "id": "user-experience",
+      "question": "apakah UX (instant vs protected, preview visibilitas) sudah didefinisikan dan diuji?",
+      "features": [
+        { "id": "ux/instant-protected", "checks": [
+          { "id": "ux-defined", "type": "grep", "pattern": "INSTANT|PROTECTED|protected", "path": "chaff", "min_count": 2 }
+        ] },
+        { "id": "ux/visibility-meter", "checks": [
+          { "id": "meter-defined", "type": "grep", "pattern": "visibility|kandidat|candidate", "path": "chaff", "min_count": 2 }
+        ] }
+      ]
+    },
+    {
+      "id": "user-flow",
+      "question": "apakah user flow onboarding->deposit->transfer->withdraw terdokumentasi end-to-end?",
+      "features": [
+        { "id": "flow/product", "checks": [
+          { "id": "product-md", "type": "files", "patterns": ["chaff/BRAIN/PRODUCT.md"], "expect": "all_exist" },
+          { "id": "flow-steps", "type": "grep", "pattern": "onboarding|deposit|withdraw", "path": "chaff/BRAIN/PRODUCT.md", "min_count": 5 }
+        ] }
+      ]
+    },
+    {
+      "id": "concept-narasi",
+      "question": "apakah narasi produk konsisten di semua artefak?",
+      "features": [
+        { "id": "narrative/one-liner", "checks": [
+          { "id": "product-liner", "type": "grep", "pattern": "jumlah|amounts? (stay|tetap)", "path": "chaff/BRAIN/PRODUCT.md", "min_count": 2 },
+          { "id": "readme-liner", "type": "files", "patterns": ["chaff/README.md"], "expect": "all_exist" },
+          { "id": "naming-verdict", "type": "files", "patterns": ["chaff/BRAIN/research/novelty/NAMING.md"], "expect": "all_exist" }
+        ] }
+      ]
+    },
+    {
+      "id": "workflow",
+      "question": "apakah aturan kerja (gerbang pre-registered) dihormati oleh eksekusi?",
+      "advisory": false,
+      "features": [
+        {
+          "id": "workflow/gate-compliance",
+          "checks": [
+            { "id": "gate-fail-recorded", "type": "command", "command": "python3 -c \"import json;d=json.load(open('chaff/research/gate-summary.json'));exit(0 if d['verdict']=='FAIL' else 1)\"", "expect_exit": 0 },
+            { "id": "override-documented", "type": "grep", "pattern": "OVERRIDE", "path": "chaff/MEGA-PLAN.md", "min_count": 1 },
+            { "id": "task2-ran-despite-gate-fail", "type": "files", "patterns": ["chaff/TECH-DESIGN.md", "chaff/poc/run-poc.ts"], "expect": "none_exist",
+              "note": "gate FAIL => per chaff-session.json on_fail, task_2 tidak boleh dimulai. Check ini BROKEN bila task_2 dieksekusi — override terdokumentasi di MEGA-PLAN.md tidak mengubah fakta bahwa gerbang pre-registered dilanggar; klaim produk wajib dibatasi dan gate wajib diulang." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "framework",
+      "question": "apakah stack/framework terdefinisi dan versinya terpasang dari registry?",
+      "features": [
+        { "id": "framework/sdk", "checks": [
+          { "id": "zolana-on-npm", "type": "registry", "ecosystem": "npm", "package": "@heliuslabs/zolana", "dist_tag": "alpha", "min_version": "0.8" },
+          { "id": "sdk-declared", "type": "grep", "pattern": "@heliuslabs/zolana", "path": "chaff/poc/package.json", "min_count": 1 }
+        ] }
+      ]
+    },
+    {
+      "id": "docker",
+      "question": "apakah deployment container siap? (PoC CLI: belum diharapkan)",
+      "features": [
+        { "id": "docker/presence", "checks": [ { "id": "no-docker-yet", "type": "docker", "expect": "none" } ] }
+      ]
+    },
+    {
+      "id": "implementasi",
+      "question": "apakah implementasi PoC benar-benar jalan dan meninggalkan bukti?",
+      "features": [
+        { "id": "impl/tx-signatures", "checks": [
+          { "id": "run-log-sigs", "type": "grep", "pattern": "withdrawFeeCut|\"transfer\"", "path": "chaff/poc/poc-run.log", "min_count": 2 },
+          { "id": "recipient-balance", "type": "grep", "pattern": "recipientPublicBalance", "path": "chaff/poc/poc-run.log", "min_count": 1 },
+          { "id": "readme-sigs", "type": "grep", "pattern": "SIG |[1-9A-HJ-NP-Za-km-z]{40,}", "path": "chaff/README.md", "min_count": 3 },
+          { "id": "keys-gitignored", "type": "command", "command": "git check-ignore chaff/poc/.devnet-key.json chaff/poc/.devnet-key-recipient.json >/dev/null 2>&1 && echo ignored || echo NOT-IGNORED", "expect_exit": 0, "cwd": "." }
+        ] },
+        { "id": "impl/repro", "checks": [
+          { "id": "poc-rerun", "type": "command", "command": "cd chaff/poc && npm run poc 2>&1 | tail -4", "expect_exit": 0, "slow": true }
+        ] }
+      ]
+    },
+    {
+      "id": "mainnet-onchain",
+      "question": "apakah protokol yang jadi fondasi (Helius Rings) hidup di mainnet, dan signature PoC bisa diverifikasi?",
+      "features": [
+        { "id": "onchain/program", "checks": [
+          { "id": "spp-account", "type": "rpc", "url": "https://api.mainnet-beta.solana.com", "method": "getAccountInfo",
+            "params": ["ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW", {"encoding": "base64"}], "expect_fields": ["owner"] }
+        ] },
+        { "id": "onchain/poc-signature", "checks": [
+          { "id": "sig-verifiable", "type": "rpc", "url": "https://api.mainnet-beta.solana.com", "method": "getSignatureStatuses",
+            "params": [["2vKKud2t2Gt8CqxELm6PnH9p63dcca4aWvxXRZGBCUDNYVRbuWhzYNpYaP7YaD6ooH3xpJaYDWCQtZKhpfLvTCKn"]],
+            "expect_fields": ["slot"] }
+        ] }
+      ]
+    },
+    {
+      "id": "api-kebutuhan",
+      "question": "apakah API/endpoint eksternal yang dibutuhkan tersedia?",
+      "features": [
+        { "id": "api/docs", "checks": [
+          { "id": "helius-privacy-docs", "type": "http", "url": "https://www.helius.dev/docs/privacy", "expect_status": 200 },
+          { "id": "prover-response-cached", "type": "files", "patterns": ["chaff/poc/last-prover-response.json", "chaff/poc/last-indexer-response.json"], "expect": "any_exist" }
+        ] }
+      ]
+    },
+    {
+      "id": "resource-github-hf",
+      "question": "apakah resource GitHub/HuggingFace yang jadi referensi hidup dan keputusan pemakaiannya terdokumentasi?",
+      "features": [
+        { "id": "gh/upstream", "checks": [
+          { "id": "privacy-rings-repo", "type": "github", "repo": "helius-labs/privacy-rings", "expect_active_within_days": 7, "tree_contains": ["sdk-libs/ts/README.md"] }
+        ] },
+        { "id": "hf/decision", "checks": [
+          { "id": "hf-decision-documented", "type": "grep", "pattern": "HuggingFace", "path": "chaff/MEGA-PLAN.md", "min_count": 1,
+            "note": "informasional: keputusan 'HF tidak dibutuhkan v1' harus terdokumentasi, bukan asumsi" }
+        ] }
+      ]
+    },
+    {
+      "id": "fitur-berfungsi",
+      "question": "audit fitur per fitur: berjalan atau belum (bukti dari kode+log+chain, bukan klaim)?",
+      "features": [
+        { "id": "fitur/register", "checks": [
+          { "id": "register-in-code", "type": "grep", "pattern": "buildRegistrationTransaction|register", "path": "chaff/poc/run-poc.ts", "min_count": 1 }
+        ] },
+        { "id": "fitur/deposit", "checks": [
+          { "id": "deposit-in-code", "type": "grep", "pattern": "buildDepositTransaction|deposit", "path": "chaff/poc/run-poc.ts", "min_count": 1 }
+        ] },
+        { "id": "fitur/transfer", "checks": [
+          { "id": "transfer-sig", "type": "grep", "pattern": "\"transfer\": ?\"[1-9A-HJ-NP-Za-km-z]{20,}", "path": "chaff/poc/poc-run.log", "min_count": 1 }
+        ] },
+        { "id": "fitur/withdraw-fee-cut", "checks": [
+          { "id": "feecut-sig", "type": "grep", "pattern": "withdrawFeeCut", "path": "chaff/poc/poc-run.log", "min_count": 1 },
+          { "id": "feecut-no-buffer", "type": "grep", "pattern": "buffer", "path": "chaff/poc/run-poc.ts", "max_count": 0, "note": "tanpa buffer sesuai keputusan user" }
+        ] },
+        { "id": "fitur/visibility-meter", "checks": [
+          { "id": "meter-tool", "type": "files", "patterns": ["chaff/tools/rings-patterns.py", "chaff/tools/rings-reserve.py", "chaff/tools/null-on-parts.py"], "expect": "any_exist" },
+          { "id": "meter-in-poc", "type": "grep", "pattern": "visibility|meter|kandidat", "path": "chaff/poc", "max_count": 0, "note": "meter belum masuk PoC = UNVERIFIED (bukan BROKEN) — dijual sebagai product feature, belum diimplementasi PoC" }
+        ] },
+        { "id": "fitur/policy-engine", "checks": [
+          { "id": "policy-in-design", "type": "grep", "pattern": "policy|kill.?switch|cap", "path": "chaff/TECH-DESIGN.md", "min_count": 3 },
+          { "id": "policy-in-poc", "type": "grep", "pattern": "policy|killSwitch", "path": "chaff/poc/run-poc.ts", "max_count": 0, "note": "belum diimplementasi di PoC" }
+        ] },
+        { "id": "ideas/brainstorming", "checks": [
+          { "id": "risk-file", "type": "files", "patterns": ["chaff/BRAIN/research/chaff/RISK-SIMULATION.md"], "expect": "all_exist" },
+          { "id": "verdicts-file", "type": "files", "patterns": ["chaff/BRAIN/research/novelty/VERDICTS.md"], "expect": "all_exist" },
+          { "id": "open-ideas", "type": "manual", "question": "ide lanjutan pasca-gate-FAIL perlu brainstorming baru (mis: desain ulang window >72h, atau pivot) — butuh keputusan manusia" }
+        ] }
+      ]
+    }
+  ]
+}
