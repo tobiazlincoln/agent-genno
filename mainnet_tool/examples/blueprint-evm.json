@@ -1,0 +1,42 @@
+{
+  "spec": "mainnet-tool/1",
+  "project": {
+    "name": "my-evm-app",
+    "chain": "evm",
+    "network": "mainnet",
+    "desc": "onchain registry",
+    "root": "my-evm-app"
+  },
+  "build": {
+    "chain": "evm",
+    "target": "my-evm-app"
+  },
+  "dimensions": [
+    {
+      "id": "mainnet-onchain",
+      "checks": [
+        { "id": "onchain/chainid", "type": "rpc", "url": "https://eth.llamarpc.com",
+          "method": "eth_chainId", "params": [], "expect_fields": ["result"] }
+      ]
+    },
+    {
+      "id": "api-kebutuhan",
+      "checks": [
+        { "id": "api/rpc", "type": "rpc", "url": "https://eth.llamarpc.com", "method": "eth_blockNumber", "params": [], "expect_fields": ["result"] }
+      ]
+    },
+    {
+      "id": "resource-github-hf",
+      "checks": [
+        { "id": "res/hf-model", "type": "huggingface", "kind": "models", "id": "sentence-transformers/all-MiniLM-L6-v2" }
+      ]
+    },
+    {
+      "id": "fitur-berfungsi",
+      "checks": [
+        { "id": "fitur/contract", "type": "files", "patterns": ["contracts/*.sol"], "expect": "any_exist" },
+        { "id": "fitur/deploy-script", "type": "files", "patterns": ["scripts/deploy.ts"], "expect": "all_exist" }
+      ]
+    }
+  ]
+}

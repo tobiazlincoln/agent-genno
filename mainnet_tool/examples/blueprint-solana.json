@@ -1,0 +1,46 @@
+{
+  "spec": "mainnet-tool/1",
+  "project": {
+    "name": "my-solana-app",
+    "chain": "solana",
+    "network": "mainnet",
+    "desc": "private balance tool",
+    "root": "my-solana-app"
+  },
+  "build": {
+    "chain": "solana",
+    "target": "my-solana-app"
+  },
+  "dimensions": [
+    {
+      "id": "mainnet-onchain",
+      "checks": [
+        { "id": "onchain/program-alive", "type": "rpc", "url": "https://api.mainnet-beta.solana.com",
+          "method": "getAccountInfo",
+          "params": ["11111111111111111111111111111111", {"encoding": "base64"}],
+          "expect_fields": ["owner"] }
+      ]
+    },
+    {
+      "id": "api-kebutuhan",
+      "checks": [
+        { "id": "api/rpc-alive", "type": "rpc", "url": "https://api.mainnet-beta.solana.com",
+          "method": "getHealth", "params": [], "expect_fields": ["ok"] }
+      ]
+    },
+    {
+      "id": "resource-github-hf",
+      "checks": [
+        { "id": "res/upstream-sdk", "type": "github", "repo": "solana-labs/solana-web3.js", "expect_active_within_days": 30 }
+      ]
+    },
+    {
+      "id": "fitur-berfungsi",
+      "checks": [
+        { "id": "fitur/balance-cmd", "type": "grep", "pattern": "getBalance", "path": "src/main.ts", "min_count": 1 },
+        { "id": "fitur/tx-cmd", "type": "grep", "pattern": "getSignatureStatus", "path": "src/main.ts", "min_count": 1 },
+        { "id": "ideas/brainstorm", "type": "manual", "question": "fitur v2 apa yang paling dibutuhkan user? putuskan bersama" }
+      ]
+    }
+  ]
+}
