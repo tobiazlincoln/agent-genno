@@ -393,12 +393,46 @@ def run_check(c, root, slow_ok):
             res = r.get('result')
             if res is None and r.get('error'):
                 return ('BROKEN', f'rpc error: {json.dumps(r)[:160]}{latency(r)}')
+            # payload = bagian bermakna hasil. Solana membungkus: {"context":..., "value": X}.
+            # Fix bug laten (ditemukan session GLM): nullish harus dihitung dari PAYLOAD,
+            # dan asersi substring bisa lolos lewat context — asersi presisi pakai path.
+            payload = res.get('value') if isinstance(res, dict) and 'value' in res and set(res.keys()) <= {'context', 'value'} else res
+            nullish = payload is None or payload == '' or payload == {} or (isinstance(payload, list) and not [x for x in payload if x is not None])
+
+            def nav(obj, path):
+                cur = obj
+                for seg in path.split('.'):
+                    if isinstance(cur, list):
+                        try:
+                            cur = cur[int(seg)]
+                        except (ValueError, IndexError):
+                            return None
+                    elif isinstance(cur, dict):
+                        cur = cur.get(seg)
+                    else:
+                        return None
+                return cur
+
+            ev = json.dumps(res)[:150] + latency(r)
+            path_fields = [f for f in c.get('expect_fields', []) if '.' in f]
+            if nullish and 'expect_result' not in c:
+                if not path_fields:
+                    return ('UNVERIFIED', f'payload {json.dumps(payload)[:60]!r} null/kosong — RPC merespons tapi nilai '
+                                          f'tidak bisa diverifikasi. Pakai expect_fields path (mis. "value.0.slot") atau expect_result.')
+                for f in path_fields:
+                    if nav(res, f) is None:
+                        return ('BROKEN', f'path {f} -> null/missing | payload {json.dumps(payload)[:60]} | {ev}')
+                return ('WORKS', f'path-verified {path_fields} | {ev}')
             if 'expect_result' in c and res != c['expect_result']:
                 return ('BROKEN', f'result {res!r} != expected {c["expect_result"]!r}{latency(r)}')
-            ev = json.dumps(res)[:150] + latency(r)
             for f in c.get('expect_fields', []):
-                if f not in ev:
+                if '.' in f:
+                    if nav(res, f) is None:
+                        return ('BROKEN', f'path {f} -> null/missing | {ev}')
+                elif f not in ev:
                     return ('BROKEN', f'field {f!r} missing | {ev}')
+            if not c.get('expect_fields') and 'expect_result' not in c:
+                ev += ' [assertion: endpoint+method responded — TANPA asersi nilai]'
             return ('WORKS', ev)
         if t == 'github':
             repo = c['repo']
