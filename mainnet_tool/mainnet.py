@@ -27,7 +27,20 @@ CACHE = os.path.join(HERE, '.cache')
 SPEC = 'mainnet-tool/1'
 BLOCKED = ('rm' + ' -rf /|rm' + ' -rf ~|git push --f' + 'orce|git push -f|git reset --h' + 'ard|git clean -fd|'
            'DROP' + ' TABLE|DROP' + ' DATABASE|mkfs|dd if=|chmod -R 777|sudo rm')
-CHAINS = ('solana', 'evm', 'web')
+CHAINS = ('solana', 'evm', 'web')  # template families
+# Registry jaringan — semua chainId & RPC DIVERIFIKASI LIVE via eth_chainId / getHealth
+# (22 Nov 2026). robinhood menolak User-Agent python — Net selalu pakai UA browser.
+NETWORKS = {
+    'solana':    {'family': 'solana', 'rpc': 'https://api.mainnet-beta.solana.com', 'currency': 'SOL', 'explorer': 'https://solscan.io'},
+    'eth':       {'family': 'evm', 'rpc': 'https://ethereum-rpc.publicnode.com', 'chain_id': 1, 'currency': 'ETH', 'explorer': 'https://etherscan.io'},
+    'bsc':       {'family': 'evm', 'rpc': 'https://bsc-rpc.publicnode.com', 'chain_id': 56, 'currency': 'BNB', 'explorer': 'https://bscscan.com'},
+    'robinhood': {'family': 'evm', 'rpc': 'https://rpc.mainnet.chain.robinhood.com', 'chain_id': 4663, 'currency': 'ETH', 'explorer': 'https://robinhoodchain.blockscout.com'},
+    'elysium':   {'family': 'evm', 'rpc': 'https://rpc.elysiumchain.tech', 'chain_id': 1339, 'currency': 'LAVA', 'explorer': 'https://blockscout.elysiumchain.tech'},
+    'evm':       {'family': 'evm'},  # generic: blueprint wajib isi rpc + chain_id sendiri
+}
+# CATATAN tabrakan nama: ada DUA "Elysium" — Vulcan Forged (1339/LAVA, terdaftar di atas)
+# dan Kinetiq/HyperEVM (99901/HYPE). Kinetiq tidak punya public RPC yang kami verifikasi;
+# pakai chain 'evm' + rpc/chain_id sendiri untuk itu. Verifikasi SELALU dengan eth_chainId.
 DEFAULT_DIMENSIONS = [
     ('backtest', 'apakah backtest/eksperimen berjalan dan terukur?',
      [{'id': 'backtest/no-tests-yet', 'type': 'files', 'patterns': ['tests/*', 'test/*', '**/backtest*'], 'expect': 'any_exist'}]),
@@ -95,7 +108,7 @@ class Net:
             try:
                 r = urllib.request.urlopen(urllib.request.Request(
                     url, data=json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params}).encode(),
-                    headers={'Content-Type': 'application/json'}), timeout=30)
+                    headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 (mainnet-tool)'}), timeout=30)
                 return json.load(r)
             except urllib.error.HTTPError as e:
                 return {'error': f'HTTP {e.code}'}
@@ -107,7 +120,7 @@ class Net:
     def get(url):
         def call():
             try:
-                r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'mainnet-tool'}), timeout=30)
+                r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (mainnet-tool)'}), timeout=30)
                 return {'status': r.status, 'body': r.read(500).decode('utf-8', 'replace')}
             except urllib.error.HTTPError as e:
                 return {'status': e.code, 'body': ''}
@@ -208,7 +221,7 @@ contract {{CONTRACT}} {
 }
 ''',
         'scripts/deploy.ts': '''// {{NAME}} — evm deploy/check entry (lord.py pattern: evidence first)
-import { readFileSync } from "node:fs";
+const EXPECTED_CHAIN_ID = {{CHAIN_ID}};
 const RPC = process.env.RPC_URL ?? die("set RPC_URL (see .env.example)");
 const cmd = process.argv[2] ?? "check";
 async function main() {
@@ -216,13 +229,15 @@ async function main() {
     const r = await fetch(RPC, {method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({jsonrpc: "2.0", id: 1, method: "eth_chainId", params: []})});
     const j = await r.json() as any;
-    console.log("chainId", parseInt(j.result, 16), "@", RPC);
+    const id = parseInt(j.result, 16);
+    if (id !== EXPECTED_CHAIN_ID) die(`WRONG NETWORK: chain id ${id}, expected ${EXPECTED_CHAIN_ID} — refusing to continue`);
+    console.log("chainId", id, "OK @", RPC);
   } else die(`unknown command: ${cmd}`);
 }
 function die(m: string): never { console.error(m); process.exit(1); }
 main();
 ''',
-        '.env.example': 'RPC_URL=https://eth.llamarpc.com\n',
+        '.env.example': 'RPC_URL={{RPC_URL}}\n',
         'Dockerfile': '''FROM node:22-slim
 WORKDIR /app
 COPY package*.json ./
@@ -232,16 +247,17 @@ CMD ["tsx", "scripts/deploy.ts", "check"]
 ''',
         'README.md': '''# {{NAME}}
 
-evm project scaffolded by mainnet_tool.
+{{CHAIN_TITLE}} project scaffolded by mainnet_tool.
 
-## user flow
+## user flow (onboarding in 4 steps)
 1. install: `npm install`
 2. setup: `cp .env.example .env`
-3. check network: `npm run check:code`
+3. check network: `npm run check:code` (verifies chain id)
 4. deploy: `npm run deploy` (wiring up a signer is your next step)
 
 ## what this is
-one-liner: {{NAME}} is a {{DESC}} on evm.
+one-liner: {{NAME}} is a {{DESC}} on {{CHAIN_TITLE}}.
+network: chain id {{CHAIN_ID}}, currency {{CURRENCY}}, explorer {{EXPLORER}}
 ''',
     },
     'web': {
@@ -261,8 +277,8 @@ one-liner: {{NAME}} is a {{DESC}} on evm.
         'app.js': '''// {{NAME}} — wallet connect stub (evidence: console output)
 document.getElementById("go").onclick = async () => {
   const out = document.getElementById("out");
-  if (!(window as any).solana) return out.textContent = "no solana wallet found";
-  const r = await (window as any).solana.connect();
+  if (!window.solana) { out.textContent = "no solana wallet found"; return; }
+  const r = await window.solana.connect();
   out.textContent = "connected: " + r.publicKey.toString();
 };
 ''',
@@ -289,23 +305,31 @@ def render(text, vars):
 def cmd_init(bp, target, force):
     b = bp['build']
     chain = b.get('chain') or bp['project'].get('chain')
-    if chain not in CHAINS:
-        die(f'unknown chain {chain!r}; supported: {", ".join(CHAINS)}')
+    net = NETWORKS.get(chain, {})
+    family = net.get('family', chain)
+    if family not in CHAINS:
+        die(f'unknown chain {chain!r}; supported networks: {", ".join(NETWORKS)} (or generic: {", ".join(CHAINS)})')
     if not target:
         target = b.get('target') or bp['project']['name']
     target = os.path.realpath(target)
     if os.path.exists(target) and os.listdir(target) and not force:
         die(f'target {target} exists and is not empty (use --force to overwrite files)')
     vars = {'NAME': bp['project']['name'], 'DESC': bp['project'].get('desc', 'web3 project'),
-            'CONTRACT': re.sub(r'[^A-Za-z0-9]', '', bp['project']['name'].title())}
+            'CONTRACT': re.sub(r'[^A-Za-z0-9]', '', bp['project']['name'].title()),
+            'RPC_URL': net.get('rpc', ''), 'CHAIN_ID': str(net.get('chain_id', '')),
+            'CURRENCY': net.get('currency', ''), 'EXPLORER': net.get('explorer', ''),
+            'CHAIN_TITLE': (chain or '').replace('-', ' ').title() or family}
     vars.update(b.get('vars', {}))
+    if family == 'evm' and not vars['RPC_URL']:
+        die("generic 'evm' chain needs build.vars: RPC_URL + CHAIN_ID (no defaults by design)")
     made = []
     os.makedirs(CACHE, exist_ok=True)
-    for rel, content in TEMPLATES[chain].items():
-        p = os.path.join(target, rel)
+    for rel, content in TEMPLATES[family].items():
+        rel2 = render(rel, vars)
+        p = os.path.join(target, rel2)
         os.makedirs(os.path.dirname(p), exist_ok=True)
         open(p, 'w').write(render(content, vars))
-        made.append(rel)
+        made.append(rel2)
     json.dump({'target': target, 'chain': chain, 'created': made, 'when': time.strftime('%Y-%m-%d %H:%M')},
               open(os.path.join(CACHE, 'last-init.json'), 'w'))
     print(f'init: {len(made)} files -> {target} (chain={chain})')
@@ -374,6 +398,8 @@ def run_check(c, root, slow_ok):
             res = r.get('result')
             if res is None and r.get('error'):
                 return ('BROKEN', f'rpc error: {json.dumps(r)[:160]}')
+            if 'expect_result' in c and res != c['expect_result']:
+                return ('BROKEN', f'result {res!r} != expected {c["expect_result"]!r}')
             ev = json.dumps(res)[:160]
             for f in c.get('expect_fields', []):
                 if f not in ev:
@@ -421,10 +447,29 @@ def cmd_check(bp, refresh, only):
     if refresh:
         shutil.rmtree(CACHE, ignore_errors=True)
     proj = bp['project']
-    root = os.path.realpath(proj.get('root') or proj['name'])
+    raw = proj.get('root') or proj['name']
+    root = raw if os.path.isabs(raw) else os.path.join(os.getcwd(), raw)
+    if not os.path.isdir(root) and not os.path.isabs(raw):
+        alt = os.path.join(os.path.dirname(os.path.realpath(bp.get('_path', ''))), raw)
+        if os.path.isdir(alt):
+            root = alt
+    root = os.path.realpath(root)
     if not os.path.isdir(root):
         die(f'target root {root} does not exist (run init first, or fix project.root)')
+    # auto mainnet-onchain check dari registry jaringan (dipakai kalau blueprint tidak menimpanya)
+    net = NETWORKS.get(proj.get('chain'))
+    if net and net.get('family') == 'evm' and net.get('rpc'):
+        auto = [{'id': 'onchain/chainid', 'type': 'rpc', 'url': net['rpc'], 'method': 'eth_chainId',
+                 'params': [], 'expect_result': '0x' + format(net['chain_id'], 'x')}]
+    elif net and net.get('family') == 'solana':
+        auto = [{'id': 'onchain/health', 'type': 'rpc', 'url': net['rpc'], 'method': 'getHealth',
+                 'params': [], 'expect_fields': ['ok']}]
+    else:
+        auto = None
     dims = {d[0]: d for d in DEFAULT_DIMENSIONS}
+    if auto:
+        q, old = dims['mainnet-onchain'][1], dims['mainnet-onchain'][2]
+        dims['mainnet-onchain'] = ('mainnet-onchain', q, [a for a in auto if a['id'] not in {c.get('id') for c in old}] + old)
     for cat in bp.get('dimensions', []):
         cid = cat['id']
         if cid in dims:
@@ -433,6 +478,11 @@ def cmd_check(bp, refresh, only):
             dims[cid] = tuple(base)
         else:
             dims[cid] = (cid, cat.get('question', ''), cat.get('checks', []))
+    # check blueprint tidak boleh menimpa auto-check chainId — gabungkan (by id)
+    if auto:
+        q, checks = dims['mainnet-onchain'][1], dims['mainnet-onchain'][2]
+        have = {c.get('id') for c in checks}
+        dims['mainnet-onchain'] = ('mainnet-onchain', q, [a for a in auto if a['id'] not in have] + checks)
     L = [f'# {proj["name"].upper()} — AUDIT — {time.strftime("%Y-%m-%d %H:%M")}',
          f'root: `{root}` | chain: {proj.get("chain")} | network: {proj.get("network", "?")} | spec {SPEC}', '',
          '| dimension | verdict | ok/broken/unv |', '|---|---|---|']
@@ -489,8 +539,10 @@ def main():
         die(__doc__)
     cmd, args = a[0], a[1:]
     if cmd == 'list-chains':
-        for ch in CHAINS:
-            print(f'{ch:8} {len(TEMPLATES[ch])} template files')
+        print(f'{"network":12} {"family":8} {"chain_id":9} {"currency":9} rpc')
+        for name, n in NETWORKS.items():
+            print(f'{name:12} {n["family"]:8} {str(n.get("chain_id", "-")):9} {n.get("currency", "-"):9} {n.get("rpc", "(blueprint must provide)")}')
+        print(f'\ngeneric families (blueprint supplies everything): {", ".join(CHAINS)}')
         return
     if cmd == 'selftest':
         sys.exit(cmd_selftest())
@@ -507,8 +559,10 @@ def main():
         die(f'blueprint not valid JSON: {e}')
     if bp.get('spec') != SPEC:
         die(f'blueprint spec {bp.get("spec")!r} != {SPEC!r}')
+    bp['_path'] = os.path.realpath(cfg[0])
     if cmd == 'init':
-        cmd_init(bp, next((cfg[i + 1] for i, x in enumerate(cfg) if x == '--target'), None), '--force' in args)
+        tgt = args[args.index('--target') + 1] if '--target' in args else None
+        cmd_init(bp, tgt, '--force' in args)
     elif cmd == 'check':
         only = None
         if '--only' in args:

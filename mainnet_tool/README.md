@@ -1,7 +1,28 @@
 # mainnet_tool
 
-Builder + auditor untuk project crypto/web3, jaringan apapun (solana / evm / web).
+Builder + auditor untuk project crypto/web3, jaringan apapun.
 Satu file Python, stdlib saja, tidak menyentuh folder lain.
+
+## Jaringan terdaftar (chainId & RPC diverifikasi live, 22 Nov 2026)
+
+| network | family | chain id | gas | explorer | public rpc |
+|---|---|---|---|---|---|
+| `solana` | solana | - | SOL | solscan.io | api.mainnet-beta.solana.com |
+| `eth` | evm | 1 | ETH | etherscan.io | ethereum-rpc.publicnode.com |
+| `bsc` | evm | 56 | BNB | bscscan.com | bsc-rpc.publicnode.com |
+| `robinhood` | evm | 4663 | ETH | robinhoodchain.blockscout.com | rpc.mainnet.chain.robinhood.com |
+| `elysium` | evm | 1339 | LAVA | blockscout.elysiumchain.tech | rpc.elysiumchain.tech |
+| `evm` | evm | (isi sendiri) | - | - | blueprint wajib isi `build.vars.RPC_URL` + `CHAIN_ID` |
+
+Catatan penting:
+- **Tabrakan nama "Elysium"**: yang terdaftar = Vulcan Forged (1339/LAVA). Ada chain lain
+  bernama Elysium dari Kinetiq (99901, gas HYPE, HyperEVM L2) — untuk itu pakai chain `evm`
+  + rpc/chainId sendiri, dan selalu verifikasi dengan `eth_chainId` sebelum signing.
+- **Robinhood public RPC menolak User-Agent python** — tool ini sudah pakai UA browser;
+  kalau pakai library lain dan dapat 403, itu sebabnya. Untuk produksi pakai Alchemy
+  (rekomendasi resmi Robinhood).
+- Auto-check `mainnet-onchain` memverifikasi chain id yang benar per jaringan
+  (salah network = BROKEN, bukan UNVERIFIED).
 
 Dibangun dari pola yang sudah terbukti: `lord.py` (ops deterministik: file/grep/rpc/run),
 `codetool.py` (scaffold dari template + check), `glm-audit.py` (disiplin usage + laporan jujur).

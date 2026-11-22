@@ -1,0 +1,33 @@
+{
+  "spec": "mainnet-tool/1",
+  "project": {
+    "name": "my-robinhood-app",
+    "chain": "robinhood",
+    "network": "mainnet",
+    "desc": "tokenized stocks registry",
+    "root": "my-robinhood-app"
+  },
+  "build": { "chain": "robinhood", "target": "my-robinhood-app" },
+  "dimensions": [
+    {
+      "id": "mainnet-onchain",
+      "checks": [
+        { "id": "onchain/block-live", "type": "rpc", "url": "https://rpc.mainnet.chain.robinhood.com",
+          "method": "eth_blockNumber", "params": [] }
+      ]
+    },
+    {
+      "id": "resource-github-hf",
+      "checks": [
+        { "id": "res/orbit-docs", "type": "http", "url": "https://docs.robinhood.com/chain/connecting/", "expect_status": 200 }
+      ]
+    },
+    {
+      "id": "fitur-berfungsi",
+      "checks": [
+        { "id": "fitur/chainid-guard", "type": "grep", "pattern": "WRONG NETWORK|EXPECTED_CHAIN_ID", "path": "scripts/deploy.ts", "min_count": 2 },
+        { "id": "fitur/contract", "type": "files", "patterns": ["contracts/*.sol"], "expect": "any_exist" }
+      ]
+    }
+  ]
+}
