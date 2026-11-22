@@ -58,7 +58,9 @@ DEFAULT_DIMENSIONS = [
     ('docker', 'apakah deployment container siap?',
      [{'id': 'docker/presence', 'type': 'docker'}]),
     ('implementasi', 'apakah implementasi meninggalkan bukti jalan (log/build)?',
-     [{'id': 'impl/artifacts', 'type': 'files', 'patterns': ['*.log', 'dist/*', 'build/*', 'out/*'], 'expect': 'any_exist'}]),
+     [{'id': 'impl/artifacts', 'type': 'files', 'patterns': ['*.log', 'dist/*', 'build/*', 'out/*'], 'expect': 'any_exist'},
+      {'id': 'impl/no-unrendered-vars', 'type': 'grep', 'pattern': r'\{\{', 'path': '.', 'max_count': 0},
+      {'id': 'impl/no-template-literal-names', 'type': 'files', 'patterns': ['**/{{*'], 'expect': 'none_exist'}]),
     ('mainnet-onchain', 'apakah target on-chain hidup?',
      [{'id': 'onchain/manual', 'type': 'manual', 'question': 'auto-check chainId aktif kalau project.chain ada di networks.json'}]),
     ('api-kebutuhan', 'apakah API eksternal yang dibutuhkan tersedia?',
@@ -219,6 +221,24 @@ def cmd_init(bp, target, force, git):
     target = os.path.realpath(target)
     if os.path.exists(target) and os.listdir(target) and not force:
         die(f'target {target} exists and is not empty (use --force)')
+    if force and os.path.exists(os.path.join(CACHE, 'last-init.json')):
+        try:
+            prev = json.load(open(os.path.join(CACHE, 'last-init.json')))
+            if prev.get('target') == target:
+                removed = 0
+                for f in prev.get('created', []):
+                    p = os.path.join(target, f)
+                    if os.path.isfile(p):
+                        os.remove(p)
+                        removed += 1
+                # bersihkan direktori kosong yang tertinggal
+                for cur, dirs, files in os.walk(target, topdown=False):
+                    if not os.listdir(cur) and cur != target:
+                        os.rmdir(cur)
+                if removed:
+                    print(f'force: removed {removed} files from previous init (user files untouched)')
+        except (OSError, ValueError):
+            pass
     vars = {'NAME': bp['project']['name'], 'DESC': bp['project'].get('desc', 'web3 project'),
             'CONTRACT': re.sub(r'[^A-Za-z0-9]', '', bp['project']['name'].title()),
             'RPC_URL': net.get('rpc', ''), 'CHAIN_ID': net.get('chain_id', ''),
@@ -234,7 +254,7 @@ def cmd_init(bp, target, force, git):
         rel = os.path.relpath(cur, src)
         for f in files:
             sp = os.path.join(cur, f)
-            relf = os.path.normpath(os.path.join(render(rel, vars), f)) if rel != '.' else f
+            relf = render(os.path.normpath(os.path.join(rel, f)), vars)
             dp = os.path.join(target, relf)
             os.makedirs(os.path.dirname(dp) or target, exist_ok=True)
             if f.endswith(TEXT_EXT) or f.startswith('.env'):
@@ -249,6 +269,15 @@ def cmd_init(bp, target, force, git):
         made.append('LICENSE')
     json.dump({'target': target, 'chain': chain, 'created': made, 'when': time.strftime('%Y-%m-%d %H:%M')},
               open(os.path.join(CACHE, 'last-init.json'), 'w'))
+    # absolute-mode guard: scaffold yang masih mengandung template var = bug render, gagalkan
+    leftovers = []
+    for relf in made:
+        p = os.path.join(target, relf)
+        if os.path.isfile(p) and relf.endswith(TEXT_EXT) and '{{' in open(p, errors='replace').read():
+            leftovers.append(relf)
+    if leftovers:
+        shutil.rmtree(target)
+        die(f'render incomplete, target REMOVED (this is a tool bug — report it): {leftovers}')
     print(f'init: {len(made)} files -> {target} (chain={chain}, family={family})')
     for m in sorted(made):
         print('  +', m)
@@ -343,6 +372,33 @@ def run_check(c, root, slow_ok):
             kind = c.get('kind', 'models')
             r = Net.get(f'https://huggingface.co/api/{kind}/{c["id"]}')
             return ('WORKS' if r['status'] == 200 else 'BROKEN', f'HF {kind}/{c["id"]}: HTTP {r["status"]}{latency(r)}')
+        if t == 'registry':
+            eco, pkg = c['ecosystem'], c['package']
+            url = {'npm': f'https://registry.npmjs.org/{pkg}',
+                  'pypi': f'https://pypi.org/pypi/{pkg}/json',
+                  'crates': f'https://crates.io/api/v1/crates/{pkg}'}[eco]
+            r = Net.get(url)
+            if r.get('status') != 200:
+                return ('BROKEN', f'{eco}/{pkg}: HTTP {r.get("status")}')
+            try:
+                d = json.loads(r['body'])
+            except ValueError:
+                return ('BROKEN', f'{eco}/{pkg}: body bukan JSON')
+            if eco == 'npm' and c.get('dist_tag'):
+                ver = d.get('dist-tags', {}).get(c['dist_tag'])
+                if not ver:
+                    return ('BROKEN', f'npm/{pkg}: dist-tag {c["dist_tag"]!r} tidak ada di {sorted(d.get("dist-tags", {}))}')
+            else:
+                ver = {'npm': lambda: d.get('dist-tags', {}).get('latest'),
+                       'pypi': lambda: d.get('info', {}).get('version'),
+                       'crates': lambda: d.get('crate', {}).get('max_stable_version')}[eco]()
+            ok = True
+            if c.get('min_version') and ver:
+                try:
+                    ok = [int(x) for x in ver.split('.')[0:2]] >= [int(x) for x in c['min_version'].split('.')[0:2]]
+                except ValueError:
+                    ok = False
+            return ('WORKS' if ok else 'BROKEN', f'{eco}/{pkg}: {c.get("dist_tag", "latest")} {ver} (want >= {c.get("min_version", "any")}){latency(r)}')
         if t == 'docker':
             files = [f for f in ('Dockerfile', 'docker-compose.yml', 'compose.yaml') if os.path.exists(tp(f))]
             if c.get('expect') == 'none' or not files:

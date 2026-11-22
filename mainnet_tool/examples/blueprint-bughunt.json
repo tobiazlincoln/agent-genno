@@ -1,0 +1,75 @@
+{
+  "spec": "mainnet-tool/2",
+  "project": {
+    "name": "bughunt",
+    "chain": "elysium",
+    "network": "mainnet",
+    "desc": "tes semua tipe check",
+    "root": "my-elysium-app"
+  },
+  "build": { "chain": "elysium", "target": "my-elysium-app" },
+  "dimensions": [
+    {
+      "id": "tipe-files",
+      "question": "files: all/any/none + nama file ter-render benar",
+      "checks": [
+        { "id": "files/contract-nama-benar", "type": "files", "patterns": ["contracts/*.sol"], "expect": "any_exist" },
+        { "id": "files/tidak-ada-literal", "type": "files", "patterns": ["contracts/{{*"], "expect": "none_exist" }
+      ]
+    },
+    {
+      "id": "tipe-grep",
+      "checks": [
+        { "id": "grep/chainid", "type": "grep", "pattern": "EXPECTED_CHAIN_ID", "path": "scripts/deploy.ts", "min_count": 1 },
+        { "id": "grep/harus-gagal", "type": "grep", "pattern": "zzz-tidak-ada", "path": "scripts/deploy.ts", "min_count": 1 }
+      ]
+    },
+    {
+      "id": "tipe-command",
+      "checks": [
+        { "id": "cmd/ok", "type": "command", "command": "node --version", "expect_exit": 0 },
+        { "id": "cmd/gagal", "type": "command", "command": "exit 3", "expect_exit": 0 }
+      ]
+    },
+    {
+      "id": "tipe-http",
+      "checks": [
+        { "id": "http/ok", "type": "http", "url": "https://www.helius.dev/docs/privacy", "expect_status": 200 },
+        { "id": "http/404", "type": "http", "url": "https://www.helius.dev/tidak-ada-xyz", "expect_status": 200 }
+      ]
+    },
+    {
+      "id": "tipe-rpc",
+      "checks": [
+        { "id": "rpc/chainid-ok", "type": "rpc", "url": "https://rpc.elysiumchain.tech", "method": "eth_chainId", "params": [], "expect_result": "0x53b" },
+        { "id": "rpc/chainid-salah", "type": "rpc", "url": "https://rpc.elysiumchain.tech", "method": "eth_chainId", "params": [], "expect_result": "0x1" }
+      ]
+    },
+    {
+      "id": "tipe-github",
+      "checks": [
+        { "id": "gh/ok", "type": "github", "repo": "helius-labs/privacy-rings", "expect_active_within_days": 7 },
+        { "id": "gh/matikan-cek", "type": "github", "repo": "bitcoin/bitcoin", "expect_active_within_days": 1 }
+      ]
+    },
+    {
+      "id": "tipe-huggingface",
+      "checks": [
+        { "id": "hf/ok", "type": "huggingface", "kind": "models", "id": "sentence-transformers/all-MiniLM-L6-v2" },
+        { "id": "hf/tidak-ada", "type": "huggingface", "kind": "models", "id": "zzz/tidak-ada-xyz" }
+      ]
+    },
+    {
+      "id": "tipe-registry",
+      "checks": [
+        { "id": "reg/npm-disttag", "type": "registry", "ecosystem": "npm", "package": "@heliuslabs/zolana", "dist_tag": "alpha", "min_version": "0.8" },
+        { "id": "reg/npm-paket-tidak-ada", "type": "registry", "ecosystem": "npm", "package": "zzz-tidak-ada-xyz-pkg" },
+        { "id": "reg/pypi", "type": "registry", "ecosystem": "pypi", "package": "requests", "min_version": "2.30" }
+      ]
+    },
+    {
+      "id": "tipe-manual",
+      "checks": [ { "id": "manual/ok", "type": "manual", "question": "placeholder" } ]
+    }
+  ]
+}
