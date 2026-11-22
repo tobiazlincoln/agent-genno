@@ -1,0 +1,8 @@
+{
+  "killSwitch": false,
+  "dailyCapLamports": "100000000",
+  "payeeAllowlist": [
+    "Gh9ViMockupRecipientAddressForDaemonDryRunOnlyNotReal"
+  ],
+  "_note": "default policy — kill switch OFF; dry-run resolves recipient from allowlist[0]."
+}

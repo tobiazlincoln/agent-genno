@@ -1,0 +1,8 @@
+{
+  "killSwitch": false,
+  "dailyCapLamports": "100000000",
+  "payeeAllowlist": [
+    "Gh9ViMockupRecipientAddressForDaemonDryRunOnlyNotReal"
+  ],
+  "_note": "example policy — dailyCap 0.1 SOL, single mockup payee. Real config via --config."
+}

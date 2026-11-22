@@ -66,6 +66,78 @@
       ]
     },
     {
+      "id": "daemon",
+      "question": "apakah daemon autopilot chaff ter-type-check strict, dry-run+planner+policy jujur, dan TIDAK mengklaim eksekusi tx nyata?",
+      "checks": [
+        {
+          "id": "daemon/code",
+          "type": "files",
+          "patterns": [
+            "daemon/src/index.ts",
+            "daemon/src/planner.ts",
+            "daemon/src/policy.ts",
+            "daemon/src/execute.ts",
+            "daemon/src/shims.ts",
+            "daemon/src/client.ts",
+            "daemon/src/version-probe.ts"
+          ],
+          "expect": "all_exist"
+        },
+        {
+          "id": "daemon/deps",
+          "type": "files",
+          "patterns": [
+            "daemon/node_modules/@heliuslabs/zolana/package.json"
+          ],
+          "expect": "any_exist"
+        },
+        {
+          "id": "daemon/types-strict",
+          "type": "command",
+          "command": "npx tsc --noEmit --strict",
+          "cwd": "daemon",
+          "expect_exit": 0,
+          "timeout": 180,
+          "note": "proof #1: SDK 0.8.0-alpha typechecks strict — LocalKeys implements WalletKeys = ShieldedKeys & ProofAuthority; cast narrowing yang dulu melanggar ProofAuthority sudah dihapus."
+        },
+        {
+          "id": "daemon/dry-run-schedules",
+          "type": "command",
+          "command": "npx tsc --outDir dist && node dist/index.js --dry-run --seed chaff-determinism --amount 25000000",
+          "cwd": "daemon",
+          "expect_exit": 0,
+          "timeout": 180,
+          "note": "proof #2: 3-5 non-round parts, delay 1-72h, sum == amount; dry-run path imports NO zolana (offline-safe)."
+        },
+        {
+          "id": "daemon/planner-determinism",
+          "type": "command",
+          "command": "npx tsc --outDir dist && node --test dist/test/planner.test.js",
+          "cwd": "daemon",
+          "expect_exit": 0,
+          "timeout": 180,
+          "note": "proof #3: same seed => identical schedule; total preserved exactly; shape invariant (3-5 parts, 1-72h, non-round)."
+        },
+        {
+          "id": "daemon/policy-kill-refuses",
+          "type": "command",
+          "command": "npx tsc --outDir dist && node dist/index.js --dry-run --config config/policy.kill.json",
+          "cwd": "daemon",
+          "expect_exit": 2,
+          "timeout": 180,
+          "note": "proof #4: kill switch ON => policy refuses BEFORE planner runs; exit 2, no transaction built or signed."
+        },
+        {
+          "id": "daemon/no-real-exec-claimed",
+          "type": "grep",
+          "pattern": "WIRED BUT NOT EXECUTED|UNVERIFIED, not claimed",
+          "path": "daemon/README.md",
+          "min_count": 1,
+          "note": "honesty: --execute send path is wired but NOT executed this session; daemon must not claim real tx execution."
+        }
+      ]
+    },
+    {
       "id": "concept-narasi",
       "question": "apakah poros filosofi konsisten di semua artefak?",
       "checks": [
@@ -176,8 +248,15 @@
           "params": [
             [
               "2vKKud2t2Gt8CqxELm6PnH9p63dcca4aWvxXRZGBCUDNYVRbuWhzYNpYaP7YaD6ooH3xpJaYDWCQtZKhpfLvTCKn"
-            ]
-          ]
+            ],
+            {
+              "searchTransactionHistory": true
+            }
+          ],
+          "expect_fields": [
+            "value.0.slot"
+          ],
+          "note": "searchTransactionHistory=true supaya sig lama tetap terverifikasi; slot wajib ada — sig palsu = [null] = BROKEN"
         }
       ]
     },
@@ -303,6 +382,40 @@
           "pattern": "@heliuslabs/zolana",
           "path": "poc/package.json",
           "min_count": 1
+        }
+      ]
+    },
+    {
+      "id": "frontend",
+      "question": "apakah preview localhost landing + dapp jalan dan narasi jujur (batas tampil, tanpa kata terlarang)?",
+      "checks": [
+        {
+          "id": "frontend/files",
+          "type": "files",
+          "patterns": ["web/landing.html", "web/dapp.html"],
+          "expect": "all_exist"
+        },
+        {
+          "id": "frontend/localhost-200",
+          "type": "command",
+          "command": "curl -sf -o /dev/null http://localhost:8788/landing.html && curl -sf -o /dev/null http://localhost:8788/dapp.html",
+          "cwd": ".",
+          "expect_exit": 0
+        },
+        {
+          "id": "frontend/mockup-labeled",
+          "type": "grep",
+          "pattern": "MOCKUP",
+          "path": "web",
+          "min_count": 1
+        },
+        {
+          "id": "frontend/no-forbidden-claims",
+          "type": "grep",
+          "pattern": "anonim|untraceable|invisible",
+          "path": "web",
+          "min_count": 0,
+          "max_count": 0
         }
       ]
     }

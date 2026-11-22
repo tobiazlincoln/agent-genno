@@ -1,0 +1,7 @@
+node_modules/
+dist/
+state/*
+!state/.gitkeep
+.env
+.env.*
+*.cipher

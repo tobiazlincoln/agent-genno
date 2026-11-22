@@ -1,0 +1,8 @@
+{
+  "killSwitch": true,
+  "dailyCapLamports": "100000000",
+  "payeeAllowlist": [
+    "Gh9ViMockupRecipientAddressForDaemonDryRunOnlyNotReal"
+  ],
+  "_note": "kill switch ON — verifies the refusal path (proof #4)."
+}

@@ -1,0 +1,21 @@
+{
+  "name": "chaff-daemon",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "chaff local daemon — sync, policy, planner, version probe (dry-run default)",
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "typecheck": "tsc --noEmit --strict",
+    "dry-run": "node dist/index.js --dry-run",
+    "test": "node --test dist/test/"
+  },
+  "dependencies": {
+    "@heliuslabs/zolana": "alpha",
+    "@solana/kit": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^5.9.0"
+  }
+}
