@@ -59,7 +59,7 @@ DEFAULT_DIMENSIONS = [
      [{'id': 'docker/presence', 'type': 'docker'}]),
     ('implementasi', 'apakah implementasi meninggalkan bukti jalan (log/build)?',
      [{'id': 'impl/artifacts', 'type': 'files', 'patterns': ['*.log', 'dist/*', 'build/*', 'out/*'], 'expect': 'any_exist'},
-      {'id': 'impl/no-unrendered-vars', 'type': 'grep', 'pattern': r'\{\{', 'path': '.', 'max_count': 0},
+      {'id': 'impl/no-unrendered-vars', 'type': 'grep', 'pattern': r'\{\{', 'path': '.', 'min_count': 0, 'max_count': 0},
       {'id': 'impl/no-template-literal-names', 'type': 'files', 'patterns': ['**/{{*'], 'expect': 'none_exist'}]),
     ('mainnet-onchain', 'apakah target on-chain hidup?',
      [{'id': 'onchain/manual', 'type': 'manual', 'question': 'auto-check chainId aktif kalau project.chain ada di networks.json'}]),
@@ -75,6 +75,43 @@ DEFAULT_DIMENSIONS = [
 
 def die(m):
     sys.exit(f'mainnet: {m}')
+
+
+def arg_val(args, flag, cast=str):
+    if flag in args:
+        i = args.index(flag)
+        if i + 1 >= len(args):
+            die(f'{flag} butuh nilai')
+        try:
+            return cast(args[i + 1])
+        except ValueError:
+            die(f'{flag} harus {cast.__name__}: {args[i + 1]!r}')
+    return None
+
+
+def validate_blueprint(bp):
+    """Pesan error jelas untuk blueprint yang salah tulis — team akan membuat kesalahan, tool harus memandu."""
+    errs = []
+    if not isinstance(bp.get('project'), dict):
+        errs.append('section "project" (object) wajib ada')
+    else:
+        if not bp['project'].get('name'):
+            errs.append('project.name wajib ada')
+        if not bp['project'].get('chain'):
+            errs.append('project.chain wajib ada (solana/eth/bsc/robinhood/elysium/evm)')
+    if 'build' in bp and not isinstance(bp['build'], dict):
+        errs.append('section "build" harus object')
+    if 'dimensions' in bp and not isinstance(bp['dimensions'], list):
+        errs.append('section "dimensions" harus array')
+    for i, cat in enumerate(bp.get('dimensions', []) if isinstance(bp.get('dimensions'), list) else []):
+        if not isinstance(cat, dict) or not cat.get('id'):
+            errs.append(f'dimensions[{i}] harus object dengan "id"')
+    if errs:
+        die('blueprint invalid:\n  - ' + '\n  - '.join(errs))
+    chain = bp.get('build', {}).get('chain') or bp['project'].get('chain')
+    if chain and chain not in load_networks():
+        print(f'WARNING: chain {chain!r} tidak ada di networks.json (init akan gagal); '
+              f'cari: mainnet.py networks --find <nama>')
 
 
 def sha(s):
@@ -98,7 +135,10 @@ class Net:
         p = os.path.join(CACHE, sha(key) + '.json')
         if os.path.exists(p) and time.time() - os.path.getmtime(p) < ttl_h * 3600:
             Net.calls['cached'] += 1
-            return json.load(open(p))
+            out = json.load(open(p))
+            if isinstance(out, dict):
+                out['_from_cache'] = True
+            return out
         Net.calls['http'] += 1
         t0 = time.time()
         out = fn()
@@ -136,8 +176,12 @@ class Net:
 
 
 def latency(r):
-    ms = r.get('_latency_ms') if isinstance(r, dict) else None
-    return f' [{ms}ms]' if ms else ' [cached]'
+    if not isinstance(r, dict):
+        return ''
+    if r.get('_from_cache'):
+        return ' [cached]'
+    ms = r.get('_latency_ms')
+    return f' [{ms}ms]' if ms else ''
 
 
 # ---------------------------------------------------------------- chainlist (ethereum-lists)
@@ -243,6 +287,7 @@ def cmd_init(bp, target, force, git):
             'CONTRACT': re.sub(r'[^A-Za-z0-9]', '', bp['project']['name'].title()),
             'RPC_URL': net.get('rpc', ''), 'CHAIN_ID': net.get('chain_id', ''),
             'CURRENCY': net.get('currency', ''), 'EXPLORER': net.get('explorer', ''),
+            'AUTHOR': 'Your Name',
             'CHAIN_TITLE': (chain or family).replace('-', ' ').title()}
     vars.update(b.get('vars', {}))
     if family == 'evm' and not vars['RPC_URL']:
@@ -265,7 +310,7 @@ def cmd_init(bp, target, force, git):
     if git and shutil.which('git'):
         subprocess.run(['git', 'init', '-q'], cwd=target)
         open(os.path.join(target, 'LICENSE'), 'w').write(
-            f'MIT License (c) {time.strftime("%Y")} {{AUTHOR}}\n')
+            f'MIT License (c) {time.strftime("%Y")} {vars["AUTHOR"]}\n')
         made.append('LICENSE')
     json.dump({'target': target, 'chain': chain, 'created': made, 'when': time.strftime('%Y-%m-%d %H:%M')},
               open(os.path.join(CACHE, 'last-init.json'), 'w'))
@@ -308,6 +353,8 @@ def run_check(c, root, slow_ok):
         if t == 'grep':
             rx = re.compile(c['pattern'], re.I)
             base = tp(c.get('path', '.'))
+            if not os.path.exists(base):
+                return ('BROKEN', f'path not found: {c.get("path", ".")} (cek project.root di blueprint)')
             files = []
             if os.path.isfile(base):
                 files = [base]
@@ -414,7 +461,7 @@ def run_check(c, root, slow_ok):
         return ('UNVERIFIED', f'check error {type(e).__name__}: {e}')
 
 
-def cmd_check(bp, refresh, only):
+def cmd_check(bp, refresh, only, summary=False, json_path=None):
     if refresh:
         shutil.rmtree(CACHE, ignore_errors=True)
     proj = bp['project']
@@ -451,7 +498,7 @@ def cmd_check(bp, refresh, only):
     L = [f'# {proj["name"].upper()} — AUDIT — {time.strftime("%Y-%m-%d %H:%M")}',
          f'root: `{root}` | chain: {proj.get("chain")} | network: {proj.get("network", "?")} | spec {SPEC}', '',
          '| dimension | verdict | ok/broken/unv |', '|---|---|---|']
-    detail, broken_items, any_broken = [], [], False
+    detail, broken_items, any_broken, results = [], [], False, {}
     for cid, q, checks in dims.values():
         if only and cid not in only:
             continue
@@ -463,9 +510,22 @@ def cmd_check(bp, refresh, only):
         if bad:
             any_broken = True
             broken_items += [(cid, i, e) for i, v, e in rs if v == 'BROKEN']
+        results[cid] = {'verdict': verdict, 'ok': ok, 'broken': bad, 'unverified': unv, 'question': q,
+                        'checks': [{'id': i, 'verdict': v, 'evidence': e[:300]} for i, v, e in rs]}
         L.append(f'| {cid} | **{verdict}** | {ok}/{bad}/{unv} |')
         detail += [f'## {cid} — {q}', '', '| check | verdict | evidence |', '|---|---|---|']
         detail += [f'| {i} | {v} | {e.replace("|", "/")[:220]} |' for i, v, e in rs] + ['']
+    if only:
+        unknown = only - set(results)
+        if unknown:
+            print(f'WARNING: --only dimensi tak dikenal (diabaikan): {", ".join(sorted(unknown))}')
+            print(f'  yang tersedia: {", ".join(dims)}')
+    if json_path:
+        json.dump({'spec': SPEC, 'project': proj, 'root': root, 'generated': time.strftime('%Y-%m-%d %H:%M'),
+                   'result': 'FAIL' if any_broken else 'PASS', 'dimensions': results,
+                   'next_actions': [{'dimension': d, 'check': i, 'evidence': e} for d, i, e in broken_items]},
+                  open(json_path, 'w'), indent=1)
+        print(f'json -> {json_path}')
     if broken_items:
         L += ['', '## NEXT ACTIONS (dari temuan BROKEN, urut perbaikan)']
         for cid, i, e in broken_items:
@@ -475,10 +535,59 @@ def cmd_check(bp, refresh, only):
     out = os.path.join(HERE, 'reports', f'{proj["name"].upper()}-AUDIT.md')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, 'w').write('\n'.join(L) + '\n')
-    print('\n'.join(L[:5 + len(dims)]))
+    if summary:
+        print('\n'.join(L[:5 + len(results)]))
+    else:
+        print('\n'.join(L[:5 + len(dims)]))
     print(f'report -> {out}')
     print(f'RESULT: {"FAIL" if any_broken else "PASS"}')
-    return 1 if any_broken else 0
+    return (1 if any_broken else 0), results, broken_items, L
+
+
+def cmd_context(bp):
+    """Satu file handoff siap tempel ke AI agent mana pun (Claude/GLM/dll).
+    Tujuan: menghemat token mahal — agent membaca SATU file ringkas yang berisi
+    semua fakta terverifikasi + next actions, alih-alih mengeksplorasi repo."""
+    rc, results, broken_items, _ = cmd_check(bp, refresh=False, only=None, summary=True)
+    proj = bp['project']
+    net = load_networks().get(proj.get('chain'), {})
+    L = [f'# {proj["name"].upper()} — CONTEXT PACK untuk AI agent — {time.strftime("%Y-%m-%d %H:%M")}',
+         '',
+         '## Instruksi untuk agent',
+         'Semua klaim di file ini sudah TERVERIFIKASI dengan evidence (lihat laporan lengkap di path',
+         'paling bawah). Jangan eksplorasi ulang repo untuk hal yang sudah ada di sini. Mulai dari',
+         'NEXT ACTIONS. Setelah bekerja, minta user menjalankan ulang check dan context.',
+         '',
+         '## Project',
+         f'- nama: {proj["name"]} | chain: {proj.get("chain")} | network: {proj.get("network", "?")}',
+         f'- deskripsi: {proj.get("desc", "-")}',
+         f'- root: {os.path.realpath(proj.get("root") or proj["name"])}',
+         f'- blueprint: {bp.get("_path", "-")}',
+         '',
+         '## Fakta jaringan (registry, diverifikasi)',
+         f'- rpc: {net.get("rpc", "-")} | chain_id: {net.get("chain_id", "-")} | currency: {net.get("currency", "-")}',
+         f'- explorer: {net.get("explorer", "-")}']
+    if net.get('note'):
+        L.append(f'- catatan: {net["note"]}')
+    L += ['', '## Status audit (snapshot terbaru)', '| dimensi | verdict | ok/broken/unv |', '|---|---|---|']
+    L += [f'| {cid} | {r["verdict"]} | {r["ok"]}/{r["broken"]}/{r["unverified"]} |' for cid, r in results.items()]
+    if broken_items:
+        L += ['', '## NEXT ACTIONS (urut perbaikan — mulai dari sini)']
+        L += [f'- [{cid}/{i}] {e[:170]}' for cid, i, e in broken_items]
+    else:
+        L += ['', '## NEXT ACTIONS', '- tidak ada temuan BROKEN — lanjutkan fitur berikutnya dari blueprint']
+    L += ['', '## Perintah tool yang tersedia (untuk agent)',
+          '```',
+          'python3 mainnet_tool/mainnet.py check <blueprint> --summary   # audit ringkas',
+          'python3 mainnet_tool/mainnet.py check <blueprint> --json out.json  # audit terstruktur',
+          'python3 mainnet_tool/mainnet.py context <blueprint>         # file ini (refresh)',
+          'python3 mainnet_tool/mainnet.py init <blueprint> --force     # re-scaffold',
+          '```',
+          '',
+          f'Laporan lengkap + evidence: mainnet_tool/reports/{proj["name"].upper()}-AUDIT.md']
+    out = os.path.join(HERE, 'reports', f'{proj["name"].upper()}-CONTEXT.md')
+    open(out, 'w').write('\n'.join(L) + '\n')
+    print(f'context -> {out} ({os.path.getsize(out)} bytes — tempel file ini ke AI agent)')
 
 
 def cmd_selftest():
@@ -513,11 +622,8 @@ def main():
         die(__doc__)
     cmd, args = a[0], a[1:]
     if cmd in ('list-chains', 'networks'):
-        find = chainid = None
-        if '--find' in args:
-            find = args[args.index('--find') + 1]
-        if '--chainid' in args:
-            chainid = int(args[args.index('--chainid') + 1])
+        find = arg_val(args, '--find')
+        chainid = arg_val(args, '--chainid', int)
         cmd_networks(find, chainid)
         return
     if cmd == 'doctor':
@@ -526,6 +632,8 @@ def main():
     if cmd == 'selftest':
         sys.exit(cmd_selftest())
     if cmd == 'show':
+        if not args:
+            die('show butuh nama file contoh, mis: blueprint-solana.json (lihat: ls examples/)')
         p = os.path.join(HERE, 'examples', args[0])
         print(open(p).read() if os.path.exists(p) else f'no example {args[0]!r} in examples/')
         return
@@ -536,15 +644,22 @@ def main():
         bp = json.load(open(cfg[0]))
     except ValueError as e:
         die(f'blueprint not valid JSON: {e}')
+    if not isinstance(bp, dict):
+        die('blueprint harus JSON object')
     if bp.get('spec') != SPEC:
         die(f'blueprint spec {bp.get("spec")!r} != {SPEC!r} (rebuild v2 mengubah spec — update blueprint: ganti nilainya)')
+    validate_blueprint(bp)
     bp['_path'] = os.path.realpath(cfg[0])
     if cmd == 'init':
-        tgt = args[args.index('--target') + 1] if '--target' in args else None
+        tgt = arg_val(args, '--target')
         cmd_init(bp, tgt, '--force' in args, '--git' in args)
     elif cmd == 'check':
-        only = set(args[args.index('--only') + 1].split(',')) if '--only' in args else None
-        sys.exit(cmd_check(bp, '--refresh' in args, only))
+        only = set(arg_val(args, '--only').split(',')) if '--only' in args else None
+        rc, *_ = cmd_check(bp, '--refresh' in args, only,
+                           summary='--summary' in args, json_path=arg_val(args, '--json'))
+        sys.exit(rc)
+    elif cmd == 'context':
+        cmd_context(bp)
     else:
         die(f'unknown command {cmd!r}')
 
