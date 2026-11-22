@@ -1,0 +1,9 @@
+{
+ "latest": "0.9.0-alpha",
+ "versions": [
+  "0.0.0-stage",
+  "0.9.0-alpha"
+ ],
+ "desc": "TypeScript SDK for Solana Privacy Rings.",
+ "weekly": 1675
+}

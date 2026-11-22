@@ -1,0 +1,102 @@
+      Helius Pricing: Solana RPCs and APIs          {"prerender":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/stake","/stake/*","/contact","/contact/*","/careers","/careers/*","/docs","/docs/*","/benchmarks","/benchmarks/*","/api/*","/relay-RMqE/*","/.well-known/*","/*.md","/*.xml","/*.json","/*.txt","/blog?*"]}},{"not":{"selector_matches":"[data-no-prerender], [download], [target=_blank]"}}]},"eagerness":"moderate"}]}                                           
+      /**
+       * No-FOUC theme resolution. Mirrors the Next.js site's next-themes setup:
+       * attribute="class", storageKey "theme" (next-themes default),
+       * defaultTheme "dark" (production currently *forces* dark).
+       * Kept storage-compatible so the theme stays consistent across both
+       * sites during the migration.
+       */
+      ;(function () {
+        var dark = true
+        try {
+          var t = localStorage.getItem('theme')
+          if (t === 'light') dark = false
+          else if (t === 'system')
+            dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        } catch (e) {}
+        var root = document.documentElement
+        root.classList.toggle('dark', dark)
+        root.classList.toggle('light', !dark)
+        root.style.colorScheme = dark ? 'dark' : 'light'
+      })()
+      
+      /**
+       * Recover from a stale chunk graph — "Importing a module script failed."
+       * in PostHog (iOS Safari, /staking/calculator and /): typically a tab
+       * that outlived a deploy asking for a hashed chunk the new HTML no
+       * longer references, or a flaky mobile network. Two paths raise it:
+       *   - Vite's own `import()` wrapper → `vite:preloadError` (cancelable);
+       *   - an Astro island's component-url / renderer-url import, which the
+       *     island runtime retries once (`?astro-retry=`) and then reports as
+       *     `astro:hydration-error` (bubbles to document, detail.error).
+       * Only MODULE-LOAD failures qualify on the island path — a component
+       * that throws while rendering must keep surfacing as an error. Reload
+       * once per session to pick up the current graph; a second failure is
+       * left alone so it is still reported.
+       */
+      ;(function () {
+        var key = 'helius:preload-reloaded'
+        function isModuleLoadError(err) {
+          var msg = String((err && err.message) || err || '')
+          return (
+            /Importing a module script failed/i.test(msg) || // Safari
+            /Failed to fetch dynamically imported module/i.test(msg) || // Chrome
+            /error loading dynamically imported module/i.test(msg) // Firefox
+          )
+        }
+        function recoverOnce(event) {
+          try {
+            if (sessionStorage.getItem(key)) return
+            sessionStorage.setItem(key, '1')
+          } catch (e) {
+            return
+          }
+          event.preventDefault()
+          window.location.reload()
+        }
+        window.addEventListener('vite:preloadError', recoverOnce)
+        document.addEventListener('astro:hydration-error', function (event) {
+          var err = event.detail && event.detail.error
+          if (isModuleLoadError(err)) recoverOnce(event)
+        })
+      })()
+      
+      /**
+       * No-FOUC banner state (same pre-paint pattern as the theme snippet
+       * above). The announcement banner ships in the HTML unconditionally in
+       * its visible state; stamping   here — before any body markup is
+       * painted — lets CSS in Header.astro resolve the banner's visibility
+       * AND the header's 44px offset at first paint. Without this, the
+       * header controller ran after first paint on real networks, so every
+       * navigation for a dismissed visitor painted the banner, then removed
+       * it and slid the header up over 200ms — a visible jump at the top of
+       * every page load.
+       */
+      ;(function () {
+        try {
+          if (localStorage.getItem('privacy-rings-banner-dismissed') === 'true')
+            document.documentElement.classList.add('banner-dismissed')
+        } catch (e) {}
+      })()
+      
+      /**
+       * The consent dialog ships in every page's HTML but stays `display:none`
+       * until   carries `needs-consent`. Unlike the theme/announcement
+       * snippets, visibility is NOT decided pre-paint: whether the banner is
+       * shown depends on the visitor's region (production shows it only in
+       * California), which a static, edge-cached page can't know at paint time.
+       * The ConsentBanner body script resolves region via /api/consent-region
+       * and reveals the banner then — no layout shift, since the dialog is
+       * fixed-positioned. This queue is still defined here in   so per-page
+       * hooks (the 404 `not_found` event, the pricing flag reveal) can register
+       * regardless of script order. Drained by the ConsentBanner loader once
+       * (and only if) consent loads PostHog; never fires otherwise.
+       */
+      ;(function () {
+        window.__phCallbacks = window.__phCallbacks || []
+        window.__phReady = function (cb) {
+          if (window.__phInitialized && window.posthog) cb(window.posthog)
+          else window.__phCallbacks.push(cb)
+        }
+      })()
+      *,:before,:after,::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:#3b82f680;--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }*,:before,:after{box-sizing:border-box;border-style:solid;border-width:0;border-color:var(--gray-200)}:before,:after{--tw-content:""}html,:host{-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;line-height:1.5;font-family:var(--font-geist-sans);font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{line-height:inherit;margin:0}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--font-geist-mono);font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-feature-settings:inherit;font-variation-settings:inherit;font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:#0000;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dl,dd,h1,h2,h3,h4,h5,h6,hr,figure,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}ol,ul,menu{margin:0;padding:0;list-style:none}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:var(--gray-400)}input::placeholder,textarea::placeholder{opacity:1;color:var(--gray-400)}button,[role=button]{cursor:pointer}:disabled{cursor:default}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}:root{--font-geist-sans:"Geist Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;--font-geist-mono:"Geist Mono", ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, monospace;--font-lausanne:"TWK Lausanne Pan", var(--font-geist-sans);--primary-lightest:#ff664d;--primary-lighter:#ea4e33;--primary-light:#e84125;--primary-dark:#32120d;--primary-darker:#32120d;--primary-darkest:#220c08;--gray-50:#fafafa;--gray-100:#f4f4f5;--gray-200:#e3e3e8;--gray-300:#d3d3d9;--gray-400:#9f9fac;--gray-500:#7d7d8c;--gray-600:#50505d;--gray-700:#3e3e47;--gray-800:#26262b;--gray-900:#17171c;--gray-950:#111113;--gray-1000:#09090b;--gray-1100:#000;--background:0 0% 100%;--foreground:222.2 84% 4.9%;--card:240 5% 96%;--card-foreground:222.2 84% 4.9%;--popover:0 0% 100%;--popover-foreground:222.2 84% 4.9%;--primary:222.2 47.4% 11.2%;--primary-foreground:210 40% 98%;--secondary:210 40% 96.1%;--secondary-foreground:222.2 47.4% 11.2%;--muted:210 40% 96.1%;--muted-foreground:215.4 16.3% 46.9%;--accent:210 40% 96.1%;--accent-foreground:222.2 47.4% 11.2%;--destructive:0 84.2% 60.2%;--destructive-foreground:210 40% 98%;--border:240 6% 90%;--input:214.3 31.8% 91.4%;--ring:222.2 84% 4.9%;--radius:.75rem;--info:217 82% 8%;--success:148 92% 6%;--warning:42 63% 56%;--error:12 75% 9%;--shiki-foreground:#f8f8f2;--shiki-background:#17171c;--shiki-token-constant:#f8f8f2;--shiki-token-string:#f1fa8c;--shiki-token-comment:#6272a4;--shiki-token-keyword:#de489e;--shiki-token-parameter:#f8f8f2;--shiki-token-function:#54bc32;--shiki-token-string-expression:#f1fa8c;--shiki-token-punctuation:#f8f8f2;--shiki-token-link:#f8f8f2;--prose-body:var(--gray-900);--prose-headings:var(--gray-900);--prose-links:var(--primary-light);--prose-bold:hsl(var(--foreground));--prose-counters:hsl(var(--foreground));--prose-bullets:hsl(var(--foreground));--prose-hr:hsl(var(--foreground));--prose-quotes:hsl(var(--foreground));--prose-quote-borders:hsl(var(--border));--prose-captions:hsl(var(--foreground));--prose-code:var(--gray-900);--prose-pre-code:hsl(var(--card-foreground));--prose-pre-bg:hsl(var(--card));--prose-th-borders:hsl(var(--border));--prose-td-borders:hsl(var(--border));--sidebar-background:0 0% 98%;--sidebar-foreground:240 5.3% 26.1%;--sidebar-primary:240 5.9% 10%;--sidebar-primary-foreground:0 0% 98%;--sidebar-accent:240 4.8% 95.9%;--sidebar-accent-foreground:240 5.9% 10%;--sidebar-border:220 13% 91%;--sidebar-ring:217.2 91.2% 59.8%}.\!dark{--background:0 0% 0%!important;--foreground:0 2% 98%!important;--card:240 12% 4%!important;--card-foreground:0 2% 98%!important;--popover:240 10% 6% / 98%!important;--popover-foreground:0 2% 98%!important;--primary:9 81% 53%!important;--primary-foreground:0 2% 98%!important;--secondary:240 7% 16%!important;--secondary-foreground:0 2% 98%!important;--muted:240 7% 26% / 20%!important;--muted-foreground:240 5% 64.9%!important;--accent:240 6% 10% / 95%!important;--accent-foreground:0 2% 98%!important;--destructive:0 62.8% 30.6%!important;--destructive-foreground:210 40% 98%!important;--border:240 7% 26%!important;--input:217.2 32.6% 17.5%!important;--ring:240 8% 10%!important;--info:217 82% 8%!important;--success:148 92% 6%!important;--warning:42 88% 7%!important;--error:12 75% 9%!important;--shiki-foreground:#f8f8f2!important;--shiki-background:#17171c!important;--shiki-token-constant:#f8f8f2!important;--shiki-token-string:#f1fa8c!important;--shiki-token-comment:#6272a4!important;--shiki-token-keyword:#de489e!important;--shiki-token-parameter:#f8f8f2!important;--shiki-token-function:#54bc32!important;--shiki-token-string-expression:#f1fa8c!important;--shiki-token-punctuation:#f8f8f2!important;--shiki-token-link:#f8f8f2!important;--prose-body:var(--gray-300)!important;--prose-headings:var(--gray-50)!important;--prose-links:var(--primary-light)!important;--prose-bold:hsl(var(--foreground))!important;--prose-counters:hsl(var(--foreground))!important;--prose-bullets:hsl(var(--foreground))!important;--prose-hr:hsl(var(--foreground))!important;--prose-quotes:hsl(var(--foreground))!important;--prose-quote-borders:hsl(var(--border))!important;--prose-captions:hsl(var(--foreground))!important;--prose-code:var(--gray-300)!important;--prose-pre-code:hsl(var(--card-foreground))!important;--prose-pre-bg:hsl(var(--card))!important;--prose-th-borders:hsl(var(--border))!important;--prose-td-borders:hsl(var(--border))!important;--sidebar-background:0 0% 0%!important;--sidebar-foreground:240 4.8% 95.9%!important;--sidebar-primary:224.3 76.3% 48%!important;--sidebar-primary-foreground:0 0% 100%!important;--sidebar-accent:240 3.7% 15.9%!important;--sidebar-accent-foreground:240 4.8% 95.9%!important;--sidebar-border:240 3.7% 15.9%!important;--sidebar-ring:217.2 91.2% 59.8%!important}.dark{--background:0 0% 0%;--foreground:0 2% 98%;--card:240 12% 4%;--card-foreground:0 2% 98%;--popover:240 10% 6% / 98%;--popover-foreground:0 2% 98%;--primary:9 81% 53%;--primary-foreground:0 2% 98%;--secondary:240 7% 16%;--secondary-foreground:0 2% 98%;--muted:240 7% 26% / 20%;--muted-foreground:240 5% 64.9%;--accent:240 6% 10% / 95%;--accent-foreground:0 2% 98%;--destructive:0 62.8% 30.6%;--destructive-foreground:210 40% 98%;--border:240 7% 26%;--input:217.2 32.6% 17.5%;--ring:240 8% 10%;--info:217 82% 8%;--success:148 92% 6%;--warning:42 88% 7%;--error:12 75% 9%;--shiki-foreground:#f8f8f2;--shiki-background:#17171c;--shiki-token-constant:#f8f8f2;--shiki-token-string:#f1fa8c;--shiki-token-comment:#6272a4;--shiki-token-keyword:#de489e;--shiki-token-parameter:#f8f8f2;--shiki-token-function:#54bc32;--shiki-token-string-expression:#f1fa8c;--shiki-token-punctuation:#f8f8f2;--shiki-token-link:#f8f8f2;--prose-body:var(--gray-300);--prose-headings:var(--gray-50);--prose-links:var(--primary-light);--prose-bold:hsl(var(--foreground));--prose-counters:hsl(var(--foreground));--prose-bullets:hsl(var(--foreground));--prose-hr:hsl(var(--foreground));--prose-quotes:hsl(var(--foreground));--prose-quote-borders:hsl(var(--border));--prose-captions:hsl(var(--foreground));--prose-code:var(--gray-300);--prose-pre-code:hsl(var(--card-foreground));--prose-pre-bg:hsl(var(--card));--prose-th-borders:hsl(var(--border));--prose-td-borders:hsl(var(--border));--sidebar-background:0 0% 0%;--sidebar-foreground:240 4.8% 95.9%;--sidebar-primary:224.3 76.3% 48%;--sidebar-primary-foreground:0 0% 100%;--sidebar-accent:240 3.7% 15.9%;--sidebar-accent-foreground:240 4.8% 95.9%;--sidebar-border:240 3.7% 15.9%;--sidebar-ring:217.2 91.2% 59.8%}*{overflow-wrap:break-word;border-color:hsla(var(--border));scroll-margin-top:6rem}body{background-color:hsl(var(--background));font-family:var(--font-geist-sans);color:hsl(var(--foreground));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}.container{width:100%;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}@media (width>=40rem){.container{max-width:40rem;padding-left:1rem;padding-right:1rem}}@media (width>=48rem){.container{max-width:48rem;padding-left:2rem;padding-right:2rem}}@media (width>=64rem){.container{max-width:64rem;padding-left:2rem;padding-right:2rem}}@media (width>=80rem){.container{max-width:80rem;padding-left:2rem;padding-right:2rem}}.prose{color:var(--tw-prose-body);max-width:65ch}.prose :where(p):not(:where([class~=not-prose],[class~=not-prose] *)){margin-top:1.25em;margin-bottom:1.25em}.prose :where([class~=lead]):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-lead);margin-top:1.2em;margin-bottom:1.2em;font-size:1.25em;line-height:1.6}.prose :where(a):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-links);font-weight:400;text-decoration:underline}.prose :where(a):not(:where([class~=not-prose],[class~=not-prose] *)):hover{color:var(--primary-lightest)}.prose :where(strong):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-bold);font-weight:600}.prose :where(a strong):not(:where([class~=not-prose],[class~=not-prose] *)),.prose :where(blockquote strong):not(:where([class~=not-prose],[class~=not-prose] *)),.prose :where(thead th strong):not(:where([class~=not-prose],[class~=not-prose] *)){color:inherit}.prose :where(ol):not(:where([class~=not-prose],[class~=not-prose] *)){margin-top:1.25em;margin-bottom:1.25em;padding-inline-start:1.625em;list-style-type:decimal}.prose :where(ol[type=A]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:upper-alpha}.prose :where(ol[type=a]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:lower-alpha}.prose :where(ol[type=A s]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:upper-alpha}.prose :where(ol[type=a s]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:lower-alpha}.prose :where(ol[type=I]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:upper-roman}.prose :where(ol[type=i]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:lower-roman}.prose :where(ol[type=I s]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:upper-roman}.prose :where(ol[type=i s]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:lower-roman}.prose :where(ol[type="1"]):not(:where([class~=not-prose],[class~=not-prose] *)){list-style-type:decimal}.prose :where(ul):not(:where([class~=not-prose],[class~=not-prose] *)){margin-top:1.25em;margin-bottom:1.25em;padding-inline-start:1.625em;list-style-type:disc}.prose :where(ol>li):not(:where([class~=not-prose],[class~=not-prose] *))::marker{color:var(--tw-prose-counters);font-weight:400}.prose :where(ul>li):not(:where([class~=not-prose],[class~=not-prose] *))::marker{color:var(--tw-prose-bullets)}.prose :where(dt):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-headings);margin-top:1.25em;font-weight:600}.prose :where(hr):not(:where([class~=not-prose],[class~=not-prose] *)){border-color:var(--tw-prose-hr);border-top-width:1px;margin-top:3em;margin-bottom:3em}.prose :where(blockquote):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-quotes);border-inline-start-width:.25rem;border-inline-start-color:var(--tw-prose-quote-borders);quotes:"“""”""‘""’";margin-top:1.6em;margin-bottom:1.6em;padding-inline-start:1em;font-style:italic;font-weight:500}.prose :where(blockquote p:first-of-type):not(:where([class~=not-prose],[class~=not-prose] *)):before{content:open-quote}.prose :where(blockquote p:last-of-type):not(:where([class~=not-prose],[class~=not-prose] *)):after{content:close-quote}.prose :where(h1):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-headings);font-size:2.25em;font-weight:450;line-height:1.11111;font-family:var(--font-lausanne);margin-top:0;margin-bottom:.888889em}.prose :where(h1 strong):not(:where([class~=not-prose],[class~=not-prose] *)){color:inherit;font-weight:900}.prose :where(h2):not(:where([class~=not-prose],[class~=not-prose] *)){color:var(--tw-prose-headings);font-size:1.5em;font-weight:450;line-height:1.33333;font-family:var(--font-lausanne);margin-top:2em;margin-bottom:1em}.prose :where(h2 strong):not(:where([class~=not-prose],[class~=not-prose] *)){color:inherit;font-weight:800}.prose :where(h3):not(:where([class~=

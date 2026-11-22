@@ -1,0 +1,9 @@
+finding-anonymous-ring-recipient-count-leak
+finding-bloom-filter-cycle
+finding-bloom-filter-size
+finding-distinguishable-output-dummy-digest
+finding-domain-separation-signature-algo
+finding-faerie-gold
+finding-gnark-fake-glv-underconstrained
+finding-merge-transact-output-tree-unbound
+finding-spend-linkability

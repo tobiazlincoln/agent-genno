@@ -1,0 +1,17 @@
+{
+ "latest": "3.5.0",
+ "versions": [
+  "2.2.0",
+  "2.2.1",
+  "2.2.2",
+  "3.0.0",
+  "3.1.0",
+  "3.2.0",
+  "3.3.0",
+  "3.4.0",
+  "3.4.1",
+  "3.5.0"
+ ],
+ "desc": "A Helius TypeScript SDK for building the future of Solana \u2014 DAS API, Sender, Webhooks, Enhanced WebSockets, ZK Compression, and Solana RPC primitives. Built on @solana/kit.",
+ "weekly": 28623
+}

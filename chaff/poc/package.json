@@ -1,0 +1,17 @@
+{
+  "name": "chaff-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "poc": "tsx run-poc.ts"
+  },
+  "dependencies": {
+    "@heliuslabs/zolana": "alpha",
+    "@solana/kit": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

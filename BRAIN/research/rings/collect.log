@@ -1,0 +1,207 @@
+phase 1: signatures
+  sigs: 25698 total (+15 new), reached 2026-11-21 04:16 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-20 18:36 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-20 06:41 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-19 18:21 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-19 05:37 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-18 16:26 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-18 04:09 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-17 16:22 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-17 04:53 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-16 18:22 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-16 10:27 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-16 01:20 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-15 17:06 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-15 01:09 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-14 10:10 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-13 20:36 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-13 08:33 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-12 22:50 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-12 12:55 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-11 22:49 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-11 11:42 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-10 22:25 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-09 04:42 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-07 11:52 UTC
+  sigs: 25698 total (+15 new), reached 2026-11-03 21:02 UTC
+  sigs: 25698 total (+15 new), reached 2026-10-27 22:10 UTC
+signatures: 25698 (2026-10-27 -> 2026-11-21 17:09 UTC), failed on chain: 14
+transactions fetched: 366 / 25698 (1.4%)
+phase 1b: deposit/withdraw signatures (fetched first)
+  vault accounts: 368 (1 SOL + 367 token)
+  vault 1/368: 5710 deposit/withdraw signatures
+  vault 26/368: 5890 deposit/withdraw signatures
+  vault 51/368: 5945 deposit/withdraw signatures
+  vault 76/368: 6016 deposit/withdraw signatures
+  vault 101/368: 6053 deposit/withdraw signatures
+  vault 126/368: 6126 deposit/withdraw signatures
+  vault 151/368: 6220 deposit/withdraw signatures
+  vault 176/368: 7190 deposit/withdraw signatures
+  vault 201/368: 7355 deposit/withdraw signatures
+  vault 226/368: 7403 deposit/withdraw signatures
+  vault 251/368: 7453 deposit/withdraw signatures
+  vault 276/368: 7509 deposit/withdraw signatures
+  vault 301/368: 7549 deposit/withdraw signatures
+  vault 326/368: 7594 deposit/withdraw signatures
+  vault 351/368: 7640 deposit/withdraw signatures
+  priority set: 7666 signatures, 0 vaults failed
+  priority: 7666 total, 7361 still to fetch
+phase 2: fetching 25334 transactions from 3 endpoints
+  53/25334 ok=53 bad=0 retries=18 1.8 tx/s eta 239 min | HTTP Error 429: Too Many Requests
+  106/25334 ok=106 bad=0 retries=35 1.8 tx/s eta 238 min | HTTP Error 429: Too Many Requests
+  159/25334 ok=157 bad=2 retries=57 1.8 tx/s eta 238 min | HTTP Error 429: Too Many Requests
+  212/25334 ok=210 bad=2 retries=71 1.8 tx/s eta 237 min | HTTP Error 429: Too Many Requests
+  262/25334 ok=260 bad=2 retries=92 1.7 tx/s eta 239 min | HTTP Error 429: Too Many Requests
+  318/25334 ok=314 bad=4 retries=111 1.8 tx/s eta 236 min | HTTP Error 429: Too Many Requests
+  366/25334 ok=362 bad=4 retries=133 1.7 tx/s eta 239 min | HTTP Error 429: Too Many Requests
+  418/25334 ok=414 bad=4 retries=152 1.7 tx/s eta 238 min | HTTP Error 429: Too Many Requests
+  472/25334 ok=466 bad=6 retries=171 1.7 tx/s eta 237 min | HTTP Error 429: Too Many Requests
+  524/25334 ok=518 bad=6 retries=189 1.7 tx/s eta 237 min | HTTP Error 429: Too Many Requests
+  569/25334 ok=563 bad=6 retries=214 1.7 tx/s eta 239 min | HTTP Error 429: Too Many Requests
+  625/25334 ok=617 bad=8 retries=232 1.7 tx/s eta 237 min | HTTP Error 429: Too Many Requests
+  672/25334 ok=664 bad=8 retries=253 1.7 tx/s eta 239 min | HTTP Error 429: Too Many Requests
+  727/25334 ok=719 bad=8 retries=271 1.7 tx/s eta 237 min | HTTP Error 429: Too Many Requests
+  782/25334 ok=772 bad=10 retries=290 1.7 tx/s eta 236 min | HTTP Error 429: Too Many Requests
+  835/25334 ok=825 bad=10 retries=308 1.7 tx/s eta 235 min | HTTP Error 429: Too Many Requests
+  884/25334 ok=874 bad=10 retries=329 1.7 tx/s eta 235 min | HTTP Error 429: Too Many Requests
+  935/25334 ok=923 bad=12 retries=350 1.7 tx/s eta 235 min | HTTP Error 429: Too Many Requests
+  990/25334 ok=978 bad=12 retries=366 1.7 tx/s eta 234 min | HTTP Error 429: Too Many Requests
+  1040/25334 ok=1028 bad=12 retries=387 1.7 tx/s eta 234 min | HTTP Error 429: Too Many Requests
+  1092/25334 ok=1078 bad=14 retries=408 1.7 tx/s eta 233 min | HTTP Error 429: Too Many Requests
+  1146/25334 ok=1132 bad=14 retries=423 1.7 tx/s eta 232 min | HTTP Error 429: Too Many Requests
+  1198/25334 ok=1184 bad=14 retries=441 1.7 tx/s eta 232 min | HTTP Error 429: Too Many Requests
+  1247/25334 ok=1231 bad=16 retries=464 1.7 tx/s eta 232 min | HTTP Error 429: Too Many Requests
+  1304/25334 ok=1288 bad=16 retries=477 1.7 tx/s eta 230 min | HTTP Error 429: Too Many Requests
+  1358/25334 ok=1342 bad=16 retries=487 1.7 tx/s eta 230 min | HTTP Error 429: Too Many Requests
+  1410/25334 ok=1392 bad=18 retries=497 1.7 tx/s eta 229 min | HTTP Error 429: Too Many Requests
+  1466/25334 ok=1448 bad=18 retries=507 1.7 tx/s eta 228 min | HTTP Error 429: Too Many Requests
+  1521/25334 ok=1503 bad=18 retries=523 1.7 tx/s eta 227 min | HTTP Error 429: Too Many Requests
+  1581/25334 ok=1561 bad=20 retries=534 1.8 tx/s eta 225 min | HTTP Error 429: Too Many Requests
+  1635/25334 ok=1615 bad=20 retries=545 1.8 tx/s eta 225 min | HTTP Error 429: Too Many Requests
+  1690/25334 ok=1670 bad=20 retries=556 1.8 tx/s eta 224 min | HTTP Error 429: Too Many Requests
+  1748/25334 ok=1726 bad=22 retries=568 1.8 tx/s eta 223 min | HTTP Error 429: Too Many Requests
+  1802/25334 ok=1780 bad=22 retries=584 1.8 tx/s eta 222 min | HTTP Error 429: Too Many Requests
+  1853/25334 ok=1831 bad=22 retries=596 1.8 tx/s eta 222 min | HTTP Error 429: Too Many Requests
+  1904/25334 ok=1880 bad=24 retries=608 1.8 tx/s eta 222 min | HTTP Error 429: Too Many Requests
+  1955/25334 ok=1931 bad=24 retries=619 1.8 tx/s eta 221 min | HTTP Error 429: Too Many Requests
+  2004/25334 ok=1980 bad=24 retries=630 1.8 tx/s eta 221 min | HTTP Error 429: Too Many Requests
+  2058/25334 ok=2032 bad=26 retries=641 1.8 tx/s eta 221 min | HTTP Error 429: Too Many Requests
+  2108/25334 ok=2082 bad=26 retries=652 1.8 tx/s eta 220 min | HTTP Error 429: Too Many Requests
+  2160/25334 ok=2134 bad=26 retries=663 1.8 tx/s eta 220 min | HTTP Error 429: Too Many Requests
+  2212/25334 ok=2184 bad=28 retries=674 1.8 tx/s eta 220 min | HTTP Error 429: Too Many Requests
+  2266/25334 ok=2238 bad=28 retries=684 1.8 tx/s eta 219 min | HTTP Error 429: Too Many Requests
+  2320/25334 ok=2292 bad=28 retries=694 1.8 tx/s eta 218 min | HTTP Error 429: Too Many Requests
+  2374/25334 ok=2344 bad=30 retries=705 1.8 tx/s eta 218 min | HTTP Error 429: Too Many Requests
+  2431/25334 ok=2401 bad=30 retries=715 1.8 tx/s eta 217 min | HTTP Error 429: Too Many Requests
+  2487/25334 ok=2457 bad=30 retries=726 1.8 tx/s eta 216 min | HTTP Error 429: Too Many Requests
+  2539/25334 ok=2507 bad=32 retries=737 1.8 tx/s eta 215 min | HTTP Error 429: Too Many Requests
+  2591/25334 ok=2559 bad=32 retries=748 1.8 tx/s eta 215 min | HTTP Error 429: Too Many Requests
+  2649/25334 ok=2617 bad=32 retries=758 1.8 tx/s eta 214 min | HTTP Error 429: Too Many Requests
+  2704/25334 ok=2670 bad=34 retries=774 1.8 tx/s eta 213 min | HTTP Error 429: Too Many Requests
+  2758/25334 ok=2724 bad=34 retries=793 1.8 tx/s eta 213 min | HTTP Error 429: Too Many Requests
+  2813/25334 ok=2779 bad=34 retries=803 1.8 tx/s eta 212 min | HTTP Error 429: Too Many Requests
+  2869/25334 ok=2833 bad=36 retries=818 1.8 tx/s eta 211 min | HTTP Error 429: Too Many Requests
+  2918/25334 ok=2882 bad=36 retries=840 1.8 tx/s eta 211 min | HTTP Error 429: Too Many Requests
+  2972/25334 ok=2936 bad=36 retries=856 1.8 tx/s eta 211 min | HTTP Error 429: Too Many Requests
+  3028/25334 ok=2990 bad=38 retries=874 1.8 tx/s eta 210 min | HTTP Error 429: Too Many Requests
+  3081/25334 ok=3043 bad=38 retries=889 1.8 tx/s eta 209 min | HTTP Error 429: Too Many Requests
+  3134/25334 ok=3094 bad=40 retries=909 1.8 tx/s eta 209 min | HTTP Error 429: Too Many Requests
+  3188/25334 ok=3148 bad=40 retries=926 1.8 tx/s eta 208 min | HTTP Error 429: Too Many Requests
+  3245/25334 ok=3205 bad=40 retries=938 1.8 tx/s eta 208 min | HTTP Error 429: Too Many Requests
+  3306/25334 ok=3264 bad=42 retries=948 1.8 tx/s eta 207 min | HTTP Error 429: Too Many Requests
+  3363/25334 ok=3321 bad=42 retries=958 1.8 tx/s eta 206 min | HTTP Error 429: Too Many Requests
+  3419/25334 ok=3377 bad=42 retries=974 1.8 tx/s eta 205 min | HTTP Error 429: Too Many Requests
+  3476/25334 ok=3432 bad=44 retries=991 1.8 tx/s eta 204 min | HTTP Error 429: Too Many Requests
+  3531/25334 ok=3487 bad=44 retries=1007 1.8 tx/s eta 204 min | HTTP Error 429: Too Many Requests
+  3587/25334 ok=3543 bad=44 retries=1020 1.8 tx/s eta 203 min | HTTP Error 429: Too Many Requests
+  3643/25334 ok=3597 bad=46 retries=1036 1.8 tx/s eta 202 min | HTTP Error 429: Too Many Requests
+  3700/25334 ok=3654 bad=46 retries=1049 1.8 tx/s eta 202 min | HTTP Error 429: Too Many Requests
+  3754/25334 ok=3708 bad=46 retries=1060 1.8 tx/s eta 201 min | HTTP Error 429: Too Many Requests
+  3813/25334 ok=3765 bad=48 retries=1075 1.8 tx/s eta 200 min | HTTP Error 429: Too Many Requests
+  3868/25334 ok=3820 bad=48 retries=1093 1.8 tx/s eta 200 min | HTTP Error 429: Too Many Requests
+  3921/25334 ok=3873 bad=48 retries=1109 1.8 tx/s eta 199 min | HTTP Error 429: Too Many Requests
+  3976/25334 ok=3926 bad=50 retries=1127 1.8 tx/s eta 199 min | HTTP Error 429: Too Many Requests
+  4028/25334 ok=3978 bad=50 retries=1144 1.8 tx/s eta 198 min | HTTP Error 429: Too Many Requests
+  4082/25334 ok=4032 bad=50 retries=1160 1.8 tx/s eta 198 min | HTTP Error 429: Too Many Requests
+  4134/25334 ok=4082 bad=52 retries=1180 1.8 tx/s eta 197 min | HTTP Error 429: Too Many Requests
+  4182/25334 ok=4130 bad=52 retries=1202 1.8 tx/s eta 197 min | HTTP Error 429: Too Many Requests
+  4235/25334 ok=4183 bad=52 retries=1218 1.8 tx/s eta 197 min | HTTP Error 429: Too Many Requests
+  4295/25334 ok=4241 bad=54 retries=1233 1.8 tx/s eta 196 min | HTTP Error 429: Too Many Requests
+  4347/25334 ok=4293 bad=54 retries=1252 1.8 tx/s eta 196 min | HTTP Error 429: Too Many Requests
+  4403/25334 ok=4349 bad=54 retries=1265 1.8 tx/s eta 195 min | HTTP Error 429: Too Many Requests
+  4451/25334 ok=4395 bad=56 retries=1288 1.8 tx/s eta 195 min | HTTP Error 429: Too Many Requests
+  4502/25334 ok=4446 bad=56 retries=1307 1.8 tx/s eta 194 min | HTTP Error 429: Too Many Requests
+  4550/25334 ok=4494 bad=56 retries=1329 1.8 tx/s eta 194 min | HTTP Error 429: Too Many Requests
+  4602/25334 ok=4544 bad=58 retries=1350 1.8 tx/s eta 194 min | HTTP Error 429: Too Many Requests
+  4657/25334 ok=4599 bad=58 retries=1367 1.8 tx/s eta 193 min | HTTP Error 429: Too Many Requests
+  4709/25334 ok=4651 bad=58 retries=1386 1.8 tx/s eta 193 min | HTTP Error 429: Too Many Requests
+  4762/25334 ok=4702 bad=60 retries=1406 1.8 tx/s eta 192 min | HTTP Error 429: Too Many Requests
+  4813/25334 ok=4753 bad=60 retries=1428 1.8 tx/s eta 192 min | HTTP Error 429: Too Many Requests
+  4866/25334 ok=4806 bad=60 retries=1447 1.8 tx/s eta 191 min | HTTP Error 429: Too Many Requests
+  4919/25334 ok=4857 bad=62 retries=1466 1.8 tx/s eta 191 min | HTTP Error 429: Too Many Requests
+  4970/25334 ok=4908 bad=62 retries=1488 1.8 tx/s eta 191 min | HTTP Error 429: Too Many Requests
+  5019/25334 ok=4957 bad=62 retries=1508 1.8 tx/s eta 190 min | HTTP Error 429: Too Many Requests
+  5067/25334 ok=5003 bad=64 retries=1532 1.8 tx/s eta 190 min | HTTP Error 429: Too Many Requests
+  5119/25334 ok=5055 bad=64 retries=1552 1.8 tx/s eta 190 min | HTTP Error 429: Too Many Requests
+  5169/25334 ok=5105 bad=64 retries=1571 1.8 tx/s eta 189 min | HTTP Error 429: Too Many Requests
+  5224/25334 ok=5158 bad=66 retries=1591 1.8 tx/s eta 189 min | HTTP Error 429: Too Many Requests
+  5276/25334 ok=5210 bad=66 retries=1609 1.8 tx/s eta 188 min | HTTP Error 429: Too Many Requests
+  5329/25334 ok=5263 bad=66 retries=1628 1.8 tx/s eta 188 min | HTTP Error 429: Too Many Requests
+  5382/25334 ok=5314 bad=68 retries=1648 1.8 tx/s eta 187 min | HTTP Error 429: Too Many Requests
+  5437/25334 ok=5369 bad=68 retries=1664 1.8 tx/s eta 187 min | HTTP Error 429: Too Many Requests
+  5487/25334 ok=5419 bad=68 retries=1685 1.8 tx/s eta 186 min | HTTP Error 429: Too Many Requests
+  5537/25334 ok=5467 bad=70 retries=1707 1.8 tx/s eta 186 min | HTTP Error 429: Too Many Requests
+  5591/25334 ok=5521 bad=70 retries=1724 1.8 tx/s eta 185 min | HTTP Error 429: Too Many Requests
+  5637/25334 ok=5567 bad=70 retries=1748 1.8 tx/s eta 185 min | HTTP Error 429: Too Many Requests
+  5689/25334 ok=5617 bad=72 retries=1769 1.8 tx/s eta 185 min | HTTP Error 429: Too Many Requests
+  5739/25334 ok=5667 bad=72 retries=1791 1.8 tx/s eta 184 min | HTTP Error 429: Too Many Requests
+  5792/25334 ok=5720 bad=72 retries=1808 1.8 tx/s eta 184 min | HTTP Error 429: Too Many Requests
+  5845/25334 ok=5771 bad=74 retries=1826 1.8 tx/s eta 183 min | HTTP Error 429: Too Many Requests
+  5899/25334 ok=5825 bad=74 retries=1843 1.8 tx/s eta 183 min | HTTP Error 429: Too Many Requests
+  5952/25334 ok=5878 bad=74 retries=1861 1.8 tx/s eta 182 min | HTTP Error 429: Too Many Requests
+  6005/25334 ok=5929 bad=76 retries=1881 1.8 tx/s eta 182 min | HTTP Error 429: Too Many Requests
+  6056/25334 ok=5980 bad=76 retries=1904 1.8 tx/s eta 181 min | HTTP Error 429: Too Many Requests
+  6107/25334 ok=6031 bad=76 retries=1925 1.8 tx/s eta 181 min | HTTP Error 429: Too Many Requests
+  6165/25334 ok=6087 bad=78 retries=1941 1.8 tx/s eta 180 min | HTTP Error 429: Too Many Requests
+  6211/25334 ok=6133 bad=78 retries=1965 1.8 tx/s eta 180 min | HTTP Error 429: Too Many Requests
+  6261/25334 ok=6181 bad=80 retries=1988 1.8 tx/s eta 180 min | HTTP Error 429: Too Many Requests
+  6312/25334 ok=6232 bad=80 retries=2006 1.8 tx/s eta 179 min | HTTP Error 429: Too Many Requests
+  6359/25334 ok=6279 bad=80 retries=2030 1.8 tx/s eta 179 min | HTTP Error 429: Too Many Requests
+  6409/25334 ok=6327 bad=82 retries=2053 1.8 tx/s eta 179 min | HTTP Error 429: Too Many Requests
+  6461/25334 ok=6379 bad=82 retries=2072 1.8 tx/s eta 178 min | HTTP Error 429: Too Many Requests
+  6509/25334 ok=6427 bad=82 retries=2094 1.8 tx/s eta 178 min | HTTP Error 429: Too Many Requests
+  6559/25334 ok=6475 bad=84 retries=2117 1.8 tx/s eta 178 min | HTTP Error 429: Too Many Requests
+  6611/25334 ok=6527 bad=84 retries=2137 1.8 tx/s eta 177 min | HTTP Error 429: Too Many Requests
+  6663/25334 ok=6579 bad=84 retries=2153 1.8 tx/s eta 177 min | HTTP Error 429: Too Many Requests
+  6725/25334 ok=6639 bad=86 retries=2172 1.8 tx/s eta 176 min | HTTP Error 429: Too Many Requests
+  6821/25334 ok=6735 bad=86 retries=2195 1.8 tx/s eta 174 min | HTTP Error 429: Too Many Requests
+  6920/25334 ok=6834 bad=86 retries=2219 1.8 tx/s eta 172 min | HTTP Error 429: Too Many Requests
+  7018/25334 ok=6932 bad=86 retries=2241 1.8 tx/s eta 170 min | HTTP Error 429: Too Many Requests
+  7119/25334 ok=7033 bad=86 retries=2261 1.8 tx/s eta 168 min | HTTP Error 429: Too Many Requests
+  7216/25334 ok=7130 bad=86 retries=2285 1.8 tx/s eta 166 min | HTTP Error 429: Too Many Requests
+  7314/25334 ok=7228 bad=86 retries=2308 1.8 tx/s eta 164 min | HTTP Error 429: Too Many Requests
+  7391/25334 ok=7305 bad=86 retries=2328 1.8 tx/s eta 163 min | HTTP Error 429: Too Many Requests
+  7448/25334 ok=7362 bad=86 retries=2343 1.8 tx/s eta 162 min | HTTP Error 429: Too Many Requests
+  7495/25334 ok=7409 bad=86 retries=2365 1.8 tx/s eta 162 min | HTTP Error 429: Too Many Requests
+  7547/25334 ok=7459 bad=88 retries=2386 1.8 tx/s eta 161 min | HTTP Error 429: Too Many Requests
+  7597/25334 ok=7509 bad=88 retries=2407 1.8 tx/s eta 161 min | HTTP Error 429: Too Many Requests
+  7647/25334 ok=7559 bad=88 retries=2427 1.8 tx/s eta 161 min | HTTP Error 429: Too Many Requests
+  7702/25334 ok=7612 bad=90 retries=2446 1.8 tx/s eta 160 min | HTTP Error 429: Too Many Requests
+  7755/25334 ok=7665 bad=90 retries=2466 1.8 tx/s eta 160 min | HTTP Error 429: Too Many Requests
+  7804/25334 ok=7714 bad=90 retries=2489 1.8 tx/s eta 160 min | HTTP Error 429: Too Many Requests
+  7855/25334 ok=7763 bad=92 retries=2511 1.8 tx/s eta 159 min | HTTP Error 429: Too Many Requests
+  7908/25334 ok=7816 bad=92 retries=2527 1.8 tx/s eta 159 min | HTTP Error 429: Too Many Requests
+  7955/25334 ok=7863 bad=92 retries=2550 1.8 tx/s eta 158 min | HTTP Error 429: Too Many Requests
+  8010/25334 ok=7916 bad=94 retries=2569 1.8 tx/s eta 158 min | HTTP Error 429: Too Many Requests
+  8062/25334 ok=7968 bad=94 retries=2587 1.8 tx/s eta 157 min | HTTP Error 429: Too Many Requests
+  8111/25334 ok=8017 bad=94 retries=2610 1.8 tx/s eta 157 min | HTTP Error 429: Too Many Requests
+  8165/25334 ok=8069 bad=96 retries=2628 1.8 tx/s eta 157 min | HTTP Error 429: Too Many Requests
+  8217/25334 ok=8121 bad=96 retries=2645 1.8 tx/s eta 156 min | HTTP Error 429: Too Many Requests
+  8271/25334 ok=8175 bad=96 retries=2664 1.8 tx/s eta 156 min | HTTP Error 429: Too Many Requests
+  8329/25334 ok=8231 bad=98 retries=2679 1.8 tx/s eta 155 min | HTTP Error 429: Too Many Requests
+  8378/25334 ok=8280 bad=98 retries=2701 1.8 tx/s eta 155 min | HTTP Error 429: Too Many Requests
+  8430/25334 ok=8332 bad=98 retries=2720 1.8 tx/s eta 154 min | HTTP Error 429: Too Many Requests
+  8481/25334 ok=8381 bad=100 retries=2742 1.8 tx/s eta 154 min | HTTP Error 429: Too Many Requests
+  8531/25334 ok=8431 bad=100 retries=2763 1.8 tx/s eta 154 min | HTTP Error 429: Too Many Requests
+  8583/25334 ok=8483 bad=100 retries=2783 1.8 tx/s eta 153 min | HTTP Error 429: Too Many Requests
+  8635/25334 ok=8533 bad=102 retries=2804 1.8 tx/s eta 153 min | HTTP Error 429: Too Many Requests

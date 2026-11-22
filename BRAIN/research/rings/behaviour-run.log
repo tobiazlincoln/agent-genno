@@ -1,0 +1,18 @@
+8996 tx -> BRAIN/research/rings/BEHAVIOUR.md
+
+## Flows
+| asset | deposits | withdrawals | dep volume | wd volume |
+|---|---|---|---|---|
+| SOL | 1854 | 1372 | 8,273.43 | 3,256.96 |
+| EPjFWdd5Au | 524 | 367 | 214,814.15 | 91,606.43 |
+| Es9vMFrzaC | 44 | 40 | 86,403.84 | 58,843.00 |
+| 12XbVdAszA | 46 | 21 | 334,269,184.84 | 334,269,184.84 |
+| 65iH8k736Q | 24 | 20 | 2,488,577.57 | 2,424,439.65 |
+| GdZ9rwHyKc | 3 | 39 | 30,882,360.00 | 30,882,360.00 |
+| 7wKGTD1r2j | 24 | 14 | 125,316.03 | 125,316.03 |
+| ZfkySvDU6d | 12 | 24 | 1,200.00 | 1,200.00 |
+| DezXAZ8z7P | 23 | 12 | 172,852,419.02 | 991,704.95 |
+| AD3ksG2WY3 | 16 | 10 | 421,804.39 | 421,804.39 |
+- distinct depositors: 1560; distinct withdrawal recipients: 1319
+- tx fee lamports: p10=5000 / p25=5000 / p50=87532 / p75=87532 / p90=325000
+

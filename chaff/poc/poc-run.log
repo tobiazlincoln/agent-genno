@@ -1,0 +1,28 @@
+[key] recipient key loaded from .env CHAFF_RECIPIENT_KEY
+[keys] owner (wallet kamu) BB3Ysn7N5THV4Cdz3dWVKccWWN1WknzXZxB14XZRCyNx
+[keys] recipient (fee payer withdraw) 6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP
+using deprecated parameters for the initialization function; pass a single object instead
+[client] zolana client ready (mainnet, helius gateway /v1/spr; TEE policy verified)
+[fund] owner BB3Ysn7N5THV4Cdz3dWVKccWWN1WknzXZxB14XZRCyNx: 441658520 | recipient 6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP: 5000000 lamports
+SIG register BB3Ysn7N5THV4Cdz3dWVKccWWN1WknzXZxB14XZRCyNx: already registered (undefined)
+SIG register 6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP: already registered (undefined)
+[deposit] skip — private balance 50000000 lamports >= 35000000 (deposit run sebelumnya sudah on-chain)
+[deposit] private balance now 50000000 lamports
+[transfer] private transfer 10000000 lamports to 6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP
+SIG private-transfer: 2vKKud2t2Gt8CqxELm6PnH9p63dcca4aWvxXRZGBCUDNYVRbuWhzYNpYaP7YaD6ooH3xpJaYDWCQtZKhpfLvTCKn
+[withdraw] withdraw 25000000 lamports to 6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP with feePayer = recipient (fee-cut, no buffer)
+SIG withdraw-fee-cut: 3foY54erFeZXeTpR9oqxSJStf5KVeg1tmNU9WEK8aWXNiydpvyJcY4PeMvr8ZjyhjHaayb33iofznz1c2xX4y2kz
+[done] recipient: public 29985000 lamports (fee-cut terlihat), private 0 lamports
+[done] owner private sisa: 15000000 lamports
+
+POC RESULT
+{
+  "network": "mainnet",
+  "owner": "BB3Ysn7N5THV4Cdz3dWVKccWWN1WknzXZxB14XZRCyNx",
+  "recipient": "6KrvxALkxYmbJocChEWiTdDkTn9vsq5Mf3jQ6UFKuYHP",
+  "deposit": "skipped (already funded)",
+  "transfer": "2vKKud2t2Gt8CqxELm6PnH9p63dcca4aWvxXRZGBCUDNYVRbuWhzYNpYaP7YaD6ooH3xpJaYDWCQtZKhpfLvTCKn",
+  "withdrawFeeCut": "3foY54erFeZXeTpR9oqxSJStf5KVeg1tmNU9WEK8aWXNiydpvyJcY4PeMvr8ZjyhjHaayb33iofznz1c2xX4y2kz",
+  "recipientPublicBalance": "29985000",
+  "recipientPrivateBalance": "0"
+}

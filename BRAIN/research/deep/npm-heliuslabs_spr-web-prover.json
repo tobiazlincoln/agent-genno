@@ -1,0 +1,9 @@
+{
+ "latest": "0.7.0-alpha",
+ "versions": [
+  "0.0.0-stage",
+  "0.7.0-alpha"
+ ],
+ "desc": "Local Groth16 proving for Solana Privacy Rings in browsers.",
+ "weekly": 133
+}

@@ -1,0 +1,2 @@
+getShieldedTransactionsByNullifiers
+{"jsonrpc":"2.0","id":"test-account","result":{"context":{"blockTime":1795297244,"slot":472293177},"outputTreeId":0,"data":[],"paginationToken":null}}

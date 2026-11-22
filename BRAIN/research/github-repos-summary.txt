@@ -1,0 +1,94 @@
+.github                             ★    3 -            
+DAS-Collection                      ★    1 JavaScript   Get a full collection of assets posted to a .json file using DAS getAssetsByGroup endpoint. 
+agave                               ★   12 Rust         Web-Scale Blockchain for fast, secure, scalable, decentralized apps and marketplaces.
+agave-sdk                           ★    0 -            
+airship                             ★   79 TypeScript   Helius AirShip is an open-source tool that simplifies and reduces the cost of Solana token airdrops, offering both web and CLI versions.
+alpamayo                            ★    0 -            Lightweight drop-in replacement for the Solana RPC stack, designed for frozen data (blocks, transactions, etc.)
+anchor                              ★    0 -            ⚓ Solana Sealevel Framework
+atlas-priority-fee-estimator        ★   38 Rust         
+atlas-txn-sender                    ★  187 Rust         
+blockbuster                         ★    0 Rust         Canonical Program Parsing from Geyser Plugins
+blockbuster-1                       ★    0 -            Canonical Program Parsing from Geyser Plugins
+chain-stress-tests                  ★    0 -            stress testing some L2s
+claude-agent-acp                    ★    0 -            Use Claude Agent SDK from any ACP client such as Zed!
+clickhouse-rs                       ★    0 Rust         Official pure Rust typed client for ClickHouse DB
+cloudfare-telegram-template         ★    9 TypeScript   
+codex-acp                           ★    0 -            
+compression-examples                ★   32 TypeScript   
+core-ai                             ★   33 TypeScript   Official Helius AI tooling repository 
+custom-privacy-rings                ★    0 Rust         Custom rings implementation for Zolana
+das-ui                              ★    0 JavaScript   
+deserialize-account                 ★    3 TypeScript   
+deserialize-base                    ★    0 -            
+digital-asset-rpc-infrastructure    ★    2 Rust         
+digital-asset-validator-plugin      ★    1 Rust         The NFT Geyser plugin that powers metaplex APIs
+durable-nonce                       ★    3 TypeScript   
+firedancer                          ★    0 -            Firedancer is Jump Crypto's Solana validator software.
+galleria                            ★   30 TypeScript   An open source portfolio viewer that is built on top of Helius's DAS API. 
+geyser-grpc-plugin                  ★    0 -            Solana Geyser plugin for account and slot updates over GRPC
+geyser-lattice-test                 ★    0 Rust         
+grpc-latency-monitor                ★    0 -            Neutral latency and reliability benchmark for Solana streaming providers (Yellowstone gRPC, WebSocket), multi-region
+helius-cli                          ★   40 TypeScript   
+helius-rpc-proxy                    ★  127 TypeScript   This repo hosts a one-click-deploy Cloudflare worker that proxies RPC requests to Helius.
+helius-rust-sdk                     ★  192 Rust         Asynchronous Helius Rust SDK
+helius-sdk                          ★  299 TypeScript   
+infrastructure-kubernetes           ★    0 -            
+jito-relayer                        ★    0 Rust         Jito Foundation's Transaction Relayer
+jito-solana                         ★    1 Rust         Jito Foundation MEV Solana Client
+jsonrpsee                           ★    0 Rust         Rust JSON-RPC library on top of async/await
+klickhouse                          ★    0 -            Rust crate for accessing Clickhouse
+laserstream-sdk                     ★   59 Rust         
+leaky-bucket                        ★    0 Rust         A token-based rate limiter based on the leaky bucket algorithm.
+lite-rpc                            ★    4 Rust         This is a solana lite rpc which optimizes sending transactions and confirming transactions strategies.
+mpl-bubblegum                       ★    0 TypeScript   Create and manage Metaplex compressed NFTs
+mtndao-mobile-workshop              ★    0 TypeScript   
+namor                               ★    4 TypeScript   Generate (deterministic) human-readable names from Solana addresses.
+neon-faucet                         ★    0 -            Neon Faucet service
+node-datadog-metrics                ★    0 JavaScript   Buffered metrics reporting via the DataDog HTTP API
+openclaw                            ★    0 TypeScript   Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 
+photon                              ★  114 Rust         
+photon-explorer                     ★   10 TypeScript   Photon - Solana ZK Compression Explorer
+privacy-ring-examples               ★   11 Rust         
+privacy-ring-mobile-sdk             ★    1 Rust         Flutter and Rust SDK for local Zolana proving
+privacy-ring-web-sdk                ★    0 TypeScript   Browser SDK for local Zolana Groth16 proving
+privacy-rings                       ★   55 Rust         
+privacy-rings-programs              ★    0 TypeScript   
+pyre                                ★   40 TypeScript   An educational app that teaches users about Helius and Solana development.
+pythnet                             ★    0 -            Pythnet
+quickstart-portfolio-tracker        ★    0 TypeScript   Solana portfolio tracker built on Helius (DAS, history, live WebSocket feed) — the finished app from the Build a Portfolio Tracker quickstart.
+rocksdb                             ★    0 C++          A library that provides an embeddable, persistent key-value store for fast storage.
+royalties-example                   ★    1 TypeScript   
+rpc-perf-dash                       ★    8 TypeScript   Continuous, regional, non-gameable Solana RPC benchmark dashboard
+rust-rocksdb                        ★    0 -            rust wrapper for rocksdb
+rust-rocksdb-v2                     ★    0 Rust         rust wrapper for rocksdb
+rust-threadpool                     ★    0 -            A very simple thread pool for parallel task execution
+rwa-indexer                         ★   14 Rust         Indexer for real world assets 
+rwa-token                           ★    2 -            The RWA Token Program is a wrapper and extension program for Solana Token Extensions that creates a uniform approach to permissions tokens on SVM blockchains.
+saga-token-gating-tutorial          ★    4 TypeScript   Solana Saga token-gating tutorial for mobile development, adapted from @solana-mobile/solana-mobile-dapp-scaffold.
+shaq                                ★    0 -            
+solana-accountsdb-plugin-postgres   ★    0 -            
+solana-accountsdb-sqs               ★    0 Rust         
+solana-awesome                      ★  554 -            The "Solana-Awesome" repository serves as a comprehensive, factual resource hub for anyone interested in learning about the Solana blockchain and its underlying technology. It is meticulously curated to include a wide array of informative materials such as articles, videos, and Twitter threads, as well as insightful blog posts.
+solana-bigtable                     ★    0 -            
+solana-com                          ★    0 -            The solana.com website.
+solana-local-cluster                ★    0 -            
+solana-program-library              ★    0 -            A collection of Solana programs maintained by Solana Labs
+solana-sdk                          ★    1 Rust         Rust SDK for the Solana blockchain, used by on-chain program developers and the Agave validator
+spr-ceremony                        ★    0 Go           
+spr-tvc                             ★    0 TypeScript   
+test-drive                          ★    8 JavaScript   
+the-kitchen                         ★    1 TypeScript   
+threadfin                           ★    0 Rust         A thread pool for running multiple tasks on a configurable group of threads.
+tpu-traffic-classifier              ★    1 Go           
+validator-firewall                  ★   29 Rust         A low level ingress firewall for Solana validators
+wallet-adapter                      ★    0 -            Modular TypeScript wallet adapters and components for Solana applications.
+wallet-standard                     ★    0 -            Solana extensions to the Wallet Standard.
+watchtower                          ★    6 TypeScript   Open-source security monitor for Solana programs, powered by Helius Parsed Events and Parsed Streams
+wdt                                 ★    0 C++          Warp speed Data Transfer (WDT)  is an embeddedable library (and command line tool) aiming to transfer data between 2 systems as fast as possible over multiple TCP paths.
+websocket-widget                    ★    5 JavaScript   This is a landing page to test Helius Geyser Enhanced Websockets
+xray                                ★  223 Svelte       A human-readable Solana transaction explorer powered by Helius.
+xray-devnet                         ★    0 -            A human-readable Solana transaction explorer powered by Helius.
+yellowstone-grpc                    ★   16 Rust         solana geyser grpc service
+zk-tools                            ★    1 Rust         Zolana local provers: the js/wasm and cgo Groth16 bridges and their vendored upstream prover code
+zolana-keyderivation                ★    0 -            Frozen Zolana wallet key-derivation vectors and a second CI gate
+zolana-ring                         ★    0 Liquid       

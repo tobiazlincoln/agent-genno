@@ -1,0 +1,68 @@
+{
+  "gate": "K1 aggregate matching",
+  "generated": "2026-11-22 02:56 (report timestamp; regenerated after null-column fix)",
+  "pre_registered": "chaff-session.json section gate (thresholds locked before computation)",
+  "data": {
+    "source": "BRAIN/research/rings/tx.jsonl (no network)",
+    "successful_tx": 8996,
+    "deposits": 3124,
+    "withdrawals": 2183,
+    "chaff_parts_seed7": 8757,
+    "range_utc": "2026-10-27 to 2026-11-21 17:11"
+  },
+  "results_tol_1pct": {
+    "24h": {
+      "aggregate_unique_real": 0.173,
+      "aggregate_unique_null_mean": 0.152,
+      "aggregate_unique_null_p95": 0.179,
+      "aggregate_any_real": 0.322,
+      "aggregate_same_address_real": 0.148,
+      "oto_unique_real": 0.259,
+      "oto_unique_null_mean": 0.174,
+      "oto_unique_null_p95": 0.211,
+      "oto_unique_chaff_seed7": 0.033,
+      "oto_unique_chaff_mean20": 0.033,
+      "aggregate_unique_chaff_seed7": 0.055,
+      "aggregate_unique_chaff_mean20": 0.055
+    },
+    "7d": {
+      "aggregate_unique_real": 0.187,
+      "aggregate_unique_null_mean": 0.183,
+      "aggregate_unique_null_p95": 0.213,
+      "aggregate_any_real": 0.467,
+      "aggregate_same_address_real": 0.176,
+      "oto_unique_real": 0.296,
+      "oto_unique_null_mean": 0.252,
+      "oto_unique_null_p95": 0.292,
+      "oto_unique_chaff_seed7": 0.106,
+      "oto_unique_chaff_mean20": 0.108,
+      "aggregate_unique_chaff_seed7": 0.163,
+      "aggregate_unique_chaff_mean20": 0.161
+    }
+  },
+  "gate_evaluation_7d_tol_1pct": {
+    "condition_1": {
+      "rule": "chaff lowers unique aggregate-match >= 50% vs real",
+      "real": 0.187,
+      "chaff": 0.163,
+      "reduction": 0.13,
+      "required": 0.5,
+      "verdict": "FAIL"
+    },
+    "condition_2": {
+      "rule": "chaff lowers unique one-to-one >= 80% vs real",
+      "real": 0.296,
+      "chaff": 0.106,
+      "reduction": 0.644,
+      "required": 0.8,
+      "verdict": "FAIL"
+    }
+  },
+  "verdict": "FAIL",
+  "consequence": "per pre-registered on_fail: task_2 NOT started; product premise (split defeats observers) fails as registered",
+  "cross_validation": {
+    "real_oto_7d_vs_LEAK_REPORT": "29.6% == 29.6% (exact)",
+    "real_oto_24h_vs_LEAK_REPORT": "25.9% == 25.9% (exact)",
+    "same_address_aggregate_7d_vs_BEHAVIOUR_round_trips": "17.6% vs 18.1% one-to-one round trips (consistent)"
+  }
+}

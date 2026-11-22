@@ -14,6 +14,11 @@ hackathon/contracts/state/
 hackathon/contracts/broadcast/
 .DS_Store
 
+chaff/poc/.devnet-key.json
+chaff/poc/node_modules/
+chaff/poc/wallet-state/
+chaff/.env
+
 hackathon/site-app/dist/
 hackathon/site-app/node_modules/
 state/*.png

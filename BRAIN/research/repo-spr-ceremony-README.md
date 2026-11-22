@@ -1,0 +1,138 @@
+# Solana Privacy Rings
+
+A trusted setup for **41 core circuits**. Signed invitations and receipts.
+Verified contributions. Public final keys.
+
+**Completed November 2, 2026.** All 41 circuits contain 15 accepted contributions
+each. Finalization and independent reproduction of all final keys passed.
+[Download final keys](https://github.com/helius-labs/spr-ceremony/releases/tag/core-keys-2026-11-02) ·
+[Verify and integrate](docs/final-keys.md) ·
+[Verification evidence](docs/evidence/core-finalization-2026-11-02/verification.json).
+
+[Participant site](https://d3gz3drevfa8mb.cloudfront.net) ·
+[Control panel](https://1q82ow4q4c.execute-api.eu-north-1.amazonaws.com) ·
+[CLI releases](https://github.com/helius-labs/spr-ceremony/releases) ·
+[Contributors](contributions/)
+
+## Contribute
+
+This ceremony is finalized and no longer accepts contributions. The instructions
+below describe the contribution flow for an open ceremony.
+
+Get a private invitation link from the operator. Run this in your terminal:
+
+```sh
+curl --proto '=https' --tlsv1.2 -fsS https://d3gz3drevfa8mb.cloudfront.net/join.sh | SPR_CEREMONY_DOWNLOAD_BASE=https://d3gz3drevfa8mb.cloudfront.net/native bash
+```
+
+Paste your invitation link at the hidden prompt. The command downloads the
+matching Mac/Linux binary, checks its pinned SHA256 and contributes to all 41
+circuits. **No compilation, Go, AWS account, GitHub access or sudo.** Requires
+Bash, curl and a SHA256 utility, included on macOS and common Linux installations.
+
+Keep the computer awake. Progress shows `[1/41]` through `[41/41]`. Rerun the
+same command after interruption; accepted work is skipped. Public work and
+receipts stay in `~/.local/share/spr-ceremony/work`.
+
+Open your invitation link to copy the command and your private invitation.
+Participation runs in the terminal. With an existing binary, run
+`./spr-ceremony join` and paste the link at its prompt. If you received an
+invitation file instead:
+
+```sh
+./spr-ceremony contribute --invitation bob.json
+```
+
+Optional: link your GitHub account using the URL printed after completion, or
+run `./spr-ceremony link-github`. Confirm the account before publication. Signed
+account links appear on the site and are archived automatically; no PR needed.
+Requires the operator to enable [GitHub linking](docs/github.md).
+
+The one-liner trusts the hosted installer. For independent release provenance
+verification, follow the [verification guide](docs/releases.md).
+
+## Operate
+
+Download the latest release binary for your platform, rename it `spr-ceremony`,
+and run `chmod +x spr-ceremony`. Operators also need the AWS CLI and their
+configured SSO profile. Connect once:
+
+```sh
+aws sso login --profile YOUR_PROFILE
+./spr-ceremony operator connect --operator-url https://1q82ow4q4c.execute-api.eu-north-1.amazonaws.com --profile YOUR_PROFILE
+```
+
+**Create an invitation link:** open the control panel, click **Sign in**, and run
+its displayed `./spr-ceremony operator login CODE` command. Enter a contributor
+name, click **Create invitation**, then **Copy link**. Send the link and the
+contributor one-liner privately. No SSM tunnel is needed.
+
+**Create an invitation file from the CLI:**
+
+```sh
+./spr-ceremony operator invite bob --out invitations/bob.json
+```
+
+Send the file and the printed contributor command privately. This command saves
+a file; it does not print a secret link. Invitations expire after 24 hours by
+default; use `--hours 72` to change that.
+
+**Check or manage contributions:**
+
+```sh
+./spr-ceremony operator status
+./spr-ceremony operator audit --workers 4
+./spr-ceremony operator reissue bob
+./spr-ceremony operator revoke bob
+```
+
+Audit downloads and verifies the full transcript locally; parallel workers need
+additional RAM. Reissue preserves accepted work and invalidates previous access.
+Revoke also preserves accepted work. The current ceremony is finalized; use
+`operator status` or `operator export --out final-keys --workers 4` to inspect it
+or download and independently verify its keys.
+
+**Finish:** close before the announced beacon time, finalize after it, then
+independently reproduce the published keys. Publish and independently witness
+the closure checkpoint hash before the beacon is revealed:
+
+```sh
+./spr-ceremony operator close
+# Publish the checkpoint hash printed when closure completes.
+# After the beacon time shown by operator status:
+./spr-ceremony operator finalize
+./spr-ceremony operator export --out final-keys
+```
+
+[Operator guide](docs/operator-cli.md) · [Preparation and recovery](docs/operations.md) ·
+[AWS deployment](docs/aws.md) · [Validation status](docs/readiness.md)
+
+Completed contributions appear automatically on the participant site. A separate
+GitHub workflow mirrors verified receipt records; acceptance never waits for
+GitHub. [Publication details](docs/operator-cli.md#contribution-records).
+
+## Verify independently
+
+With authenticated manifest and checkpoint hashes from the operator:
+
+```sh
+./spr-ceremony audit --url https://d3gz3drevfa8mb.cloudfront.net \
+  --manifest-sha256 MANIFEST_SHA256 --checkpoint-sha256 CHECKPOINT_SHA256 \
+  --work audit --workers 4
+```
+
+No AWS access or invitation needed. This downloads and verifies the pinned public
+transcript, including every contribution. Full-core verification can take hours;
+keep `audit/` to reuse downloads. [Audit details](docs/operator-cli.md#public-audit).
+
+## Build from source
+
+Optional; requires Go 1.27.3:
+
+```sh
+go build -o spr-ceremony ./cmd/spr-ceremony
+```
+
+[Local CLI and website demo](docs/hosted-ui.md). Custom rings, batch 10 and batch 4999 are
+excluded. The engine is pinned to gnark `v0.16.4` and gnark-crypto
+`v0.22.0`.

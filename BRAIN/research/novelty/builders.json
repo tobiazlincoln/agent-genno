@@ -1,0 +1,427 @@
+[
+ {
+  "repo": "DefiLlama/dimension-adapters",
+  "own": false,
+  "fork": false,
+  "stars": 220,
+  "created": "2022-09-27",
+  "pushed": "2026-11-21",
+  "desc": "",
+  "home": "",
+  "files": 1,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "solana-foundation/solana-mcp",
+  "own": false,
+  "fork": false,
+  "stars": 86,
+  "created": "2025-03-26",
+  "pushed": "2026-11-20",
+  "desc": "",
+  "home": "https://mcp.solana.com",
+  "files": 2,
+  "markers": [
+   "@heliuslabs/spr"
+  ]
+ },
+ {
+  "repo": "nix-dyn-drv/mars",
+  "own": false,
+  "fork": false,
+  "stars": 10,
+  "created": "2026-11-08",
+  "pushed": "2026-11-21",
+  "desc": "Massive Assortment of Rust Stuff - every crate on crates.io in a flake built with dynamic derivations",
+  "home": "",
+  "files": 2,
+  "markers": [
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "openbudgetfun/solana_kit",
+  "own": false,
+  "fork": false,
+  "stars": 2,
+  "created": "2026-02-15",
+  "pushed": "2026-11-18",
+  "desc": "A Dart port of the Solana TypeScript SDK (@solana/kit)",
+  "home": "https://openbudgetfun.github.io/solana_kit/",
+  "files": 18,
+  "markers": [
+   "@heliuslabs/spr",
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "tzarebczan/z-stack",
+  "own": false,
+  "fork": false,
+  "stars": 2,
+  "created": "2026-10-07",
+  "pushed": "2026-11-19",
+  "desc": "Zcash wallet engine and TypeScript SDK for web applications",
+  "home": "",
+  "files": 2,
+  "markers": [
+   "@heliuslabs/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "D4NZ-jpg/wispr-client",
+  "own": false,
+  "fork": false,
+  "stars": 1,
+  "created": "2026-10-12",
+  "pushed": "2026-10-12",
+  "desc": "Unofficial typed Python client + CLI for Wispr Flow speech-to-text",
+  "home": "",
+  "files": 2,
+  "markers": [
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "ItsNotAILABS/Senda",
+  "own": false,
+  "fork": false,
+  "stars": 1,
+  "created": "2026-09-24",
+  "pushed": "2026-11-20",
+  "desc": "The desk all wallets and  names on Solana and all chains. The wallet signs. Jupiter quotes. USDC pays.",
+  "home": "https://senda.pocketnova.app",
+  "files": 1,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "pina-rs/solana_kit",
+  "own": false,
+  "fork": false,
+  "stars": 1,
+  "created": "2026-10-22",
+  "pushed": "2026-11-18",
+  "desc": "A lightweight Rust Solana Kit ecosystem for native, browser WebAssembly, and embedded Wasm runtimes.",
+  "home": "",
+  "files": 11,
+  "markers": [
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "solanabr/skills",
+  "own": false,
+  "fork": false,
+  "stars": 1,
+  "created": "2026-08-11",
+  "pushed": "2026-11-16",
+  "desc": "Solana ecosystem agent skill directory.",
+  "home": "https://kit.superteam.codes",
+  "files": 2,
+  "markers": [
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr"
+  ]
+ },
+ {
+  "repo": "D4NZ-jpg/hermes-wispr-stt",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-10-12",
+  "pushed": "2026-10-12",
+  "desc": "Hermes Agent STT plugin backed by Wispr Flow (via wispr-client)",
+  "home": "",
+  "files": 1,
+  "markers": [
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "anselsol/rings-escrow",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-11",
+  "pushed": "2026-11-11",
+  "desc": "",
+  "home": "",
+  "files": 2,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW",
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "aurora-is-near/intents-rings-demo",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-09",
+  "pushed": "2026-11-09",
+  "desc": "",
+  "home": "",
+  "files": 1,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "chiDevtet/Ghostwire",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-11",
+  "pushed": "2026-11-14",
+  "desc": "",
+  "home": "",
+  "files": 5,
+  "markers": [
+   "@heliuslabs/spr",
+   "getEncryptedUtxosByTags",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "critesjosh/zolana-escrow",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-10-14",
+  "pushed": "2026-10-14",
+  "desc": "",
+  "home": "",
+  "files": 84,
+  "markers": [
+   "getEncryptedUtxosByTags",
+   "zolana-client"
+  ]
+ },
+ {
+  "repo": "enviodev/hyperindex-use-cases",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-17",
+  "pushed": "2026-11-17",
+  "desc": "Ready-to-run HyperIndex indexers that keep onchain data up to date and serve it over GraphQL, across EVM chain",
+  "home": "https://docs.envio.dev/docs/HyperIndex/overview",
+  "files": 2,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "himanshu-rawat77/lanaAI-bot",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-08-18",
+  "pushed": "2026-11-20",
+  "desc": "An enterprise-grade Telegram bot integrating Lana AI for conversational on-chain Solana intelligence and Heliu",
+  "home": "",
+  "files": 3,
+  "markers": [
+   "@heliuslabs/spr",
+   "helius-rpc.com/v1/spr"
+  ]
+ },
+ {
+  "repo": "milysecond/shieldedsol",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-01-14",
+  "pushed": "2026-11-16",
+  "desc": "Monitor shielded solana pools",
+  "home": "https://shieldedsol.com",
+  "files": 1,
+  "markers": [
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "milysecond/sol-new",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-02-12",
+  "pushed": "2026-11-13",
+  "desc": "",
+  "home": "https://sol.new",
+  "files": 8,
+  "markers": [
+   "@heliuslabs/spr",
+   "@heliuslabs/spr-web-prover",
+   "getEncryptedUtxosByTags",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "uneeb123/OrthogonalDemo",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-18",
+  "pushed": "2026-11-19",
+  "desc": "Just testing things out",
+  "home": "",
+  "files": 2,
+  "markers": [
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr"
+  ]
+ },
+ {
+  "repo": "xmr20project/xmr20-wallets",
+  "own": false,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-10-28",
+  "pushed": "2026-11-20",
+  "desc": "XMR20 wallets: shared engine, terminal wallet (CLI), Chrome extension and the xmr20.org website wallet (experi",
+  "home": "",
+  "files": 6,
+  "markers": [
+   "@heliuslabs/spr"
+  ]
+ },
+ {
+  "repo": "helius-labs/privacy-rings",
+  "own": true,
+  "fork": false,
+  "stars": 55,
+  "created": "2026-05-11",
+  "pushed": "2026-11-20",
+  "desc": "",
+  "home": "https://helius-labs.github.io/privacy-rings/",
+  "files": 116,
+  "markers": [
+   "@heliuslabs/spr",
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW",
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "helius-labs/core-ai",
+  "own": true,
+  "fork": false,
+  "stars": 33,
+  "created": "2026-02-05",
+  "pushed": "2026-11-20",
+  "desc": "Official Helius AI tooling repository ",
+  "home": "",
+  "files": 41,
+  "markers": [
+   "@heliuslabs/spr",
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr"
+  ]
+ },
+ {
+  "repo": "helius-labs/privacy-ring-examples",
+  "own": true,
+  "fork": false,
+  "stars": 11,
+  "created": "2026-07-03",
+  "pushed": "2026-11-17",
+  "desc": "",
+  "home": "",
+  "files": 30,
+  "markers": [
+   "@heliuslabs/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW",
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "helius-labs/privacy-ring-mobile-sdk",
+  "own": true,
+  "fork": false,
+  "stars": 1,
+  "created": "2026-09-14",
+  "pushed": "2026-11-18",
+  "desc": "Flutter and Rust SDK for local Zolana proving",
+  "home": "",
+  "files": 21,
+  "markers": [
+   "getEncryptedUtxosByTags",
+   "helius-rpc.com/v1/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW",
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "helius-labs/custom-privacy-rings",
+  "own": true,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-10-25",
+  "pushed": "2026-11-21",
+  "desc": "Custom rings implementation for Zolana",
+  "home": "",
+  "files": 200,
+  "markers": [
+   "@heliuslabs/spr",
+   "getEncryptedUtxosByTags",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW",
+   "spr-client"
+  ]
+ },
+ {
+  "repo": "helius-labs/privacy-ring-web-sdk",
+  "own": true,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-09-14",
+  "pushed": "2026-11-17",
+  "desc": "Browser SDK for local Zolana Groth16 proving",
+  "home": "",
+  "files": 37,
+  "markers": [
+   "@heliuslabs/spr",
+   "@heliuslabs/spr-web-prover",
+   "helius-rpc.com/v1/spr",
+   "ring1GaLCuJnkUMVkX2JeZLTTX17wKsV4fZmPVzXANW"
+  ]
+ },
+ {
+  "repo": "helius-labs/privacy-rings-programs",
+  "own": true,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-11-19",
+  "pushed": "2026-11-21",
+  "desc": "",
+  "home": "",
+  "files": 32,
+  "markers": [
+   "@heliuslabs/spr"
+  ]
+ },
+ {
+  "repo": "helius-labs/spr-tvc",
+  "own": true,
+  "fork": false,
+  "stars": 0,
+  "created": "2026-08-26",
+  "pushed": "2026-11-20",
+  "desc": "",
+  "home": "",
+  "files": 12,
+  "markers": [
+   "@heliuslabs/spr"
+  ]
+ }
+]

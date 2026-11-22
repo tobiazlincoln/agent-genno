@@ -1,0 +1,4701 @@
+
+
+========== https://www.helius.dev/docs/api-reference/privacy/llms.txt ==========
+---
+url: https://www.helius.dev/docs/api-reference/privacy
+last_updated: 2026-11-05
+---
+
+# Solana Privacy Rings API
+
+Privacy indexer JSON-RPC methods for encrypted state, shielded history, proofs, and public registry records. Beta on devnet.
+
+- Overview, authentication, encoding, pagination, and errors: https://www.helius.dev/docs/api-reference/privacy.md
+- Devnet URL: `https://devnet.helius-rpc.com/v1/spr/{method}?api-key=YOUR_API_KEY`
+- Local URL: `http://127.0.0.1:8784/{method}`
+- Send a single JSON-RPC 2.0 request whose `method` matches the final URL path segment.
+- Hashes and public keys are base58-encoded 32-byte values; signatures are base58-encoded 64-byte values. Ciphertext payloads, viewing public keys, and salts are base64.
+- History methods return `result.data`, grouped by Solana transaction, and `paginationToken`. The limit counts transactions (1–1,000; default 1,000). Follow non-null tokens with the same filters. After an uncapped terminal page, resume with `filters.slot.gt` set to that page's `context.slot`.
+- `minContextSlot` enforces freshness on paginated history reads. The indexer also requires the slot of the pagination token and of any `gt`/`gte` filter. Error `-32016` includes `error.data.contextSlot`.
+- The indexer returns encrypted payloads; wallets decrypt balances and history.
+
+## Methods
+
+- getEncryptedUtxosByTags: https://www.helius.dev/docs/api-reference/privacy/getencryptedutxosbytags.md
+- getShieldedTransactionsByTags: https://www.helius.dev/docs/api-reference/privacy/getshieldedtransactionsbytags.md
+- getShieldedTransactionsBySignature: https://www.helius.dev/docs/api-reference/privacy/getshieldedtransactionsbysignature.md
+- getShieldedTransactionsByNullifiers: https://www.helius.dev/docs/api-reference/privacy/getshieldedtransactionsbynullifiers.md
+- getMerkleProofs: https://www.helius.dev/docs/api-reference/privacy/getmerkleproofs.md
+- getNonInclusionProofs: https://www.helius.dev/docs/api-reference/privacy/getnoninclusionproofs.md
+- getNullifierQueueElements: https://www.helius.dev/docs/api-reference/privacy/getnullifierqueueelements.md
+- getUserRecords: https://www.helius.dev/docs/api-reference/privacy/getuserrecords.md
+
+## Guides
+
+- Privacy documentation: https://www.helius.dev/docs/privacy/llms.txt
+- SDK: https://www.helius.dev/docs/privacy/sdk.md
+- Endpoints: https://www.helius.dev/docs/privacy/endpoints.md
+
+
+========== https://www.helius.dev/docs/billing/credits.md#solana-privacy-rings-api-credits ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Helius Credits
+
+> Complete guide to Helius credits including credit costs, how credits work, and credits for data streaming solutions.
+
+## What are credits?
+
+Credits are a unit of account that we use to bill usage for RPCs, API requests, and data streaming products like LaserStream gRPC and LaserStream WebSocket.
+
+Every plan has a base number of credits, and every API call has an assigned credit cost.
+
+Below, we outline the credits per plan, credit costs by API, and credits for streaming data.
+
+> [card] Monthly Allocation
+>
+> Credits reset monthly
+
+> [card] Credit Priority
+>
+> Credits are consumed in this order: monthly, prepaid, autoscaling
+
+> [card] Flexible Billing
+>
+> Pay for additional credits when needed
+
+***
+
+## Base Credits by Plan
+
+Here is a breakdown of the total number of credits that are included by default in each plan.
+
+> [!NOTE]
+>
+> All prices shown in dollars are in United States dollars (USD).
+
+If you need more credits, upgrade your plan, enable [autoscaling](https://www.helius.dev/docs/billing/additional-credits.md), purchase prepaid credits, or contact sales to discuss enterprise options.
+
+For more information, read our [plans and pricing guide](https://www.helius.dev/docs/billing/plans.md)
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="160">Feature</th>
+      <th width="140">Free</th>
+      <th width="140">Developer</th>
+      <th width="140">Business</th>
+      <th width="140">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>**Pricing**</td>
+      <td>\$0/month</td>
+      <td>\$49/month</td>
+      <td>\$499/month</td>
+      <td>\$999/month</td>
+    </tr>
+
+    <tr>
+      <td>**Monthly Credits**</td>
+      <td>1M</td>
+      <td>10M</td>
+      <td>100M</td>
+      <td>200M</td>
+    </tr>
+  </tbody>
+</table>
+
+***
+
+## Standard Credits
+
+<table>
+  <thead align="left">
+    <tr>
+      <th>Service</th>
+      <th>Credits</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>**Standard RPC Calls**</td>
+      <td>1</td>
+      <td>All RPC calls except those listed separately</td>
+    </tr>
+
+    <tr>
+      <td>**getProgramAccounts**</td>
+      <td>10</td>
+      <td>Get all accounts/data owned by a program</td>
+    </tr>
+
+    <tr>
+      <td>**getProgramAccountsV2**</td>
+      <td>1</td>
+      <td>Paginated version of getProgramAccounts</td>
+    </tr>
+
+    <tr>
+      <td>**simulateBundle**</td>
+      <td>1</td>
+      <td>Simulate Jito Bundles</td>
+    </tr>
+
+    <tr>
+      <td>**Priority Fee API**</td>
+      <td>1</td>
+      <td>Estimate priority fees</td>
+    </tr>
+
+    <tr>
+      <td>**DAS API**</td>
+      <td>10</td>
+      <td>All DAS endpoints</td>
+    </tr>
+
+    <tr>
+      <td>**Enhanced Transactions**</td>
+      <td>100</td>
+      <td>Legacy transaction parsing, in maintenance mode</td>
+    </tr>
+
+    <tr>
+      <td>**Parsed Events**</td>
+      <td>10</td>
+      <td>Per request; scan adds 1 per history page scanned. Successor to Enhanced Transactions. All plans.</td>
+    </tr>
+  </tbody>
+</table>
+
+### Parsed Events
+
+[Parsed Events](https://www.helius.dev/docs/parsed-events.md) parses transaction signatures and address history into decoded instructions over REST. Available on **all plans** at **10 credits per request**, for `POST /v1/parsed-events/transactions`, `POST /v1/parsed-events/transaction-history`, and the IDL endpoints `GET /v1/parsed-events/idl/{programId}` and `GET /v1/parsed-events/idl/{programId}/{slot}`.
+
+`POST /v1/parsed-events/scan` costs **10 credits per request plus 1 credit per history page scanned**. A page holds up to 1,000 transactions, so a scan with the default budget of 10,000 transactions costs at most 20 credits.
+
+## Historical Data Credits
+
+[Historical data queries](https://www.helius.dev/docs/rpc/guides/overview.md#historical-data-archival), sometimes called archival calls, cost **1 credit** each.
+
+Exceptions are [`getTransactionsForAddress`](https://www.helius.dev/docs/rpc/gettransactionsforaddress), which starts at **10 credits** and is metered by returned results, and [`getTransfersByAddress`](https://www.helius.dev/docs/rpc/gettransfersbyaddress), which costs **10 credits**. The historical account state methods (beta), `getHistoricalAccountInfo` and `getHistoricalTokenAccountsByOwner`, cost **0 credits** on Business plans and above during the beta; prices are subject to change.
+
+<table>
+  <thead align="left">
+    <tr>
+      <th>Method</th>
+      <th>Credits</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>`getBlock`</td>
+      <td>1</td>
+      <td>Retrieve block data and transactions for a specified slot</td>
+    </tr>
+
+    <tr>
+      <td>`getBlocks`</td>
+      <td>1</td>
+      <td>Get list of blocks between two slots</td>
+    </tr>
+
+    <tr>
+      <td>`getBlocksWithLimit`</td>
+      <td>1</td>
+      <td>Get blocks starting at a given slot with limit</td>
+    </tr>
+
+    <tr>
+      <td>`getSignaturesForAddress`</td>
+      <td>1</td>
+      <td>Get transaction signatures for an address</td>
+    </tr>
+
+    <tr>
+      <td>`getTransaction`</td>
+      <td>1</td>
+      <td>Retrieve transaction details for a specified signature</td>
+    </tr>
+
+    <tr>
+      <td>`getBlockTime`</td>
+      <td>1</td>
+      <td>Get estimated production time of a block</td>
+    </tr>
+
+    <tr>
+      <td>`getSignatureStatuses`</td>
+      <td>1</td>
+      <td>Get statuses for transaction signatures</td>
+    </tr>
+
+    <tr>
+      <td>`getInflationReward`</td>
+      <td>1</td>
+      <td>Get inflation reward for a list of addresses for an epoch</td>
+    </tr>
+
+    <tr>
+      <td>`getTransactionsForAddress`</td>
+      <td>10+</td>
+      <td>Enhanced transaction history with advanced filtering and sorting. Full transactions cost 10 credits per 100 returned; signatures-only responses cost 10 credits flat. Returns up to 1,000 full transactions or signatures.</td>
+    </tr>
+
+    <tr>
+      <td>`getTransfersByAddress`</td>
+      <td>10</td>
+      <td>Parsed token and native SOL transfer history. Returns up to 100 transfers.</td>
+    </tr>
+
+    <tr>
+      <td>`getHistoricalAccountInfo`</td>
+      <td>0</td>
+      <td>An account's state at a past slot or right after a specific transaction (beta). Business plans and above; prices are subject to change.</td>
+    </tr>
+
+    <tr>
+      <td>`getHistoricalTokenAccountsByOwner`</td>
+      <td>0</td>
+      <td>A wallet's token accounts at a past slot or right after a specific transaction (beta). Business plans and above; prices are subject to change.</td>
+    </tr>
+  </tbody>
+</table>
+
+> [!WARNING]
+>
+> **Plan Requirement**: `getTransfersByAddress` is only available on Developer plans and above. Free plan users will receive an error when attempting to use this endpoint.
+
+### getTransactionsForAddress
+
+`getTransactionsForAddress` metering scales with what a successful response returns:
+
+| Response type | Credits |
+| - | - |
+| Full transactions | 10 credits per 100 returned transactions, rounded up; 10-credit minimum |
+| Signatures only | 10 credits flat, regardless of count |
+| Failed API responses | Free |
+
+Examples:
+
+| Returned | Credits |
+| - | - |
+| 1-100 full transactions | 10 |
+| 250 full transactions | 30 |
+| 1,000 full transactions | 100 |
+
+## Data Streaming Credits
+
+Unlike regular credits that assign credits per call, data streaming products like LaserStream gRPC and LaserStream WebSocket assign credits per amount of data consumed. Parsed Streams, Preconfirmations, and Preprocessed Transactions are metered per delivered message instead.
+
+<table>
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>Credits</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>**LaserStream WSS (standard Solana methods)**</td>
+      <td>2</td>
+      <td>Per 0.1 MB of streamed data (uncompressed). All plans.</td>
+    </tr>
+
+    <tr>
+      <td>**LaserStream WSS (Helius extensions)**</td>
+      <td>2</td>
+      <td>Per 0.1 MB of streamed data (uncompressed). Developer, Business, and Professional plans.</td>
+    </tr>
+
+    <tr>
+      <td>**LaserStream gRPC**</td>
+      <td>2</td>
+      <td>Per 0.1 MB of streamed data (uncompressed). Business and Professional plans (Mainnet); all plans (Devnet).</td>
+    </tr>
+
+    <tr>
+      <td>**Preprocessed Transactions — preprocessedSubscribe (WSS)**</td>
+      <td>0.1</td>
+      <td>Per message (one message per delivered transaction). All paid plans.</td>
+    </tr>
+
+    <tr>
+      <td>**Parsed Streams — parsedTransactionSubscribe (WSS)**</td>
+      <td>1</td>
+      <td>Per delivered event (one event per matching transaction). All plans.</td>
+    </tr>
+
+    <tr>
+      <td>**Preconfirmations — preconfSubscribe (WSS)**</td>
+      <td>10</td>
+      <td>Per delivered message. All paid plans. Zero-message slots cost zero; slots with one or more delivered messages have a 300-credit minimum per subscription.</td>
+    </tr>
+
+    <tr>
+      <td>**Data Add-on (Pro Plan only)**</td>
+      <td>2</td>
+      <td>Per 0.1 MB after included allowance (5-100TB). Applies to LaserStream gRPC and LaserStream WebSocket usage.</td>
+    </tr>
+  </tbody>
+</table>
+
+### Preconfirmations
+
+[Preconfirmations](https://www.helius.dev/docs/pre-confirmations/overview.md) stream transactions over a WebSocket at the lowest possible latency. They are available on **all paid plans: Developer, Business, Professional, and Enterprise**. Free plans are not eligible.
+
+Slots with zero delivered messages cost zero credits, even when the slot has preconfirmation [coverage](https://www.helius.dev/docs/pre-confirmations/overview.md#coverage). When a slot delivers at least one message, each open `preconfSubscribe` subscription is billed the greater of 300 credits or 10 credits per delivered message. Uncovered slots cost zero.
+
+For example, 0, 10, 30, and 100 delivered messages cost 0, 300, 300, and 1,000 credits respectively. With `includeSource: ["helius"]`, BAM-only covered slots are excluded from billing. `regionInclude` excludes covered slots outside the selected regions. Eligible slots still cost zero when the subscription receives no messages. See [Pricing](https://www.helius.dev/docs/pre-confirmations/overview.md#pricing) for every coverage scenario.
+
+Preconfirmations is a new product and pricing is subject to change.
+
+### LaserStream WebSocket
+
+[LaserStream WebSocket](https://www.helius.dev/docs/rpc/websocket.md) serves the standard Solana subscription methods alongside the Helius-specific extensions (`transactionSubscribe`, enhanced `accountSubscribe`) on the unified `wss://mainnet.helius-rpc.com` endpoint. Standard methods are available on all plans; the Helius extensions require a Developer, Business, or Professional plan. All WebSocket usage is metered at **2 credits per 0.1 MB** of uncompressed streamed data.
+
+### LaserStream gRPC
+
+[LaserStream gRPC](https://www.helius.dev/docs/laserstream.md) Mainnet is available on Business and Professional plans. LaserStream gRPC Devnet is available on all plans. All users pay **2 credits per 0.1 MB** of uncompressed streamed data.
+
+### Preprocessed Transactions
+
+[Preprocessed transactions](https://www.helius.dev/docs/preprocessed-transactions/overview.md) (decoded shreds, \~8 ms ahead of `processed`) are delivered over the [`preprocessedSubscribe`](https://www.helius.dev/docs/preprocessed-transactions/preprocessed-subscribe) WebSocket, available on **all paid plans** and metered at **0.1 credits per message** (one message per delivered transaction).
+
+### Parsed Streams
+
+[Parsed Streams](https://www.helius.dev/docs/parsed-streams.md) push decoded, server-side filtered transactions over the [`parsedTransactionSubscribe`](https://www.helius.dev/docs/api-reference/parsed-streams/parsedtransactionsubscribe) WebSocket. Available on **all plans** and metered at **1 credit per delivered event**, the same rate as webhook events. Parsed Streams is the successor to Enhanced Transaction Webhooks.
+
+### Shred Delivery — Raw Shreds
+
+[Raw Shreds (UDP)](https://www.helius.dev/docs/shred-delivery/raw-shreds.md) is our premier, low-latency shred delivery service. You can [access raw shreds from your Helius Dashboard](https://dashboard.helius.dev/shred-delivery-seats). Simply add a seat and enter your IP address to start receiving shreds.
+
+Raw shreds do not consume credits. Raw shreds are available to all customers. Each seat is \$1,000/month and binds to one IP. If you are on a Professional plan, each seat costs \$800/month/IP.
+
+### Data Add-ons
+
+If you're on a Professional plan, you may purchase [Data Add-ons](https://www.helius.dev/docs/billing/plans.md#data-add-ons) between 5TB-100TB per month to be used for both LaserStream gRPC and LaserStream WebSocket.
+
+Beyond your allowance, streamed data uses your plan credits at 2 credits per 0.1 MB of uncompressed data.
+
+### Data Size
+
+Billing for data streaming products is based on uncompressed message size.
+
+Typical sizes include:
+
+<ul>
+  <li>Block (\~4MB)</li>
+  <li>Account (\~0.0004MB)</li>
+  <li>Transaction (\~0.0006MB)</li>
+</ul>
+
+> [!WARNING]
+>
+> **These are rough estimates only.** Actual data usage depends on your specific use case, including account size, transaction type, which programs you're listening to, and transaction metadata size. You should estimate usage based on your own traffic. Treat the values above as directional estimates, not guarantees.
+
+## Transaction Submission Credits
+
+Helius offers two primary transaction submission methods: [Sender](https://www.helius.dev/docs/sending-transactions/sender.md), our specialized transaction landing service for traders and low-latency applications; and [Staked Connections](https://www.helius.dev/docs/sending-transactions/overview.md) (default) for fast, reliable landing rates.
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Credits</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>**Sender**</td>
+      <td>0</td>
+      <td>Ultra-low latency submission</td>
+    </tr>
+
+    <tr>
+      <td>**Staked Connections**</td>
+      <td>1</td>
+      <td>Highest reliability (default)</td>
+    </tr>
+
+    <tr>
+      <td>**sendBundle**</td>
+      <td>10</td>
+      <td>Bundle submission via Jito</td>
+    </tr>
+  </tbody>
+</table>
+
+> [!NOTE]
+>
+> **Staked Transactions Are Now Default for All Paid Plans**: All transactions via `mainnet.helius-rpc.com` automatically use staked connections for highest success rates.
+
+## DAS API Credits
+
+All [DAS API](https://www.helius.dev/docs/api-reference/das.md) requests cost **10 credits** each:
+
+> [card] Asset Information
+>
+> * `getAsset`
+> * `getAssetProof`
+> * `getAssetProofBatch`
+> * `getNftEditions`
+
+> [card] Asset Discovery
+>
+> * `getAssetsByOwner`
+> * `getAssetsByAuthority`
+> * `getAssetsByCreator`
+> * `getAssetsByGroup`
+> * `searchAssets`
+> * `getAssetBatch`
+
+> [card] Transaction History
+>
+> * `getSignatur
+
+========== https://www.helius.dev/docs/billing/rate-limits.md#solana-privacy-rings-api ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Helius Rate Limits
+
+> Complete guide to Helius rate limits across all plans and products.
+
+## What are rate limits?
+
+Rate limits control how many requests you can make per second. When rate limits are exceeded, you'll receive an HTTP 429 response. For guidance on what to do when you hit a 429 or other transient failure, see [Retries and error handling](#retries-and-error-handling) below.
+
+## Standard Rate Limits
+
+Your plan has two standard rate limit groups: one for RPC requests, and one for DAS API requests. Here are the base rate limits for each Helius plan:
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Plan</th>
+      <th width="260">RPC Rate Limit</th>
+      <th width="260">DAS & Enhanced APIs</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>**Free**</td>
+      <td>10 requests/s</td>
+      <td>2 requests/s</td>
+    </tr>
+
+    <tr>
+      <td>**Developer**</td>
+      <td>50 requests/s</td>
+      <td>10 requests/s</td>
+    </tr>
+
+    <tr>
+      <td>**Business**</td>
+      <td>200 requests/s</td>
+      <td>50 requests/s</td>
+    </tr>
+
+    <tr>
+      <td>**Professional**</td>
+      <td>500 requests/s</td>
+      <td>100 requests/s</td>
+    </tr>
+
+    <tr>
+      <td>**Enterprise**</td>
+      <td>Custom</td>
+      <td>Custom</td>
+    </tr>
+  </tbody>
+</table>
+
+### Increase Rate Limits
+
+Teams on Professional plans can purchase an extra 100 RPS for \$100 USD/month.
+
+If you need custom rate limits ahead of launches, [contact our sales team](https://www.helius.dev/contact). If you are on Developer or Business tier, please upgrade your plan to increase your rate limits.
+
+## Special Rate Limits
+
+Some endpoints and specialized Helius products have special rate limits due to their computational requirements.
+
+### Sending Transactions
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Endpoint</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>`Sender`</td>
+      <td>50/sec</td>
+      <td>50/sec</td>
+      <td>50/sec</td>
+      <td>50/sec</td>
+    </tr>
+
+    <tr>
+      <td>`sendTransaction`</td>
+      <td>1/sec</td>
+      <td>5/sec</td>
+      <td>50/sec</td>
+      <td>100/sec</td>
+    </tr>
+
+    <tr>
+      <td>`sendBundle`</td>
+      <td>—</td>
+      <td>—</td>
+      <td>5/sec</td>
+      <td>5/sec</td>
+    </tr>
+
+    <tr>
+      <td>`simulateBundle`</td>
+      <td>10/sec</td>
+      <td>50/sec</td>
+      <td>200/sec</td>
+      <td>500/sec</td>
+    </tr>
+  </tbody>
+</table>
+
+> [!NOTE]
+>
+> Sender keyless `/fast` requests are limited to 1 request per second per egress
+> IP, per region. Callers behind the same NAT share this limit. Rejected `429`
+> requests count toward the limit; `/ping` does not. Append your existing Helius
+> project API key for the 50 requests per second, per-key, per-region limit.
+
+If you are on a Professional plan and need to increase your `sendTransaction` rate limits, [contact our sales team](https://www.helius.dev/contact).
+
+Professional plan users can also [request](https://www.helius.dev/contact) rate limit increases and custom tip arrangements for Sender to support higher-throughput trading apps.
+
+### Complex RPC Calls
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Endpoint</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>`getProgramAccounts`</td>
+      <td>5/sec</td>
+      <td>25/sec</td>
+      <td>50/sec</td>
+      <td>75/sec</td>
+    </tr>
+  </tbody>
+</table>
+
+### Historical Data
+
+When making batch requests for historical data methods, the following limits apply:
+
+<table>
+  <thead align="left">
+    <tr>
+      <th>Method</th>
+      <th>Max Batch Size</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>`getTransaction`</td>
+      <td>100 items per request</td>
+    </tr>
+
+    <tr>
+      <td>`getTransactionsForAddress`</td>
+      <td>No batch requests allowed</td>
+    </tr>
+
+    <tr>
+      <td>`getTransfersByAddress`</td>
+      <td>No batch requests allowed</td>
+    </tr>
+
+    <tr>
+      <td>All other historical methods</td>
+      <td>10 items per request</td>
+    </tr>
+  </tbody>
+</table>
+
+> [!WARNING]
+>
+> Exceeding batch limits will result in an error response. For `getTransactionsForAddress` and `getTransfersByAddress`, each address must be queried in a separate request.
+
+### Historical Accounts (Beta)
+
+The historical account methods have their own rate limits. They're the same on every plan that includes the methods, and they're separate from your plan's RPC rate limit, so these calls don't use up your RPC requests per second.
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="300">Method</th>
+      <th width="160">Rate limit</th>
+      <th width="160">Max burst</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>`getHistoricalAccountInfo`</td>
+      <td>100 requests/s</td>
+      <td>100 requests</td>
+    </tr>
+
+    <tr>
+      <td>`getHistoricalTokenAccountsByOwner`</td>
+      <td>10 requests/s</td>
+      <td>10 requests</td>
+    </tr>
+  </tbody>
+</table>
+
+These are hard limits: requests over the limit return HTTP `429` instead of borrowing unused capacity. Rate limits may change during the beta.
+
+### LaserStream
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Resource</th>
+      <th width="50">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="150">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Networks</td>
+      <td>—</td>
+      <td>Devnet</td>
+      <td>Devnet, Mainnet</td>
+      <td>Devnet, Mainnet</td>
+    </tr>
+
+    <tr>
+      <td>Max Pubkeys</td>
+      <td>—</td>
+      <td>10M</td>
+      <td>10M</td>
+      <td>10M</td>
+    </tr>
+
+    <tr>
+      <td>Active Connections</td>
+      <td>—</td>
+      <td>—</td>
+      <td>10</td>
+      <td>100</td>
+    </tr>
+  </tbody>
+</table>
+
+### Wallet API
+
+The [Wallet API](https://www.helius.dev/docs/api-reference/wallet-api.md) follows the same rate limits as DAS & Enhanced APIs. All endpoints share these limits:
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Endpoint</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>All Wallet API Endpoints</td>
+      <td>2/sec</td>
+      <td>10/sec</td>
+      <td>50/sec</td>
+      <td>100/sec</td>
+    </tr>
+  </tbody>
+</table>
+
+This includes identity lookups, balances, history, transfers, and funding source endpoints. Learn more in our [Wallet API documentation](https://www.helius.dev/docs/wallet-api/overview.md).
+
+### Parsed Streams
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Resource</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Concurrent Connections</td>
+      <td>5</td>
+      <td>10</td>
+      <td>50</td>
+      <td>50</td>
+    </tr>
+
+    <tr>
+      <td>Subscriptions per Connection</td>
+      <td>25</td>
+      <td>25</td>
+      <td>25</td>
+      <td>25</td>
+    </tr>
+  </tbody>
+</table>
+
+Connections are counted per project, across all of its API keys. A project at its connection cap gets HTTP 429. See the [Parsed Streams limits](https://www.helius.dev/docs/api-reference/parsed-streams/overview.md#limits) for per-filter and message limits.
+
+### LaserStream WebSocket
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Resource</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Concurrent Connections</td>
+      <td>5</td>
+      <td>150</td>
+      <td>250</td>
+      <td>1,000</td>
+    </tr>
+
+    <tr>
+      <td>Subscriptions per Connection</td>
+      <td>1,000</td>
+      <td>1,000</td>
+      <td>1,000</td>
+      <td>1,000</td>
+    </tr>
+
+    <tr>
+      <td>WebSocket Types</td>
+      <td>Standard</td>
+      <td>Standard, Enhanced</td>
+      <td>Standard, Enhanced</td>
+      <td>Standard, Enhanced</td>
+    </tr>
+  </tbody>
+</table>
+
+### Solana Privacy Rings API
+
+| Service | Free | Developer | Business | Professional |
+| - | - | - | - | - |
+| Reads | 2/sec | 10/sec | 50/sec | 100/sec |
+| Proof generation | 1/sec | 5/sec | 10/sec | 20/sec |
+
+### Webhooks
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Resource</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Max Webhooks</td>
+      <td>5</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+    </tr>
+
+    <tr>
+      <td>Addresses per Webhook</td>
+      <td>100k</td>
+      <td>100k</td>
+      <td>100k</td>
+      <td>100k</td>
+    </tr>
+  </tbody>
+</table>
+
+### ZK Compression
+
+<table>
+  <thead align="left">
+    <tr>
+      <th width="200">Service</th>
+      <th width="100">Free</th>
+      <th width="100">Developer</th>
+      <th width="100">Business</th>
+      <th width="100">Professional</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Photon APIs</td>
+      <td>2/sec</td>
+      <td>10/sec</td>
+      <td>50/sec</td>
+      <td>100/sec</td>
+    </tr>
+
+    <tr>
+      <td>`getValidityProof`</td>
+      <td>1/sec</td>
+      <td>5/sec</td>
+      <td>10/sec</td>
+      <td>20/sec</td>
+    </tr>
+  </tbody>
+</table>
+
+## Retries and error handling
+
+When your application receives a `429 Too Many Requests`, `503 Service Unavailable`, or transient `5xx` response, wait a moment and retry — don't retry immediately. Immediate retries pile up requests and make rate-limit recovery slower, not faster.
+
+### Recommended strategy
+
+* Wait about **1 second** before the first retry.
+* **Double the wait** each time you retry, up to a maximum of **30 seconds**.
+* Add a small random variation of **±25%** to each wait so multiple applications don't all retry at the same instant.
+* Give up after **5 attempts** and return the error to the code that called you.
+
+### Which errors to retry
+
+| Status | Retry? | Reason |
+| - | - | - |
+| `400`, `401`, `403`, `404` | No | Client errors — retrying will not change the outcome. |
+| `408` | Yes | Request timeout. |
+| `409` | No | Conflict — resolve at the caller. |
+| `422` | No | Validation error. |
+| `429` | Yes | Rate limit exceeded — wait and retry with backoff. |
+| `500`, `502` | Yes | Transient server error. |
+| `503` | Yes | Service unavailable — wait and retry with backoff. |
+| `504` | Yes | Gateway timeout. |
+| Network error | Yes | Connection reset, DNS failure, or socket timeout. |
+
+### Example
+
+```ts TypeScript theme={"system"}
+const RETRYABLE = new Set([408, 429, 500, 502, 503, 504]);
+
+export async function callWithRetry<T>(
+  request: () => Promise<Response>,
+  maxAttempts = 5,
+): Promise<T> {
+  let delay = 1000;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const res = await request();
+    if (res.ok) return (await res.json()) as T;
+
+    if (!RETRYABLE.has(res.status) || attempt === maxAttempts) {
+      throw new Error(`${res.status} after ${attempt} attempt(s): ${await res.text()}`);
+    }
+
+    const jitterMs = delay * (0.75 + Math.random() * 0.5);
+    await new Promise((r) => setTimeout(r, jitterMs));
+    delay = Math.min(delay * 2, 30_000);
+  }
+  throw new Error("unreachable");
+}
+```
+
+```python Python theme={"system"}
+import random
+import time
+
+RETRYABLE = {408, 429, 500, 502, 503, 504}
+
+def call_with_retry(request, max_attempts: int = 5):
+    delay = 1.0
+    for attempt in range(1, max_attempts + 1):
+        response = request()
+        if response.ok:
+            return response.json()
+
+        if response.status_code not in RETRYABLE or attempt == max_attempts:
+            response.raise_for_status()
+
+        time.sleep(delay * random.uniform(0.75, 1.25))
+        delay = min(delay * 2, 30.0)
+```
+
+```bash Shell theme={"system"}
+call_with_retry() {
+  local attempt=1 delay=1 body status
+  while [ "$attempt" -le 5 ]; do
+    response=$(curl -sS -w "\n%{http_code}" "$@")
+    body=$(printf '%s\n' "$response" | sed '$d')
+    status=$(printf '%s\n' "$response" | tail -n1)
+    case "$status" in
+      2*) printf '%s\n' "$body"; return 0 ;;
+      408|429|500|502|503|504) ;;  # fall through and retry
+      *) printf '%s\n' "$body" >&2; return 1 ;;
+    esac
+    # ~delay seconds with 25% jitter
+    sleep "$(awk -v d="$delay" 'BEGIN { srand(); print d * (0.75 + rand() * 0.5) }')"
+    delay=$(( delay * 2 > 30 ? 30 : delay * 2 ))
+    attempt=$(( attempt + 1 ))
+  done
+  return 1
+}
+```
+
+### Error response shape
+
+All Helius APIs return a structured JSON body on error. JSON-RPC endpoints (Solana RPC, DAS, Sender, Priority Fee, ZK Compression) return the standard JSON-RPC 2.0 envelope:
+
+```json theme={"system"}
+{
+  "jsonrpc": "2.0",
+  "error": { "code": -32005, "message": "Too many requests" },
+  "id": "1"
+}
+```
+
+REST endpoints (Wallet API, Admin API) return:
+
+```json theme={"system"}
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "code": 429,
+  "details": "Too many requests. Retry after 2 seconds."
+}
+```
+
+See [Common error codes](https://www.helius.dev/docs/api-reference/common-error-codes) for the full list of error codes and what each one means.
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Solana Privacy Rings
+
+> Overview of programmable privacy with native Solana performance for transfers that are secured by zero-knowledge proofs and execute fully onchain.
+
+## Make a Confidential Transfer. On Solana. Right now.
+
+![A confidential Solana transaction card. The transaction hash, sender, and recipient stay visible; the asset and amount are blacked out.](https://mintcdn.com/helius/2GsWBr2oQyHUzjuT/images/privacy/confidential-transaction-card.svg?fit=max\&auto=format\&n=2GsWBr2oQyHUzjuT\&q=85\&s=1cd8c54926416ef1f10a3989151413f2)
+
+[Confidential transfer on Solana devnet](https://helius-privacy-demo.fly.dev/embed)
+
+## What Are Solana Privacy Rings
+
+Solana Privacy Rings bring programmable privacy to Solana with native performance and security via simple APIs.
+
+* **Confidential transfers** — private asset and amount; public sender and recipient
+* **Native Solana execution** — private transactions settle in one Solana transaction
+* **Self-custodial** — transfers require the owner's signature
+* **Encrypt any asset** – Rings support SOL, SPL tokens, and Token-2022 tokens
+* **Programmable** – private escrow in Solana programs
+* **Custom Rings** – configurable anonymity and compliance for enterprises
+
+## Why Privacy with Solana Privacy Rings
+
+> [card] Native Solana Performance
+>
+> Private transfers execute natively on Solana; no sequencer or sidechain.
+
+> [card] One Solana Transaction
+>
+> Each private transfer settles in a single Solana transaction.
+
+> [card] Programmable Onchain Privacy
+>
+> Private escrows in Solana programs for swaps, staking, yield and more.
+
+> [card] Custom Rings for Enterprises
+>
+> Optional compliance and anonymity with a custom Ring program.
+
+## Use Cases
+
+Solana Privacy Rings enable use cases based on private transfers and private escrow in Solana programs, such as:
+
+> [card] Private On-Off ramp
+>
+> On-ramp USD, EUR, or any currency directly to a private balance, or off-ramp from one.
+
+> [card] Payments and Remittances
+>
+> Process payments and payroll privately onchain, with optional policy controls and audit trails.
+
+> [card] Payment Cards
+>
+> Spend stablecoins directly from private onchain balances.
+
+> [card] Fintechs and Institutions
+>
+> Transact privately on Solana, with optional policy and compliance controls.
+
+> [card] Trading, Treasury & RWAs
+>
+> Swap any SPL asset privately on Solana.
+
+> [card] Agentic Commerce
+>
+> Let agents transact autonomously and privately without public balances.
+
+## Get Started
+
+Choose the right guide based on your needs. All guides are meant to be self-contained.
+
+### Learn
+
+> [card] [Concepts](https://www.helius.dev/docs/privacy/concepts/overview.md)
+>
+> How Solana Privacy Rings work, user flows, and privacy guarantees.
+
+> [card] Launch Demo
+>
+> Try confidential transfers and swaps on devnet.
+
+[Open](https://www.helius.dev/privacy/demo)
+
+### Integrate
+
+> [card] [Embedded Private Wallet](https://www.helius.dev/docs/privacy/integration/embedded-wallet.md)
+>
+> Use an embedded wallet with private and public balances directly in your product. For companies and apps without their own key management.
+
+> [card] [Private Wallet](https://www.helius.dev/docs/privacy/integration/wallet.md)
+>
+> Add privacy support to an existing Solana wallet. For wallet providers with their own key management.
+
+> [card] [Private On-Off-Ramp](https://www.helius.dev/docs/privacy/integration/on-off-ramp.md)
+>
+> Onramp and offramp fiat directly to and from a private balance, without revealing the asset or amount. For CEXs and companies with fiat-to-crypto processors.
+
+> [card] [Custom Ring for Enterprises](https://www.helius.dev/docs/privacy/integration/enterprise.md)
+>
+> Configure and deploy a Ring with custom policy and compliance controls. For regulated entities, such as fintechs, payroll platforms, remittance companies, neobanks, and institutions.
+
+### Basic Guides
+
+> [card] [Transfer between Private Balances](https://www.helius.dev/docs/privacy/guides/transfer.md)
+
+> [card] [Deposit to Private Balance](https://www.helius.dev/docs/privacy/guides/deposit.md)
+
+> [card] [Read a Private Balance](https://www.helius.dev/docs/privacy/guides/read-balance.md)
+
+> [card] [Withdraw to Public Balance](https://www.helius.dev/docs/privacy/guides/withdraw.md)
+
+> [card] [Read Private History](https://www.helius.dev/docs/privacy/guides/read-history.md)
+
+### Examples
+
+> [card] [TypeScript Client](https://github.com/helius-labs/zolana-examples/tree/main/typescript-client)
+
+> [card] [Rust Client](https://github.com/helius-labs/zolana-examples/tree/main/rust-client)
+
+> [card] [Escrow Program](https://github.com/helius-labs/zolana-examples/tree/main/escrow-program)
+
+> [card] [Swap Program](https://github.com/helius-labs/zolana-examples/tree/main/swap-program)
+
+### AI Tools
+
+> [card] [AI Assisted Development](https://www.helius.dev/docs/privacy/ai-tools.md)
+>
+> Docs search and MCP.
+
+## Resources
+
+> [card] [Endpoints](https://www.helius.dev/docs/privacy/endpoints.md)
+>
+> RPC endpoints for mainnet, devnet, and localnet.
+
+> [card] [SDK](https://www.helius.dev/docs/privacy/sdk.md)
+>
+> Install the TypeScript and Rust SDKs.
+
+> [card] [Addresses](https://www.helius.dev/docs/privacy/addresses.md)
+>
+> Program IDs, interface PDA, and explorer links.
+
+> [card] [Security](https://www.helius.dev/docs/privacy/security.md)
+>
+> Security audit reports and trusted setup records.
+
+> [card] [Source Code: Zolana](https://github.com/helius-labs/zolana)
+>
+> Protocol source code.
+
+> [card] [Changelog](https://github.com/helius-labs/zolana/releases)
+>
+> Release notes on GitHub.
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy/concepts/architecture.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Architecture
+
+> Learn how wallets, RPCs, and Solana programs interact with Solana Privacy Rings.
+
+> [tab] Permissionless Confidential Ring
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'primaryColor': '#FFFFFF',
+>     'primaryTextColor': '#737373',
+>     'primaryBorderColor': '#9CA3AF',
+>     'lineColor': '#FF6B35',
+>     'secondaryColor': '#F5F5F5',
+>     'tertiaryColor': '#FFFFFF',
+>     'clusterBkg': '#FF6B350A',
+>     'clusterBorder': '#9CA3AF',
+>     'edgeLabelBackground': '#FFFFFF'
+>   }
+> }}%%
+> flowchart LR
+>     Users["Users"]
+>
+>     subgraph RPC["RPC"]
+>         direction TB
+>         Indexer["Photon Indexer"]
+>         Prover["Prover"]
+>         TransactionRPC["Transaction RPC"]
+>     end
+>
+>     subgraph Solana["Solana"]
+>         direction LR
+>         Swap["ZK Swap Program"]
+>         subgraph State[" "]
+>             direction TB
+>             SPP["SPP<br/>Solana Privacy Program"]
+>             Pools["SPL interface"]
+>             Trees["State Merkle tree account"]
+>         end
+>         Swap -->|CPI| SPP
+>     end
+>
+>     Forester["Forester"]
+>
+>     Users <-.->|Fetch encrypted UTXOs| Indexer
+>     Users <-.->|Fetch proofs| Prover
+>     Users -->|Send transaction| TransactionRPC
+>     TransactionRPC -->|Confidential transfer| SPP
+>     TransactionRPC --> Swap
+>     Forester --> Trees
+>
+>     style State fill:none,stroke:none
+> ```
+
+> [tab] Custom Confidential Ring
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'primaryColor': '#FFFFFF',
+>     'primaryTextColor': '#737373',
+>     'primaryBorderColor': '#9CA3AF',
+>     'lineColor': '#FF6B35',
+>     'secondaryColor': '#F5F5F5',
+>     'tertiaryColor': '#FFFFFF',
+>     'clusterBkg': '#FF6B350A',
+>     'clusterBorder': '#9CA3AF',
+>     'edgeLabelBackground': '#FFFFFF'
+>   }
+> }}%%
+> flowchart LR
+>     Users["Users"]
+>
+>     subgraph RPC["RPC"]
+>         direction TB
+>         Indexer["Photon Indexer"]
+>         RingRPC["Ring RPC with auditor · optional"]
+>         Prover["Prover"]
+>         TransactionRPC["Transaction RPC"]
+>     end
+>
+>     subgraph Solana["Solana"]
+>         direction LR
+>         Swap["ZK Swap Program"]
+>         Ring1["Custom Ring Program 1"]
+>         RingN["Custom Ring Program N"]
+>         subgraph State[" "]
+>             direction TB
+>             SPP["SPP<br/>Solana Privacy Program"]
+>             Pools["SPL interface"]
+>             Trees["State Merkle tree account"]
+>         end
+>         Swap -->|CPI| Ring1
+>         Ring1 -->|CPI| SPP
+>         RingN -->|CPI| SPP
+>     end
+>
+>     Forester["Forester"]
+>
+>     Users <-.->|Fetch encrypted UTXOs| Indexer
+>     Users <-.->|Fetch decrypted UTXOs| RingRPC
+>     Users <-.->|Fetch proofs| Prover
+>     Users -->|Send transaction| TransactionRPC
+>     TransactionRPC -->|Confidential transfer| Ring1
+>     TransactionRPC --> RingN
+>     TransactionRPC --> Swap
+>     Forester --> Trees
+>
+>     style State fill:none,stroke:none
+> ```
+
+> [tab] Custom Anonymous Ring
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'primaryColor': '#FFFFFF',
+>     'primaryTextColor': '#737373',
+>     'primaryBorderColor': '#9CA3AF',
+>     'lineColor': '#FF6B35',
+>     'secondaryColor': '#F5F5F5',
+>     'tertiaryColor': '#FFFFFF',
+>     'clusterBkg': '#FF6B350A',
+>     'clusterBorder': '#9CA3AF',
+>     'edgeLabelBackground': '#FFFFFF'
+>   }
+> }}%%
+> flowchart LR
+>     Users["Users"]
+>
+>     subgraph RPC["RPC"]
+>         direction TB
+>         RingRPC["Ring RPC with auditor"]
+>         Prover["Prover"]
+>         TransactionRPC["Transaction RPC<br/>Relayer for anonymous transactions"]
+>     end
+>
+>     subgraph Solana["Solana"]
+>         direction LR
+>         Swap["ZK Swap Program"]
+>         Ring1["Custom Ring Program 1"]
+>         RingN["Custom Ring Program N"]
+>         subgraph State[" "]
+>             direction TB
+>             SPP["SPP<br/>Solana Privacy Program"]
+>             Pools["SPL interface"]
+>             Trees["State Merkle tree account"]
+>         end
+>         Swap -->|CPI| Ring1
+>         Ring1 -->|CPI| SPP
+>         RingN -->|CPI| SPP
+>     end
+>
+>     Forester["Forester"]
+>
+>     Users <-.->|Fetch decrypted UTXOs| RingRPC
+>     Users <-.->|Fetch proofs| Prover
+>     Users -->|Send transaction| TransactionRPC
+>     TransactionRPC -->|Relayed anonymous transaction| Ring1
+>     TransactionRPC --> RingN
+>     TransactionRPC --> Swap
+>     Forester --> Trees
+>
+>     style State fill:none,stroke:none
+> ```
+
+## Private Wallet and User
+
+Users hold their encrypted balance in a Private Wallet and sign private transactions with their existing Solana Ed25519 key. A private wallet integration adds a shielded keypair to your key management. You can [integrate it yourself](https://www.helius.dev/docs/privacy/integration/wallet.md) or use the [Embedded Private Wallet](https://www.helius.dev/docs/privacy/integration/embedded-wallet.md).
+
+## Private Transactions
+
+Private transfers are normal Solana transactions. The Solana runtime verifies the signatures and invokes the Solana Privacy Program, which verifies the ZK proof without revealing the encrypted state.
+
+A typical confidential transfer consumes 1,279 bytes, well within v1’s 4,096-byte limit.
+
+> [accordion] Example Confidential Transfer
+>
+> | Component | Bytes |
+> | - | -: |
+> | Groth16 proof | 192 |
+> | Other privacy instruction data: ciphertexts, commitments, nullifiers, keys and metadata | 769 |
+> | Six account addresses × 32 bytes | 192 |
+> | One Ed25519 signature | 64 |
+> | Recent blockhash | 32 |
+> | Version, message header, config mask and counts | 10 |
+> | Compute-unit and loaded-account-data limits | 8 |
+> | Instruction header | 4 |
+> | Eight instruction account indices | 8 |
+> | **Total** | **1,279** |
+>
+> > [!NOTE]
+> >
+> > For the spec’s 2-input, 4-output confidential transfer example.
+> > View source code: [Spec](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/docs/spec.md#transaction-size) · [xtask/src/main.rs](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/xtask/src/main.rs#L474)
+> >
+> > See the [Solana v1 transaction layout](https://solana.com/docs/core/transactions/versioned-transactions#v1-wire-layout).
+
+## RPC
+
+A single Helius RPC URL (https\://devnet.helius-rpc.com/?api-key=\\\<API\_KEY\\> or https\://mainnet.helius-rpc.com/?api-key=\\\<API\_KEY\\>) makes the Solana RPC, indexer, and a remote prover available.
+
+* **Solana RPC** – Returns the public balance and submits transactions to the Solana network.
+
+* **Indexer** – The indexer serves the encrypted state a wallet needs to read balances and build private transactions; anyone can also run their own indexer permissionlessly as a fallback.
+
+* **Prover** – Zero-knowledge proofs can be generated locally or by a prover server in milliseconds, depending on the transaction and hardware. Helius uses GPU proving.
+
+For custom Rings, optional features include an optional Ring RPC to serve decrypted balances and history using a shared viewing key or a configured Ring auditor key. Additionally, anonymous transactions use a relayer so the user does not appear as the transaction fee payer.
+
+## Privacy and Solana Programs
+
+The Solana Privacy Program (SPP) is the main program that verifies and executes all private state transitions. Custom Ring programs and ZK Solana programs add compliance or application logic, then invoke SPP to update private state.
+
+Other Solana programs can interact with these programs through CPI in the same transaction, within Solana’s transaction limits, such as the CPI depth limit of 5.
+
+> [accordion] ZK Program Transaction Flow
+>
+> > [tab] Permissionless Ring
+> >
+> > > [tab] ZK Program alone
+> > >
+> > > ```mermaid theme={"system"}
+> > > %%{init: {
+> > >   'theme': 'base',
+> > >   'themeVariables': {
+> > >     'lineColor':           '#FF6B35',
+> > >     'primaryTextColor':    '#737373',
+> > >     'primaryBorderColor':  '#9CA3AF',
+> > >     'actorBkg':            '#FFFFFF',
+> > >     'actorBorder':         '#9CA3AF',
+> > >     'actorTextColor':      '#737373',
+> > >     'signalColor':         '#FF6B35',
+> > >     'signalTextColor':     '#737373',
+> > >     'labelBoxBkgColor':    '#FF6B351F',
+> > >     'labelBoxBorderColor': '#FF6B35',
+> > >     'noteBkgColor':        '#F5F5F5',
+> > >     'noteTextColor':       '#737373',
+> > >     'noteBorderColor':     '#9CA3AF'
+> > >   }
+> > > }}%%
+> > > sequenceDiagram
+> > >     box Offchain
+> > >     participant Client
+> > >     end
+> > >     box Onchain
+> > >     participant Runtime as Solana Runtime
+> > >     participant ZK as ZK Solana Program
+> > >     participant SPP as Solana Privacy Program
+> > >     end
+> > >
+> > >     Client->>Runtime: Sign and send transaction
+> > >     Note over Runtime: Check signatures
+> > >     Runtime->>ZK: invoke
+> > >     Note over ZK: Verify proof for ZK program logic
+> > >     ZK->>SPP: CPI
+> > >     Note over SPP: Verify proof for private state transition
+> > >     Note over SPP: Update private state<br/>(nullify input UTXOs, create output UTXOs)
+> > >     Note over ZK: Update Solana accounts (optional)
+> > >
+> > > ```
+> >
+> > > [tab] ZK Program and additional Solana Program
+> > >
+> > > ```mermaid theme={"system"}
+> > > %%{init: {
+> > >   'theme': 'base',
+> > >   'themeVariables': {
+> > >     'lineColor':           '#FF6B35',
+> > >     'primaryTextColor':    '#737373',
+> > >     'primaryBorderColor':  '#9CA3AF',
+> > >     'actorBkg':            '#FFFFFF',
+> > >     'actorBorder':         '#9CA3AF',
+> > >     'actorTextColor':      '#737373',
+> > >     'signalColor':         '#FF6B35',
+> > >     'signalTextColor':     '#737373',
+> > >     'labelBoxBkgColor':    '#FF6B351F',
+> > >     'labelBoxBorderColor': '#FF6B35',
+> > >     'noteBkgColor':        '#F5F5F5',
+> > >     'noteTextColor':       '#737373',
+> > >     'noteBorderColor':     '#9CA3AF'
+> > >   }
+> > > }}%%
+> > > sequenceDiagram
+> > >     box Offchain
+> > >     participant Client
+> > >     end
+> > >     box Onchain
+> > >     participant Runtime as Solana Runtime
+> > >     participant ZK as ZK Solana Program
+> > >     participant SPP as Solana Privacy Program
+> > >     participant Program as Solana Program
+> > >     end
+> > >
+> > >     Client->>Runtime: Sign and send transaction
+> > >     Note over Runtime: Check signatures
+> > >     Runtime->>ZK: invoke
+> > >     Note over ZK: Verify proof for ZK program logic
+> > >     ZK->>SPP: CPI
+> > >     Note over SPP: Verify proof for private state transition
+> > >     Note over SPP: Update private state<br/>(nullify input UTXOs, create output UTXOs)
+> > >     ZK->>Program: CPI
+> > >     Note over Program: Update Solana accounts
+> > >
+> > > ```
+>
+> > [tab] Custom Rings
+> >
+> > > [tab] ZK Program alone
+> > >
+> > > ```mermaid theme={"system"}
+> > > %%{init: {
+> > >   'theme': 'base',
+> > >   'themeVariables': {
+> > >     'lineColor':           '#FF6B35',
+> > >     'primaryTextColor':    '#737373',
+> > >     'primaryBorderColor':  '#9CA3AF',
+> > >     'actorBkg':            '#FFFFFF',
+> > >     'actorBorder':         '#9CA3AF',
+> > >     'actorTextColor':      '#737373',
+> > >     'signalColor':         '#FF6B35',
+> > >     'signalTextColor':     '#737373',
+> > >     'labelBoxBkgColor':    '#FF6B351F',
+> > >     'labelBoxBorderColor': '#FF6B35',
+> > >     'noteBkgColor':        '#F5F5F5',
+> > >     'noteTextColor':       '#737373',
+> > >     'noteBorderColor':     '#9CA3AF'
+> > >   }
+> > > }}%%
+> > > sequenceDiagram
+> > >     box Offchain
+> > >     participant Client
+> > >     end
+> > >     box Onchain
+> > >     participant Runtime as Solana Runtime
+> > >     participant ZK as ZK Solana Program
+> > >     participant Ring as Custom Ring Program
+> > >     participant SPP as Solana Privacy Program
+> > >     end
+> > >
+> > >     Client->>Runtime: Sign and send transaction
+> > >     Note over Runtime: Check signatures
+> > >     Runtime->>ZK: invoke
+> > >     Note over ZK: Verify proof for ZK program logic
+> > >     ZK->>Ring: CPI
+> > >     Note over Ring: Verify proof for custom compliance logic
+> > >     Ring->>SPP: CPI
+> > >     Note over SPP: Verify proof for private state transition
+> > >     Note over SPP: Update private state<br/>(nullify input UTXOs, create output UTXOs)
+> > >     Note over ZK: Update Solana accounts (optional)
+> > >
+> > > ```
+> >
+> > > [tab] ZK Program and additional Solana Program
+> > >
+> > > ```mermaid theme={"system"}
+> > > %%{init: {
+> > >   'theme': 'base',
+> > >   'themeVariables': {
+> > >     'lineColor':           '#FF6B35',
+> > >     'primaryTextColor':    '#737373',
+> > >     'primaryBorderColor':  '#9CA3AF',
+> > >     'actorBkg':            '#FFFFFF',
+> > >     'actorBorder':         '#9CA3AF',
+> > >     'actorTextColor':      '#737373',
+> > >     'signalColor':         '#FF6B35',
+> > >     'signalTextColor':     '#737373',
+> > >     'labelBoxBkgColor':    '#FF6B351F',
+> > >     'labelBoxBorderColor': '#FF6B35',
+> > >     'noteBkgColor':        '#F5F5F5',
+> > >     'noteTextColor':       '#737373',
+> > >     'noteBorderColor':     '#9CA3AF'
+> > >   }
+> > > }}%%
+> > > sequenceDiagram
+> > >     box Offchain
+> > >     participant Client
+> > >     end
+> > >     box Onchain
+> > >     participant Runtime as Solana Runtime
+> > >     participant ZK as ZK Solana Program
+> > >     participant Ring as Custom Ring Program
+> > >     participant SPP as Solana Privacy Program
+> > >     participant Program as Solana Program
+> > >     end
+> > >
+> > >     Client->>Runtime: Sign and send transaction
+> > >     Note over Runtime: Check signatures
+> > >     Runtime->>ZK: invoke
+> > >     Note over ZK: Verify proof for ZK program logic
+> > >     ZK->>Ring: CPI
+> > >     Note over Ring: Verify proof for custom compliance logic
+> > >     Ring->>SPP: CPI
+> > >     Note over SPP: Verify proof for private state transition
+> > >     Note over SPP: Update private state<br/>(nullify input UTXOs, create output UTXOs)
+> > >     ZK->>Program: CPI
+> > >     Note over Program: Update Solana accounts
+> > >
+> > > ```
+
+### Solana Privacy Program (SPP)
+
+The Solana Privacy Program verifies zero-knowledge proofs and updates private state. Use it to deposit tokens, transfer private balances, and withdraw tokens to public accounts.
+
+Other programs invoke SPP through CPI to execute private state transitions.
+
+### Custom Ring Program
+
+A Custom Ring program defines transfer permissions and any additional authorities, similar to Token-2022. Use it to configure auditors, require a co-signer, or allow an authority to freeze balances.
+
+It verifies a ZK proof to enforce its custom compliance logic, then invokes SPP to update private state.
+
+### ZK Solana Program
+
+Zero-knowledge (ZK) Solana programs enable private escrows in 
+
+========== https://www.helius.dev/docs/privacy/concepts/encryption.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Encryption and Privacy Guarantees
+
+> Learn what is public and what is encrypted in a private transaction, and how the shielded keypair encrypts and decrypts private balances.
+
+## Privacy Guarantees
+
+Each party in a private transaction sees only what it needs to.
+In this example, Alice pays Bob, then Bob pays Charlie. Both are private transfers.
+
+> [tab] Default Ring
+>
+> The Default Ring is the permissionless confidential Ring.
+> Sender and recipient addresses are public onchain. Asset and amount are encrypted.
+> Only the sender and the recipient can decrypt the transaction, each with their own viewing key. Each can decrypt only their own balance.
+>
+> ![Alice pays Bob, then Bob pays Charlie in a Confidential Ring. Each party's view shows the amounts it can decrypt; the addresses are public to everyone.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/who-sees-what-confidential.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=345de01ce5c5b51451c72f28fb852433)
+>
+> | Party | Sees | Does not see |
+> | - | - | - |
+> | Alice | Her payment to Bob. That Bob paid Charlie. | The asset and amount of Bob's payment to Charlie |
+> | Bob | Alice's payment to him. His payment to Charlie. | Alice's balance |
+> | Charlie | Bob's payment to him. That Alice paid Bob. | The asset and amount of Alice's payment to Bob |
+> | RPC and Solana | Sender and recipient addresses, commitments, and ciphertexts | Any asset or amount |
+
+> [tab] Custom Rings
+>
+> A Custom Ring
+>
+> * can be configured to be confidential, or anonymous
+>
+> * can customize compliance controls, and
+>
+> * can declare an auditor that can decrypt balances of that Ring.
+>
+> > [tab] Confidential Custom Ring
+> >
+> > Sender and recipient addresses are public onchain. Asset and amount are encrypted.
+> >
+> > ![Alice pays Bob, then Bob pays Charlie in a Confidential Ring. Each party's view shows the amounts it can decrypt; the addresses are public to everyone.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/who-sees-what-confidential.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=345de01ce5c5b51451c72f28fb852433)
+> >
+> > | Party | Sees | Does not see |
+> > | - | - | - |
+> > | Alice | Her payment to Bob. That Bob paid Charlie. | The asset and amount of Bob's payment to Charlie |
+> > | Bob | Alice's payment to him. His payment to Charlie. | Alice's balance |
+> > | Charlie | Bob's payment to him. That Alice paid Bob. | The asset and amount of Alice's payment to Bob |
+> > | Ring auditor | The Ring activity the policy defines | Activity outside the Ring |
+> > | RPC and Solana | Sender and recipient addresses, commitments, and ciphertexts | Any asset or amount |
+>
+> > [tab] Anonymous Custom Ring
+> >
+> > A relayer submits the transaction. Sender and recipient are not visible onchain. Only the recipient can see which private wallet sent the payment.
+> >
+> > ![Alice pays Bob, then Bob pays Charlie in an Anonymous Ring. Each party's view shows only its own counterparties and amounts.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/who-sees-what-anonymous.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=8c2c1ee021abe1117743b0ee1de56363)
+> >
+> > | Party | Sees | Does not see |
+> > | - | - | - |
+> > | Alice | Her payment to Bob | Bob's payment to Charlie, or that Charlie exists |
+> > | Bob | Alice's payment to him, including which private wallet sent it. His payment to Charlie. | Alice's balance |
+> > | Charlie | Bob's payment to him, including which private wallet sent it | Alice, or her payment to Bob |
+> > | Ring auditor | The Ring activity the policy defines | Activity outside the Ring |
+> > | RPC and Solana | The relayer, commitments, and ciphertexts | Sender, recipient, asset, or amount |
+
+> [!NOTE]
+>
+> This example models private transfers. Deposits and withdrawals reveal more onchain:
+>
+> * A deposit from a public balance reveals the source, asset, and amount.
+> * A withdrawal reveals the destination, asset, and amount.
+>
+> See [what stays private in each flow](https://www.helius.dev/docs/privacy/concepts/overview.md#deposit-to-a-private-balance).
+
+## Encryption
+
+A private wallet consists of a Solana keypair for signing, a nullifier key, and a viewing key for encryption. Together these keys form the shielded keypair. A shielded keypair signs, encrypts and decrypts transactions.
+
+* **Signing key:** The wallet's Ed25519 Solana keypair to sign transactions.
+* **Viewing key:** An X25519 keypair, used to encrypt and decrypt transactions.
+* **Nullifier key:** A key used to derive nullifiers, which prevent a private balance from being spent twice.
+
+The Shielded Address is the shielded keypair's public keys. Transfers encrypt to it.
+
+```
+ShieldedAddress = (signing_pk, nullifier_pk, viewing_pk)
+```
+
+To learn how transactions are encrypted, see [ViewingKey](https://github.com/helius-labs/zolana/blob/v0.5.0-alpha/docs/spec.md#viewingkey) and [AES Key derivation](https://github.com/helius-labs/zolana/blob/v0.5.0-alpha/docs/spec.md#aes-key-derivation) in the spec.
+
+### Integrating a Shielded Keypair
+
+A wallet can hold the shielded keypair itself via the native [Wallet Integration](https://www.helius.dev/docs/privacy/integration/wallet.md).
+With the [Embedded Privacy Wallet](https://www.helius.dev/docs/privacy/integration/embedded-wallet.md), a Wallet Provider holds the shielded keypair and runs its key operations instead.
+
+| Key management | Who holds the shielded keypair | Where its operations run |
+| - | - | - |
+| Native [Wallet Integration](https://www.helius.dev/docs/privacy/integration/wallet.md) | The wallet | On the device |
+| [Embedded Privacy Wallet](https://www.helius.dev/docs/privacy/integration/embedded-wallet.md) | A Wallet Provider | In the Wallet Provider's infrastructure |
+
+### Decryption Modes
+
+The owner decrypts their private balance with the viewing key.
+
+Confidential rings (the Default Ring and confidential Custom Rings) support local and delegated decryption.
+Anonymous rings (Custom Rings only) support only delegated decryption.
+
+| Mode | Where decryption happens | Who has view access | Wallet tradeoff | Who uses this |
+| - | - | - | - | - |
+| Local | Inside the wallet | Wallet only | Best privacy but requires local state and sync lifecycle | Confidential rings: the Default Ring and confidential Custom Rings |
+| Delegated | Authorized RPC provider | Wallet + provider | Less local sync work but provider can view balances and history | Any ring; the only mode in anonymous Custom Rings |
+
+#### Local Decryption
+
+In local decryption mode, the wallet decrypts and syncs balances and history locally.
+Local decryption keeps the viewing key on the device.
+
+#### Delegated Decryption
+
+In delegated decryption mode, the wallet and selected provider share a viewing key.
+This lets the provider decrypt balances and history, but it does not grant spending authority.
+A wallet may also share prior viewing keys when it authorizes the provider to sync historical activity.
+
+Auditor access is separate from delegated decryption.
+An auditor receives policy-defined Ring visibility, while a delegated provider receives wallet-scoped sync access.
+
+#### Selective Disclosure
+
+The owner can share the viewing key to grant read access, for example with an auditor for compliance or with a delegated decryption provider.
+
+* To disclose a single transaction, the sender shares the transaction viewing key, which decrypts only that transaction.
+* Custom Rings can also set a separate auditor key. It decrypts the Ring activity the policy defines. Learn more in [Custom Enterprise Rings](https://www.helius.dev/docs/privacy/integration/enterprise.md).
+
+## Learn More
+
+> [card] [Overview](https://www.helius.dev/docs/privacy/concepts/overview.md)
+>
+> Rings, privacy guarantees, and transaction flow.
+
+> [card] [Architecture](https://www.helius.dev/docs/privacy/concepts/architecture.md)
+>
+> How wallets, RPC services, and Solana programs interact.
+
+> [card] [Private State and UTXOs](https://www.helius.dev/docs/privacy/concepts/utxo.md)
+>
+> How private balances are stored and spent.
+
+> [card] [Custom Enterprise Rings](https://www.helius.dev/docs/privacy/integration/enterprise.md)
+>
+> Learn how to configure a custom Ring.
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy/concepts/overview.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Overview
+
+> Learn how Solana Privacy Rings work, including user flows, what stays public or private on a transfer, and rings with customizable policy.
+
+## Introduction
+
+Every transaction on Solana is publicly readable: addresses, balances, and transfer history are visible to anyone.
+For Solana Privacy Rings, we define two levels of privacy:
+
+* **Confidentiality** – encrypts the asset and amount
+* **Anonymity** – encrypts the asset, amount, the sender and recipient
+
+![Confidential transfers hide the asset and amount. Anonymous transfers also hide the sender and recipient. The transaction hash remains public.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/transaction-visibility-cards.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=2569051cac1c7cba10d4ffabf254577c)
+
+## Solana Privacy Rings
+
+Rings are a programmable shielded pool with encrypted onchain balances and execution directly on Solana.
+Different kind of Rings co-exist:
+
+> [card] Default Ring
+>
+> * Confidential
+> * Self-custodial
+> * Permissionless
+> * No auditor visibility
+
+> [card] [Custom Enterprise Rings](https://www.helius.dev/docs/privacy/integration/enterprise.md)
+>
+> * Confidential or anonymous
+> * Self-custodial
+> * Custom compliance
+> * Auditor visibility
+
+For most applications we recommend the permissionless, confidential default Ring.
+
+Use a Custom Ring when your application needs custom compliance with auditor access and controls.
+Custom Rings are Solana programs that define transfer permissions and any additional authorities, similar to Token-2022.
+
+The Default Ring provides the foundation for confidential DeFi and other applications.
+Independent Custom Rings can use existing applications or create their own while defining their own policies,
+auditor access, and authorities, which apply only to balances within their Ring.
+Rings are interoperable by default and share liquidity across Solana’s confidential DeFi ecosystem.
+
+![Public balances and private balances on Solana, with one Permissionless Ring alongside Custom Ring 1, Custom Ring 2, and Custom Ring n.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/privacy-rings-workshop.png?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=c549ef2c514a89c73af25da87ac0a8cf)
+
+## Key Properties
+
+* **Native Solana speed** – succinct zero-knowledge proofs (Groth16 ZK-SNARKs let Solana verify private transactions without revealing their private data. Proofs are generated server-side using GPUs, or can be generated locally.) are generated in tens of ms, preserving a familiar user experience. Think of it like another RPC call.
+* **Onchain execution** – Encrypted balances stay on Solana. No offchain ledger, sidechain, or centralized sequencer.
+* **Encrypt any asset** – Rings support SOL, SPL tokens, and Token-2022 tokens.
+* **Self-custodial balances** – Private transactions always require the owners signature.
+* **Smart account compatibility** – Rings can support smart accounts with their own authorization logic.
+* **Solana composability** – compose with any Solana program in a single transaction.
+* **Programmable privacy** – Create private escrows in Solana programs.
+
+## User Flows and Privacy Guarantees
+
+Users hold their encrypted balance in a Private Wallet. They can enter, transfer privately within, or exit from a Ring and compose with other Solana programs in a single transaction.
+
+![Public and fiat balances enter a Ring, tokens move between private balances, and users withdraw or off-ramp.](https://mintcdn.com/helius/df3Lmw7POmPkuUJN/images/privacy/privacy-rings-lifecycle.svg?fit=max\&auto=format\&n=df3Lmw7POmPkuUJN\&q=85\&s=54d057b2674ad3a194575858d35db167)
+
+Users send tokens to a Solana wallet address, as they do with public balances.
+Anyone can deposit to any private wallet by knowing only the recipient’s wallet address.
+
+### Deposit to a Private Balance
+
+Users can deposit to a private balance in two ways:
+
+1. On-ramp from a fiat balance to a private crypto balance
+2. Deposit from a public to a private crypto balance
+
+> [tab] On-ramp from fiat balance
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Private. Encrypted onchain. |
+> | Amount | Private. Encrypted onchain. |
+> | Sender | The on-ramp provider. Public in a confidential Ring; private in an anonymous Ring. |
+> | Recipient | The user. Public in a confidential Ring; private in an anonymous Ring. |
+> | Memo (optional) | Private. Encrypted onchain. |
+> | Fiat balance and payment | Not onchain. The fiat payment happens through the on-ramp provider. |
+>
+> Unlike depositing from a public balance, on-ramping to a private balance keeps the asset and amount private. The provider transfers from its private wallet to yours. In a confidential Ring, only the sender and recipient addresses are public.
+
+> [tab] Deposit from public crypto balance
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Public. Visible in the public deposit. |
+> | Amount | Public. Visible in the public deposit. |
+> | Sender | Public. The source wallet address is visible in the public deposit. |
+> | Recipient | Public. The destination wallet address is visible in the public deposit. |
+> | Memo (optional) | Public. Emitted with the public deposit. |
+> | Resulting private balance | Private. Encrypted onchain. |
+
+### Transfer between Private Balances
+
+Users can send a private transfer in two ways:
+
+1. Transfer in the same Ring
+2. Transfer to a different Ring
+
+> [tab] Default Ring
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Private. Encrypted onchain. |
+> | Amount | Private. Encrypted onchain. |
+> | Sender | Public. The Default Ring is confidential. |
+> | Recipient | Public. The Default Ring is confidential. |
+> | Memo (optional) | Private. Encrypted onchain. |
+
+> [tab] Custom Rings
+>
+> | Transfer | Asset | Amount | Sender | Recipient | Memo (optional) |
+> | - | - | - | - | - | - |
+> | Within a Custom confidential Ring | Private | Private | Public | Public | Private |
+> | Within a Custom anonymous Ring | Private | Private | Private | Private | Private |
+> | Default Ring to or from a Custom confidential Ring | Private | Private | Public | Public | Private |
+> | Confidential Ring to a Custom anonymous Ring | Private | Private | Public | Private | Private |
+> | Custom anonymous Ring to a confidential Ring | Private | Private | Private | Public | Private |
+>
+> A relayer submits transfers from anonymous Rings, so the public ledger does not reveal the source private wallet. The Custom Ring program ID remains public.
+>
+> Transfers between Rings must follow the source Ring's policy. One transaction can combine balances from the Default Ring and one Custom Ring. A transfer between two Custom Rings routes through the Default Ring.
+
+### Withdraw to a Public Balance
+
+Users can withdraw from a private balance in two ways:
+
+1. Off-ramp from private crypto to a fiat balance
+2. Withdraw from private crypto to a public crypto balance
+
+> [tab] Off-ramp to fiat balance
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Private. Encrypted onchain. |
+> | Amount | Private. Encrypted onchain. |
+> | Sender | The user. Public in a confidential Ring; private in an anonymous Ring. |
+> | Recipient | The off-ramp provider. Public in a confidential Ring; private in an anonymous Ring. |
+> | Memo (optional) | Private. Encrypted onchain. |
+> | Fiat payout | Not onchain. The fiat payout happens through the off-ramp provider. |
+>
+> Unlike withdrawing to a public balance, off-ramping from a private balance keeps the asset and amount private. You transfer from your private wallet to the provider’s private wallet, and the provider pays you in fiat. In a confidential Ring, only the sender and recipient addresses are public. Your remaining private balance stays private.
+
+> [tab] Withdraw to public crypto balance
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Public. Visible in the public withdrawal. |
+> | Amount | Public. Visible in the public withdrawal. |
+> | Sender | Public in a confidential Ring; private in an anonymous Ring. |
+> | Recipient | Public. The destination wallet address is visible in the public withdrawal. |
+> | Memo (optional) | Private when attached to an encrypted output. |
+> | Resulting public balance | Public. Held in the recipient's public account. |
+> | Remaining private balance | Private. Encrypted onchain. |
+
+## Programmability and Private Escrows
+
+Solana programs can use private escrows to build confidential DeFi applications.
+
+* **Private escrows** – ZK Solana programs can escrow private balances and define the conditions for release
+* **Solana Composability** – Combine private transactions with other Solana programs in a single transaction
+* **Shared liquidity** – ZK programs across confidential DeFi can share liquidity
+
+**What you can build**
+
+* **Conditional private payments** – Escrow encrypted assets and release them on a schedule or after required approvals, enabling payroll, vesting, milestone payments, and private multisig workflows.
+* **Swaps and Trading** – exchange wrapped tokens, SOL, memecoins, stocks, and RWAs through private escrows, such as in token swaps or OTC trades.
+* **Staking and Yield** – build private yield bearing applications, such as staking pools, tokenized treasuries, or other yield vaults.
+* **Lending and Borrowing** – hold collateral in private escrows, such as for stablecoin loans backed by tokenized assets.
+
+![Private balances connected by transfer, swap, and lending, with yield and staking above them inside Solana Privacy Rings.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/programmability.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=1ead5d736db986e9fedd4a0e51d5a730)
+
+## High-Level Transaction Flow
+
+A private transfer behaves similarly to public transfers and is executed in a single Solana transaction.
+
+> [tab] Private transfer
+>
+> 1. The user's SOL or SPL balance is encrypted onchain.
+> 2. Fetch encrypted state and decrypt locally, or a delegated provider decrypts and serves decrypted state.
+> 3. The wallet sets amount and recipient, then requests a ZK proof.
+> 4. The RPC provider generates the ZK proof by default and returns it. A Custom Ring also requires a policy proof.
+> 5. The wallet builds the Solana transaction. ZK proofs are verified without revealing the encrypted state. The invoked programs and who signs and submits depend on the Ring:
+>
+> | | Permissionless Confidential Ring | Custom Confidential Ring | Custom Anonymous Ring |
+> | - | - | - | - |
+> | Invoked Programs | Solana Privacy Program | Custom Ring program and Solana Privacy Program | Custom Ring program and Solana Privacy Program |
+> | Signer | The sender signs. A gas sponsor may pay the fee. | The sender signs. A gas sponsor may pay the fee. | A relayer, so the sender is not linked to the transaction. |
+>
+> 6. The app tracks status via the Solana transaction hash.
+>
+> > [tab] Permissionless Confidential Ring
+> >
+> > ```mermaid theme={"system"}
+> > %%{init: {
+> >   'theme': 'base',
+> >   'themeVariables': {
+> >     'lineColor':           '#FF6B35',
+> >     'primaryTextColor':    '#737373',
+> >     'primaryBorderColor':  '#9CA3AF',
+> >     'actorBkg':            '#FFFFFF',
+> >     'actorBorder':         '#9CA3AF',
+> >     'actorTextColor':      '#737373',
+> >     'signalColor':         '#FF6B35',
+> >     'signalTextColor':     '#737373',
+> >     'labelBoxBkgColor':    '#FF6B351F',
+> >     'labelBoxBorderColor': '#FF6B35',
+> >     'noteBkgColor':        '#F5F5F5',
+> >     'noteTextColor':       '#737373',
+> >     'noteBorderColor':     '#9CA3AF'
+> >   }
+> > }}%%
+> > sequenceDiagram
+> >     participant Wallet
+> >     participant RPC as RPC Provider
+> >     participant Solana
+> >
+> >     rect rgba(255, 107, 53, 0.06)
+> >         Note left of Wallet: Local
+> >         Wallet->>RPC: Fetch encrypted state
+> >         RPC-->>Wallet: Encrypted state
+> >         Note over Wallet: Decrypt locally
+> >     end
+> >     rect rgba(255, 107, 53, 0.06)
+> >         Note left of Wallet: Delegated
+> >         Wallet->>RPC: Get private balance
+> >         Note over RPC: Decrypt and serve decrypted state
+> >         RPC-->>Wallet: Decrypted state
+> >     end
+> >
+> >     Note over Wallet: Set amount and recipient
+> >     Wallet->>RPC: Request ZK proof
+> >     Note over RPC: Generate ZK proof
+> >     RPC-->>Wallet: ZK proof
+> >     Note over Wallet: Build transaction, sign
+> >
+> >     Wallet->>RPC: Submit Transaction
+> >     RPC->>Solana: Forward transaction
+> >     Note over Solana: Verify signatures
+> >     Note over Solana: CPI Solana Privacy Program
+> >     Note over Solana: Verify ZK proof
+> >     RPC-->>Wallet: Transaction signature
+> > ```
+>
+> > [tab] Custom Confidential Ring
+> >
+> > ```mermaid theme={"system"}
+> > %%{init: {
+> >   'theme': 'base',
+> >   'themeVariables': {
+> >     'lineColor':           '#FF6B35',
+> >     'primaryTextColor':    '#737373',
+> >     'primaryBorderColor':  '#9CA3AF',
+> >     'actorBkg':            '#FFFFFF',
+> >     'actorBorder':         '#9CA3AF',
+> >     'actorTextColor':      '#737373',
+> >     'signalColor':         '#FF6B35',
+> >     'signalTextColor':     '#737373',
+> >     'labelBoxBkgColor':    '#FF6B351F',
+> >     'labelBoxBorderColor': '#FF6B35',
+> >     'noteBkgColor':        '#F5F5F5',
+> >     'noteTextColor':       '#737373',
+> >     'noteBorderColor':     '#9CA3AF'
+> >   }
+> > }}%%
+> > sequenceDiagram
+> >     participant Wallet
+> >     participant RPC as RPC Provider
+> >     participant Solana
+> >
+> >     rect rgba(255, 107, 53, 0.06)
+> >         Note left of Wallet: Local
+> >         Wallet->>RPC: Fetch encrypted state
+> >         RPC-->>Wallet: Encrypted state
+> >         Note over Wallet: Decrypt locally
+> >     end
+> >     rect rgba(255, 107, 53, 0.06)
+> >         Note left of Wallet: Delegated
+> >         Wallet->>RPC: Get private balance
+> >         Note over RPC: Decrypt and serve decrypted state
+> >         RPC-->>Wallet: Decrypted state
+> >     end
+> >
+> >     Note over Wallet: Set amount and recipient
+> >     Wallet->>RPC: Request ZK proof
+> >     Note over RPC: Generate ZK proof and policy proof
+> >     RPC-->>Wallet: ZK proof and policy proof
+> >     Note over Wallet: Build transaction, sign
+> >
+> >     Wallet->>RPC: Submit Transaction
+> >     RPC->>Solana: Forward transaction
+> >     Note over Solana: Verify signatures
+> >     Note over Solana: CPI Custom Ring Program
+> >     Note over Solana: Verify policy ZK proof
+> >     Note over Solana: CPI Solana Privacy Program
+> >     Note over Solana: Verify SPP ZK proof
+> >     RPC-->>Wallet: Transaction signature
+> > ```
+>
+> > [tab] Custom Anonymous Ring
+> >
+> > ```mermaid theme={"system"}
+> > %%{init: {
+> >   'theme': 'base',
+> >   'themeVariables': {
+> >     'lineColor':           '#FF6B35',
+> >     'primaryTextColor':    '#737373',
+> >     'primaryBorderColor':  '#9C
+
+========== https://www.helius.dev/docs/privacy/concepts/utxo.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Private State and UTXOs
+
+> Learn how UTXOs store tokens and private state.
+
+A private balance is stored in UTXOs (unspent transaction outputs).
+You can think of UTXOs as private SPL token accounts, with two core differences:
+
+1. A UTXO is not a Solana account, so it needs no rent-exemption.
+2. Its balance is encrypted onchain.
+
+The UTXO data layout is similar to SPL token accounts:
+
+* **Owner** – Solana keypair or PDA.
+* **Asset** – the mint (SOL, SPL or Token-2022).
+* **Amount** – the number of units of `asset`, in its smallest unit.
+* **Data** – a UTXO can store arbitrary data, for example the owner of escrowed tokens.
+* **Program and policy data** – optional configured Ring compliance.
+
+> [tab] Diagram
+>
+> ![A Private Solana Token Account. The Solana Privacy Program owns a Private Token Account, which expands into its UTXO fields: owner, asset, amount, data, policy data, and policy program id.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/account-comparison-private.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=4143bb77db4e5ff44225882d571b8830)
+
+> [tab] Code
+>
+> The full record stored for each Private Solana Token Account is a flat UTXO:
+>
+> ```rust theme={"system"}
+> struct Utxo {
+>     /// Constant separating UTXOs from other Poseidon-hashed data.
+>     domain: u16,
+>     /// Recipient's `owner_hash` from their Shielded Address.
+>     /// Senders write this value directly; the spender supplies the preimage
+>     /// components as proof witness.
+>     owner: [u8; 32],
+>     /// Asset mint. SOL is Address::default().
+>     asset: Address,
+>     /// Amount in the smallest unit of `asset`.
+>     amount: u64,
+>     /// Random bytes ensuring distinct UTXO hashes for equal
+>     /// `(owner, asset, amount)` triples.
+>     blinding: [u8; 31],
+>     /// Arbitrary program data.
+>     program_data: Option<Vec<u8>>,
+>     /// Arbitrary policy data.
+>     policy_data: Option<Vec<u8>>,
+>     /// The policy program that authorizes spends of this UTXO.
+>     policy_program_id: Option<Address>,
+> }
+> ```
+
+> [!NOTE]
+>
+> View source code: [Spec](https://github.com/helius-labs/zolana/blob/680667f27cf9ba4203a0b69284f4c304b874092f/docs/spec.md#utxo) · [sdk-libs/transaction/src/utxo/note.rs](https://github.com/helius-labs/zolana/blob/680667f27cf9ba4203a0b69284f4c304b874092f/sdk-libs/transaction/src/utxo/note.rs#L16)
+
+> [accordion] View Solana token account
+>
+> > [tab] Diagram
+> >
+> > ![Solana token account.](https://mintcdn.com/helius/KNGZoSuCXDUVm6yU/images/privacy/account-comparison-solana.svg?fit=max\&auto=format\&n=KNGZoSuCXDUVm6yU\&q=85\&s=89ff901091255f2038972208fcb5d538)
+>
+> > [tab] Code
+> >
+> > ```rust theme={"system"}
+> > pub struct Account {
+> >     /// The mint associated with this account
+> >     pub mint: Pubkey,
+> >     /// The owner of this account.
+> >     pub owner: Pubkey,
+> >     /// The amount of tokens this account holds.
+> >     pub amount: u64,
+> >     /// If `delegate` is `Some` then `delegated_amount` represents
+> >     /// the amount authorized by the delegate
+> >     pub delegate: COption<Pubkey>,
+> >     /// The account's state
+> >     pub state: AccountState,
+> >     /// If is_native.is_some, this is a native token, and the value logs the
+> >     /// rent-exempt reserve. An Account is required to be rent-exempt, so
+> >     /// the value is used by the Processor to ensure that wrapped SOL
+> >     /// accounts do not drop below this threshold.
+> >     pub is_native: COption<u64>,
+> >     /// The amount delegated
+> >     pub delegated_amount: u64,
+> >     /// Optional authority to close the account.
+> >     pub close_authority: COption<Pubkey>,
+> > }
+> > ```
+
+## Private Balance
+
+The private balance is the sum of all UTXOs of one asset owned by a private wallet.
+The wallet displays one balance, regardless of whether a private balance
+consists of one, or multiple UTXOs.
+A private transfer can spend several UTXOs at once.
+
+![A Private Wallet connected by dashed lines to several UTXOs, each holding one amount of one asset. The wallet balance is the sum of the UTXOs.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-set-to-wallet.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=398e39f96fc52325c895e512a9b09dc7)
+
+## Private Transfer
+
+Private transfers with UTXOs work differently from public transfers with SPL token accounts:
+
+* A transfer from an SPL token account updates the `amount`.
+* A private transfer with UTXOs does not update the `amount` of a UTXO.
+  Instead, private transfers spend existing UTXOs
+  and create new UTXOs for the recipient and for the sender's remaining balance.
+
+Still for the user, public transfer with Solana token accounts
+and private transfers with UTXOs feel similar.
+
+For example, Alice has 50 USDC and sends Bob 35 USDC.
+
+* With SPL token accounts, Alice's `amount` decreases from 50 to 15, and Bob's increases by 35.
+* With UTXOs, Alice holds one UTXO for 50 USDC. The transaction spends the existing UTXO and creates two new UTXOs: one with 35 USDC for Bob and one with 15 USDC for Alice.
+
+> [tab] Transfer with one UTXO
+>
+> ![Spend one UTXO](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/spend-comparison.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=c25d35501ca9fcff9b4c0c7c8654dd73)
+
+> [tab] Transfer with multiple UTXOs
+>
+> ![Spend multiple UTXOs](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/spend-comparison-multi.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=c35ec9ab7c87c8d3cdb9e3d1caaf7742)
+
+| | Solana token account | Private Solana token account (UTXO) |
+| - | - | - |
+| Balance | The `amount` in the account | The sum of all unspent UTXOs, each a fixed amount of one asset |
+| Spending | Updates the `amount` field | Invalidate spent UTXOs and create a new UTXO |
+| Visibility | Public onchain | Encrypted onchain |
+
+### UTXO Selection
+
+For private transfers, the SDK selects unspent UTXOs that cover the amount you want to transfer.
+
+The UTXO selection algorithm spends as few UTXOs as possible per transfer:
+
+1. The SDK filters your UTXOs by the asset being sent and sorts them by amount.
+2. The SDK selects as many UTXOs as necessary to cover the transfer amount.
+   It selects the largest UTXOs first until the transfer amount is covered.
+
+For example, Alice sends Bob 80 USDC. Her three largest UTXOs are enough to cover the transfer:
+
+![Alice sends 80 USDC. Her UTXOs are sorted largest first: 40, 25, 20, 10, and 5 USDC. The SDK selects 40, 25, and 20 USDC, which cover 80 USDC, and leaves 10 and 5 USDC unselected.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-selection.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=07ed7a4483eee5a3605ceb08291d5e02)
+
+Fewer UTXOs keep the transaction small.
+Each spent UTXO adds 66 bytes for a nullifier account, which marks the UTXO as spent.
+The account prevents the UTXO from being spent again (The nullifier account is temporary. Asynchronously, the Forester inserts the nullifier into the nullifier Merkle tree, which records the UTXO as spent permanently. The Forester then closes the account and reclaims the rent-exemption.).
+
+Example private transfers with one tree, the payer as the owner signer, and no public deposits or withdrawals:
+
+| UTXOs spent | New UTXOs | Transaction size | Accounts |
+| - | - | - | - |
+| 2 | 4 | 1,279 bytes | 6 |
+| 5 | 4 | 1,477 bytes | 9 |
+| 49 | 2 | 4,067 bytes | 53 |
+
+### Transaction Variants
+
+Every private transfer uses a transaction variant: a fixed number of slots for UTXOs to spend and new UTXOs to create.
+
+Variants range from 1 to 49 spent UTXOs, and each variant has its own ZK circuit.
+The circuit proves that the spent UTXOs are valid and that the new UTXOs hold the same total amount.
+The SDK selects at most 40 UTXOs per transfer. If a transfer needs more than 40 UTXOs, [merge them first](#merging-utxos).
+
+The SDK picks a variant that fits the transfer and fills unused slots with dummy UTXOs.
+Dummy UTXOs hold no value and look like real UTXOs onchain.
+
+> [tab] 1 spent, 2 new
+>
+> Alice sends Bob 30 USDC. Her largest UTXO covers the transfer.
+>
+> ![Alice's 40 USDC UTXO is spent, and her 25, 20, 10, and 5 USDC UTXOs stay unspent. The transaction creates 30 USDC for Bob and 10 USDC for Alice.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-variant-1-2.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=728d31824165d27d6fd5f98704431f5e)
+
+> [tab] 2 spent, 2 new
+>
+> Alice sends Bob 60 USDC. Her two largest UTXOs cover the transfer.
+>
+> ![Alice's 40 and 25 USDC UTXOs are spent, and her 20, 10, and 5 USDC UTXOs stay unspent. The transaction creates 60 USDC for Bob and 5 USDC for Alice.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-variant-2-2.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=75d3804ee8a731e2b213dcbda9f3edbc)
+
+> [tab] 3 spent, 2 new
+>
+> Alice sends Bob 80 USDC. Her three largest UTXOs cover the transfer.
+>
+> ![Alice's 40, 25, and 20 USDC UTXOs are spent, and her 10 and 5 USDC UTXOs stay unspent. The transaction creates 80 USDC for Bob and 5 USDC for Alice.](https://mintcdn.com/helius/TmJKmhRkzktcPKTc/images/privacy/utxo-variant-3-3.svg?fit=max\&auto=format\&n=TmJKmhRkzktcPKTc\&q=85\&s=18333e159c5e0fc59c3cd3f39871e7ee)
+
+> [tab] 4 spent, 2 new
+>
+> Alice sends Bob 95 USDC. Her four largest UTXOs cover the transfer. The SDK fills the unused slot with a dummy UTXO.
+>
+> ![Alice's 40, 25, 20, and 10 USDC UTXOs are spent, and her 5 USDC UTXO stays unspent. The transaction creates 95 USDC for Bob and one dummy UTXO of 0 USDC in the unused slot.](https://mintcdn.com/helius/TmJKmhRkzktcPKTc/images/privacy/utxo-variant-4-3.svg?fit=max\&auto=format\&n=TmJKmhRkzktcPKTc\&q=85\&s=8acf69b1c7e683dd55ed4e18d648e1bf)
+
+> [accordion] Supported transaction variants
+>
+> | UTXOs spent | New UTXOs |
+> | - | - |
+> | 1 | 2, 4, 8, or 16 |
+> | 2 | 2, 4, 8, or 16 |
+> | 3 | 2, 4, or 8 |
+> | 4 | 2, 4, 8, or 16 |
+> | 5 | 2, 4, 8, or 16 |
+> | 6 | 2, 4, or 8 |
+> | 8 | 2, 4, 8, or 16 |
+> | 12 | 2, 4, or 8 |
+> | 16 | 2, 4, or 8 |
+> | 24 | 2 or 4 |
+> | 32 | 2 |
+> | 40 | 2 |
+> | 48 | 2 |
+> | 49 | 2 |
+>
+> > [!NOTE]
+> >
+> > View source code: [Spec](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/docs/spec.md#supported-shapes) · [Supported variants](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/program-libs/interface/src/shape.rs) · [SDK selection limit](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/sdk-libs/ts/src/flows/select.ts)
+
+## Merging UTXOs
+
+Receiving many transfers without spending can fragment the private balance across many UTXOs.
+
+If a transfer needs more than 40 UTXOs, merge them first so the user can spend the entire balance in one transfer.
+Most users will rarely encounter a fragmented balance since one transfer can spend up to 40 UTXOs.
+
+* A merge combines UTXOs of the same owner and asset into one UTXO with the same total value.
+* A merge cannot spend funds or change the owner.
+* Merging can be done under the hood without impacting UX for end users.
+
+![A merge spends five of Alice's UTXOs of 1 USDC each and creates one new UTXO of 5 USDC for Alice.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-merge.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=2fb4f8d2bad662806127ff1c4fb7687f)
+
+The number of merges needed to spend the whole balance in one transfer depends on how many UTXOs hold it:
+
+| UTXOs in the balance | Merges before the transfer | Transfer |
+| - | - | - |
+| 1 to 40 | None | One transfer spends every UTXO |
+| 41 | 1 merge of 2 UTXOs | One transfer with 40 UTXOs |
+| 100 | 2 merges of 36 UTXOs, in parallel | One transfer with 30 UTXOs |
+| 1,296 | 36 merges of 36 UTXOs, in parallel | One transfer with 36 UTXOs |
+
+Each merge is one Solana transaction with a ZK proof and turns up to 52 default-ring UTXOs into one.
+Because the merge outcome is deterministic, the merge proofs and the transfer proof can be generated in parallel using a cache account.
+
+### Example Merge Instruction Usage
+
+Your application can merge at two points:
+
+* **When syncing the private balance:** on wallet unlock, private wallet open, app resume, network reconnect, stream gap, or wallet restore.
+* **Before a transfer:** when the transfer needs more than 40 UTXOs.
+
+> [!NOTE]
+>
+> Merges run without a user signature. Custom Rings set their own merge permissions.
+> When using the embedded private wallet, merge is done for you under the hood.
+
+> [accordion] Example for Merge
+>
+> For example, a private wallet holds 1,296 USDC in 1,296 UTXOs after receiving 1,296 private transfers of 1 USDC.
+> A transfer spends at most 40 UTXOs, so the wallet spends the balance in two stages:
+>
+> 1. 36 merge transactions run in parallel and create 36 UTXOs of 36 USDC each.
+>
+> 2. One 40-input transfer spends the 36 merged UTXOs and fills the four unused input slots with dummy UTXOs, spending the entire 1,296 USDC balance.
+>
+> > [!NOTE]
+> >
+> > View example code: [sdk-tests/client/rust/optimized\_merge\_transfer.rs](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/sdk-tests/client/rust/optimized_merge_transfer.rs) · [sdk-tests/client/typescript/optimized-merge-transfer.test.ts](https://github.com/helius-labs/zolana/blob/ded44879b3df35482d2871bc1d0f32f2d1be2879/sdk-tests/client/typescript/optimized-merge-transfer.test.ts)
+
+## UTXO Concurrency
+
+Users can spend private balances as soon as transactions are final.
+
+A private balance can be spent concurrently when it is split across several UTXOs. Each UTXO can be spent in a separate transaction at the same time. For example, a balance of three UTXOs of 100 USDC each can fund three transfers of up to 100 USDC at once. The wallet selects which UTXOs to spend.
+
+![Alice's three UTXOs of 100 USDC each fund three transfers at the same time, one UTXO per transfer.](https://mintcdn.com/helius/ITnDOhn5GRfQ1FQW/images/privacy/utxo-concurrency.svg?fit=max\&auto=format\&n=ITnDOhn5GRfQ1FQW\&q=85\&s=5888bf355ed8aef63ea7cb43c63f0bcd)
+
+A single UTXO can only be spent once.
+
+For the protocol's throughput limits, see [State Merkle Tree and Forester](https://www.helius.dev/docs/privacy/concepts/architecture.md#state-merkle-tree-and-forester).
+
+## Learn More
+
+> [card] [Overview](https://www.helius.dev/docs/privacy/concepts/overview.md)
+>
+> Rings, privacy guarantees, and transaction flow.
+
+> [card] [Architecture](https://www.helius.dev/docs/privacy/concepts/architecture.md)
+>
+> How wallets, RPC services, and Solana programs interact.
+
+> [card] [Encryption and Privacy Guarantees](https://www.helius.dev/docs/privacy/concepts/encryption.md)
+>
+> How assets are encrypted and the role of the shielded keypair.
+
+> [card] [Custom Enterprise Rings](https://www.helius.dev/docs/privacy/i
+
+========== https://www.helius.dev/docs/privacy/endpoints.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Endpoints
+
+> RPC endpoints and connection details for Solana Privacy Rings.
+
+## Beta Endpoints
+
+Connect to the RPC, indexer and prover with a single [Helius API key](https://dashboard.helius.dev/).
+
+> [tab] Devnet
+>
+> ```text theme={"system"}
+> https://devnet.helius-rpc.com/?api-key=<API_KEY>
+> ```
+>
+> Fund the payer with [devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+
+> [tab] Mainnet
+>
+> ```text theme={"system"}
+> https://mainnet.helius-rpc.com/?api-key=<API_KEY>
+> ```
+
+* **Solana RPC** – Returns the public balance and submits transactions to the Solana network.
+* **Indexer** – Fetches encrypted state.
+* **Prover** – Generates ZK proofs.
+
+For direct indexer calls, use `https://mainnet.helius-rpc.com/v1/spr/{method}?api-key=YOUR_API_KEY` on mainnet or `https://devnet.helius-rpc.com/v1/spr/{method}?api-key=YOUR_API_KEY` on devnet. The JSON-RPC `method` must match the URL path. The Solana Privacy Rings section in the API Reference lists request parameters, response schemas, and pagination.
+
+**Localnet:**
+
+`zolana dev start`. RPC port `:8899`, indexer port `:8784`, prover port `:3001`.
+
+## Create an RPC connection
+
+> [tab] TypeScript
+>
+> > [tab] Mainnet
+> >
+> > ```ts theme={"system"}
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > const client = await createSprClient({
+> >   solanaRpcUrl: "https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > });
+> > ```
+>
+> > [tab] Devnet
+> >
+> > ```ts theme={"system"}
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > const client = await createSprClient({
+> >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > });
+> > ```
+>
+> > [tab] Localnet
+> >
+> > ```bash theme={"system"}
+> > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > zolana dev start
+> > ```
+> >
+> > ```ts theme={"system"}
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > const client = await createSprClient({});
+> > ```
+
+> [tab] Rust
+>
+> > [tab] Devnet
+> >
+> > ```rust theme={"system"}
+> > use zolana_client::prover::tee;
+> > use zolana_client::{SolanaRpc, ZolanaClient};
+> >
+> > let url = "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY";
+> > let client = ZolanaClient::from_urls(
+> >     SolanaRpc::new(url),
+> >     "https://d21d98xh5lgv3b.cloudfront.net",
+> >     tee::DEFAULT_PROVER_URL,
+> > )?;
+> > ```
+>
+> > [tab] Localnet
+> >
+> > ```bash theme={"system"}
+> > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > zolana dev start
+> > ```
+> >
+> > ```rust theme={"system"}
+> > use zolana_client::{SolanaRpc, ZolanaClient};
+> >
+> > let client = ZolanaClient::from_urls(
+> >     SolanaRpc::new("http://127.0.0.1:8899"),
+> >     "http://127.0.0.1:8784",
+> >     "http://127.0.0.1:3001",
+> > )?;
+> > ```
+
+## Related Guides
+
+> [card] [API Reference](https://www.helius.dev/docs/api-reference/privacy.md)
+
+> [card] [SDK](https://www.helius.dev/docs/privacy/sdk.md)
+
+> [card] [Addresses](https://www.helius.dev/docs/privacy/addresses.md)
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy/guides/deposit.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Deposit
+
+> Guide to deposit SOL, SPL, or Token 2022 assets into a private balance with a full code example.
+
+1. A deposit moves tokens from the user's public Solana balance into their own or someone else's private balance.
+2. Deposits are sent in a single Solana transaction to a Solana wallet address.
+
+#### Deposit: What Is Private
+
+| Field | Visibility |
+| - | - |
+| Asset | Public. Visible in the public deposit. |
+| Amount | Public. Visible in the public deposit. |
+| Sender | Public. The source wallet address is visible in the public deposit. |
+| Recipient | Public. The destination wallet address is visible in the public deposit. |
+| Memo (optional) | Public. Emitted with the public deposit. |
+| Resulting private balance | Private. Encrypted onchain. |
+
+> [!NOTE]
+>
+> The permissionless Ring is confidential with encrypted amount and asset.
+> A custom Ring can be configured as confidential or anonymous (encrypted sender, recipient, asset, and amount).
+
+## How a Deposit Works
+
+A deposit is a public Solana transfer with a resulting private balance.
+
+1. The user's SOL or SPL balance is public onchain.
+2. The wallet sets amount and recipient, builds the deposit, and the owner signs. A deposit does not request a ZK proof.
+3. The Solana runtime verifies the signatures and invokes the Solana Privacy Program.
+4. The app tracks status via the Solana transaction hash.
+
+```mermaid theme={"system"}
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'lineColor':           '#FF6B35',
+    'primaryTextColor':    '#737373',
+    'primaryBorderColor':  '#9CA3AF',
+    'actorBkg':            '#FFFFFF',
+    'actorBorder':         '#9CA3AF',
+    'actorTextColor':      '#737373',
+    'signalColor':         '#FF6B35',
+    'signalTextColor':     '#737373',
+    'labelBoxBkgColor':    '#FF6B351F',
+    'labelBoxBorderColor': '#FF6B35',
+    'noteBkgColor':        '#F5F5F5',
+    'noteTextColor':       '#737373',
+    'noteBorderColor':     '#9CA3AF'
+  }
+}}%%
+sequenceDiagram
+    participant Wallet
+    participant RPC as RPC Provider
+    participant Solana
+
+    Wallet->>RPC: Get public balance
+    RPC-->>Wallet: Public state
+    Note over Wallet: Set amount and recipient
+    Note over Wallet: Build deposit, sign
+    Wallet->>RPC: Submit Transaction
+    RPC->>Solana: Forward transaction
+    Note over Solana: Verify signatures
+    Note over Solana: CPI Solana Privacy Program
+    RPC-->>Wallet: Transaction signature
+```
+
+> [accordion] Compare to Solana Transfer
+>
+> 1. The user's SOL or SPL balance is public onchain.
+> 2. The wallet reads public state, builds a transfer, and the owner signs.
+> 3. The Solana runtime verifies the signatures and invokes the System Program or Token Program, which updates the public balance.
+> 4. The app tracks status via the Solana transaction hash.
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'lineColor':           '#FF6B35',
+>     'primaryTextColor':    '#737373',
+>     'primaryBorderColor':  '#9CA3AF',
+>     'actorBkg':            '#FFFFFF',
+>     'actorBorder':         '#9CA3AF',
+>     'actorTextColor':      '#737373',
+>     'signalColor':         '#FF6B35',
+>     'signalTextColor':     '#737373',
+>     'labelBoxBkgColor':    '#FF6B351F',
+>     'labelBoxBorderColor': '#FF6B35',
+>     'noteBkgColor':        '#F5F5F5',
+>     'noteTextColor':       '#737373',
+>     'noteBorderColor':     '#9CA3AF'
+>   }
+> }}%%
+> sequenceDiagram
+>     participant Wallet
+>     participant RPC
+>     participant Solana
+>
+>     Wallet->>RPC: Get public balance
+>     RPC-->>Wallet: Public state
+>     Note over Wallet: Build transfer, owner signs
+>     Wallet->>RPC: sendTransaction
+>     RPC->>Solana: Forward transaction
+>     Note over Solana: Verify signatures
+>     Note over Solana: CPI System / Token Program
+>     Note over Solana: Update balance
+>     RPC-->>Wallet: Transaction signature
+> ```
+
+> [!NOTE]
+>
+> This is the high-level transaction flow for the permissionless confidential Ring.
+> Compare to custom Rings in [High-Level Transaction Flow](https://www.helius.dev/docs/privacy/concepts/overview.md#high-level-transaction-flow).
+
+## Get Started
+
+> [tab] TypeScript Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The TypeScript examples require Node.js 24 or later, pnpm 11.18.0, and the Solana CLI.
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > ```bash theme={"system"}
+> > > pnpm install
+> > > cp .env.example .env
+> > > ```
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({
+> > >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > > });
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > On localnet, the SDK starts the local test validator (`:8899`), Photon indexer (`:8784`), and prover (`:3001`), and the
+> > > client connects to them automatically without needing endpoint configuration.
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({});
+> > > ```
+>
+> **Step 2**
+>
+> ### Deposit to a Private Balance
+>
+> > [accordion] Solana Kit send helper
+> >
+> > ```typescript theme={"system"}
+> > import {
+> >   appendTransactionMessageInstructions,
+> >   assertIsTransactionWithBlockhashLifetime,
+> >   createTransactionMessage,
+> >   getSignatureFromTransaction,
+> >   pipe,
+> >   sendTransactionWithoutConfirmingFactory,
+> >   setTransactionMessageConfig,
+> >   setTransactionMessageFeePayerSigner,
+> >   setTransactionMessageLifetimeUsingBlockhash,
+> >   signTransactionMessageWithSigners,
+> >   type Instruction,
+> >   type Signature,
+> >   type TransactionSigner,
+> > } from "@solana/kit";
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > type Client = Awaited<ReturnType<typeof createSprClient>>;
+> >
+> > export interface ConfirmedTransaction {
+> >   readonly signature: Signature;
+> >   readonly slot: bigint;
+> > }
+> >
+> > export function sendAndConfirmFactory(
+> >   client: Client,
+> >   feePayer: TransactionSigner,
+> > ): (instructions: readonly Instruction[]) => Promise<ConfirmedTransaction> {
+> >   const sendTransaction = sendTransactionWithoutConfirmingFactory({
+> >     rpc: client.solanaRpc,
+> >   });
+> >
+> >   return async function sendAndConfirm(
+> >     instructions: readonly Instruction[],
+> >   ): Promise<ConfirmedTransaction> {
+> >     const { value: lifetime } = await client.solanaRpc
+> >       .getLatestBlockhash()
+> >       .send();
+> >     const signed = await signTransactionMessageWithSigners(
+> >       pipe(
+> >         createTransactionMessage({ version: 1 }),
+> >         (message) => setTransactionMessageFeePayerSigner(feePayer, message),
+> >         (message) =>
+> >           setTransactionMessageLifetimeUsingBlockhash(lifetime, message),
+> >         (message) =>
+> >           setTransactionMessageConfig(
+> >             {
+> >               computeUnitLimit: 450_000,
+> >               loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+> >             },
+> >             message,
+> >           ),
+> >         (message) =>
+> >           appendTransactionMessageInstructions(instructions, message),
+> >       ),
+> >     );
+> >     assertIsTransactionWithBlockhashLifetime(signed);
+> >     await sendTransaction(signed, { commitment: "confirmed" });
+> >     const signature = getSignatureFromTransaction(signed);
+> >     const slot = await client.confirmTransaction(signature);
+> >     return { signature, slot };
+> >   };
+> > }
+> > ```
+> >
+> > * The SDK returns instructions. The app signs and sends them.
+> > * `sendAndConfirmFactory` builds a Kit transaction, submits it, and returns the signature plus the landed slot.
+>
+> Each SPL mint needs a token interface to hold deposited tokens. If the interface does not exist, create it in the same transaction as the deposit. The creator pays the account rent.
+>
+> > [tab] Deposit Tokens with an Existing Interface
+> >
+> > > [tab] SOL
+> > >
+> > > ```typescript theme={"system"}
+> > > import {
+> > >   depositInstruction,
+> > >   DepositAsset,
+> > > } from "@heliuslabs/spr/interface";
+> > > import { sendAndConfirmFactory } from "../src/lib.js";
+> > >
+> > >
+> > >   const sendAndConfirm = sendAndConfirmFactory(
+> > >     client,
+> > >     senderSigner,
+> > >   );
+> > >   const senderViewTag =
+> > >     senderAddress.confidentialViewTag();
+> > >   const depositIx = await depositInstruction({
+> > >     tree: client.tree,
+> > >     depositor: senderSigner,
+> > >     deposits: [
+> > >       {
+> > >         asset: DepositAsset.sol(),
+> > >         viewTag: senderViewTag,
+> > >         recipientOwnerHash:
+> > >           senderAddress.ownerHash(),
+> > >         amount: DEPOSIT_AMOUNT,
+> > >       },
+> > >     ],
+> > >   });
+> > >
+> > >   const depositTx = await sendAndConfirm([
+> > >     depositIx,
+> > >   ]);
+> > > ```
+> >
+> > > [tab] SPL
+> > >
+> > > ```typescript theme={"system"}
+> > > import {
+> > >   depositInstruction,
+> > >   DepositAsset,
+> > > } from "@heliuslabs/spr/interface";
+> > > import { sendAndConfirmFactory } from "../src/lib.js";
+> > >
+> > >
+> > >   const sendAndConfirm = sendAndConfirmFactory(
+> > >     client,
+> > >     senderSigner,
+> > >   );
+> > >   const senderViewTag =
+> > >     senderAddress.confidentialViewTag();
+> > >   const depositIx = await depositInstruction({
+> > >     tree: client.tree,
+> > >     depositor: senderSigner,
+> > >     deposits: [
+> > >       {
+> > >         asset: DepositAsset.spl({
+> > >           mint: spl.mint,
+> > >           sourceTokenAccount: spl.sourceTokenAccount,
+> > >           tokenProgram: spl.tokenProgram,
+> > >         }),
+> > >         viewTag: senderViewTag,
+> > >         recipientOwnerHash:
+> > >           senderAddress.ownerHash(),
+> > >         amount: DEPOSIT_AMOUNT,
+> > >       },
+> > >     ],
+> > >   });
+> > >
+> > >   const depositTx = await sendAndConfirm([
+> > >     depositIx,
+> > >   ]);
+> > > ```
+> >
+> > > [accordion] 1. Move public tokens into the sender's private balance
+> > >
+> > > ```typescript theme={"system"}
+> > > import {
+> > >   depositInstruction,
+> > >   DepositAsset,
+> > > } from "@heliuslabs/spr/interface";
+> > >
+> > > const senderViewTag =
+> > >   senderAddress.confidentialViewTag();
+> > > const depositIx = await depositInstruction({
+> > >   tree: client.tree,
+> > >   depositor: senderSigner,
+> > >   deposits: [
+> > >     {
+> > >       asset: DepositAsset.sol(),
+> > >       viewTag: senderViewTag,
+> > >       recipientOwnerHash:
+> > >         senderAddress.ownerHash(),
+> > >       amount: DEPOSIT_AMOUNT,
+> > >     },
+> > >   ],
+> > > });
+> > > ```
+> > >
+> > > * `senderAddress` is the recipient's Shielded Address (The public key bundle (signing, nullifier, and viewing keys) published in a user's registry record. Not an onchain address.). This example deposits to the sender. The recipient can be the sender or a third-party wallet.
+> > > * `senderViewTag` is `senderAddress.confidentialViewTag()`, the sender's Solana public key in confidential rings. The indexer uses it to return matching encrypted outputs.
+> > > * `client.tree` is the state Merkle tree that receives the new output commitment.
+> > > * `depositor` / `senderSigner` funds and signs the public-to-private deposit.
+> > > * `DepositAsset.sol()` selects SOL. `DepositAsset.spl` takes the mint, source token account, and token program for SPL and Token 2022 assets.
+> > > * `recipientOwnerHash` is `senderAddress.ownerHash()`. That hash of the recipient's signing and nullifier public keys is the owner field committed in the new private token account.
+> > > * `DEPOSIT_AMOUNT` uses lamports for SOL, or the token's base units for SPL and Token 2022 assets.
+> >
+> > > [accordion] 2. Send like any Solana transaction
+> > >
+> > > ```typescript theme={"system"}
+> > > import { sendAndConfirmFactory } from "../src/lib.js";
+> > >
+> > > const depositTx = await sendAndConfirm([
+> > >   depositIx,
+> > > ]);
+> > > ```
+> > >
+> > > * `sendAndConfirm` signs and submits `depositIx` as a Solana transaction.
+> > > * Confirmation yields the landed slot used to gate the indexer fetch.
+>
+> > [tab] Deposit Tokens without an Interface
+> >
+> > ```mermaid theme={"system"}
+> > %%{init: {
+> >   'theme': 'base',
+> >   'themeVariables': {
+> >     'primaryColor': '#FFFFFF',
+> >     'primaryTextColor': '#737373',
+> >     'primaryBorderColor': '#9CA3AF',
+> >     'lineColor': '#FF6B35',
+> >     'edgeLabelBackground': '#FFFFFF'
+> >   }
+> > }}%%
+> > flowchart LR
+> >     GetAccount["Get account"] --> Exists{"Interface PDA exists?"}
+> >     Exists -->|Yes| Deposit["Deposit to private balance"]
+> >     Exists -->|No| Create["Create interface PDA<br/>and token account"]
+> >     Create --> Deposit
+> > ```
+> >
+> > ```typescript theme={"system"}
+> > import { getSplAssetVaultAddress } from "@heliuslabs/spr/addresses";
+> > import { getCreateSplInterfaceInstructionAsync } from "@heliuslabs/spr/instructions";
+> > import { depositInstruction, DepositAsset } from "@heliuslabs/spr/interface";
+> > import { TOKEN_PROGRAM_ADDRESS } from "@solana-program/token";
+> > import type { Instruction } from "@solana/kit";
+> >
+> > // 1. Check whether the mint already has an interface PDA, the escrow that holds deposited tokens.
+> > // A second create fails the transaction, so skip step 2 when the account exists.
+> > const interfaceAddress =
+> >   await getSplAssetVaultAddress(mint);
+> > const interfaceAccount =
+> >   await client.getAccount(interfaceAddress);
+> > const instructions: Instruction[] = [];
+> >
+> > // 2. Create the mint registry PDA and interface token account.
+> > // The authority signer pays their rent.
+> > if (!interfaceAccount) {
+> >   const createInterfaceIx =
+> >     await getCreateSplInterfaceInstructionAsync(
+> >       {
+> >         authority: senderSigner,
+> >         mint,
+> >         tokenProgram: TOKEN_PROGRAM_ADDRESS,
+> >       },
+> >     );
+> >   instructions.push(createInterfaceIx);
+> > }
+> >
+> > // 3. Move public tokens into the sender's private balance.
+> > // A deposit from a public balance reveals sender, recipient, asset and amount.
+> > const depositIx = await depositInstruction({
+> >   tree: client.tree
+
+========== https://www.helius.dev/docs/privacy/guides/read-balance.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Read a Private Balance
+
+> Guide to read a wallet's private balance from the indexer with a full code example.
+
+1. Read fetches encrypted Private Solana Token Accounts from the indexer with dedicated RPC methods.
+2. Only the user, or anyone the user authorizes, can decrypt balances with their viewing key.
+3. Use it after a private balance changes and before a transfer.
+
+```mermaid theme={"system"}
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'lineColor':           '#FF6B35',
+    'primaryTextColor':    '#737373',
+    'primaryBorderColor':  '#9CA3AF',
+    'actorBkg':            '#FFFFFF',
+    'actorBorder':         '#9CA3AF',
+    'actorTextColor':      '#737373',
+    'signalColor':         '#FF6B35',
+    'signalTextColor':     '#737373',
+    'labelBoxBkgColor':    '#FF6B351F',
+    'labelBoxBorderColor': '#FF6B35',
+    'noteBkgColor':        '#F5F5F5',
+    'noteTextColor':       '#737373',
+    'noteBorderColor':     '#9CA3AF'
+  }
+}}%%
+sequenceDiagram
+    participant Wallet
+    participant RPC as RPC Provider
+
+    Wallet->>RPC: getShieldedTransactionsByTags
+    RPC-->>Wallet: Encrypted transactions
+    Note over Wallet: Decrypt
+    Note over Wallet: Sum to private balances
+```
+
+> [accordion] Compare to getBalance / getAccount
+>
+> 1. `getBalance` returns public SOL. `getAccount` returns a public token account.
+> 2. The RPC returns the public balance.
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'lineColor':           '#FF6B35',
+>     'primaryTextColor':    '#737373',
+>     'primaryBorderColor':  '#9CA3AF',
+>     'actorBkg':            '#FFFFFF',
+>     'actorBorder':         '#9CA3AF',
+>     'actorTextColor':      '#737373',
+>     'signalColor':         '#FF6B35',
+>     'signalTextColor':     '#737373',
+>     'labelBoxBkgColor':    '#FF6B351F',
+>     'labelBoxBorderColor': '#FF6B35',
+>     'noteBkgColor':        '#F5F5F5',
+>     'noteTextColor':       '#737373',
+>     'noteBorderColor':     '#9CA3AF'
+>   }
+> }}%%
+> sequenceDiagram
+>     participant Wallet
+>     participant RPC
+>
+>     Wallet->>RPC: getBalance / getAccount
+>     RPC-->>Wallet: Public SOL or token account
+> ```
+
+## Get Started
+
+> [tab] TypeScript Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The TypeScript examples require Node.js 24 or later, pnpm 11.18.0, and the Solana CLI.
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > ```bash theme={"system"}
+> > > pnpm install
+> > > cp .env.example .env
+> > > ```
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({
+> > >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > > });
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > On localnet, the SDK starts the local test validator (`:8899`), Photon indexer (`:8784`), and prover (`:3001`), and the
+> > > client connects to them automatically without needing endpoint configuration.
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({});
+> > > ```
+>
+> **Step 2**
+>
+> ### Derive the View Tag
+>
+> ```typescript theme={"system"}
+> import { createSprClient } from "@heliuslabs/spr";
+>
+> // The view tag is the sender's Solana public key in confidential rings.
+> // Used by the indexer to fetch the sender's UTXOs.
+> const senderViewTag =
+>   senderAddress.confidentialViewTag();
+> ```
+>
+> * `senderViewTag` is `senderAddress.confidentialViewTag()`, the sender's Solana public key in confidential rings. The indexer uses it to return matching encrypted outputs.
+>
+> **Step 3**
+>
+> ### Fetch Transaction Outputs from the Indexer
+>
+> ```typescript theme={"system"}
+> import { atSlot } from "@heliuslabs/spr/client";
+>
+> const depositResponse =
+>   await client.getShieldedTransactionsByTags(
+>     { tags: [senderViewTag] },
+>     atSlot(depositTx.slot),
+>   );
+> ```
+>
+> * `getShieldedTransactionsByTags` fetches the encrypted outputs associated with `senderViewTag`.
+> * `atSlot(depositTx.slot)` waits until the indexer has the deposit at that slot.
+> * The indexer returns encrypted output data. It does not decrypt the private balance.
+>
+> **Step 4**
+>
+> ### Decrypt to a Private Balance
+>
+> ```typescript theme={"system"}
+> import { SOL_MINT } from "@heliuslabs/spr";
+> import { decryptToBalances } from "@heliuslabs/spr/transaction";
+>
+> const balancesAfterDeposit =
+>   await decryptToBalances({
+>     keypair: sender,
+>     registry: assets,
+>     transactions: depositResponse.transactions,
+>   });
+> const depositBalance =
+>   balancesAfterDeposit.balance(SOL_MINT);
+> ```
+>
+> * `sender` supplies the sender's viewing key for local decryption.
+>
+> * `decryptToBalances` decrypts matching outputs and returns the sender's private balances.
+>
+> * `balancesAfterDeposit.balance(SOL_MINT)` reads the private SOL balance.
+>
+> > [!NOTE]
+> >
+> > See [Private State and UTXOs](https://www.helius.dev/docs/privacy/concepts/utxo.md) for how owner tagging and Private Solana Token Accounts work.
+>
+> ### Full Code Example
+>
+> Clone and run the example:
+>
+> ```bash theme={"system"}
+> git clone https://github.com/helius-labs/zolana-examples.git
+> cd zolana-examples/typescript-client
+> pnpm install
+> pnpm example examples/sync_balance.ts
+> ```
+>
+> > [!NOTE]
+> >
+> > The examples use a confidential Ring on local/devnet [here](https://github.com/helius-labs/zolana-examples/blob/main/typescript-client/examples/sync_balance.ts).
+
+> [tab] Rust Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The Rust examples require Rust 1.98.1 and the Solana CLI v4.0.2. See the [Solana installation guide](https://solana.com/docs/intro/installation).
+>
+> ```toml Cargo.toml theme={"system"}
+> [dependencies]
+> zolana-client = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha", features = ["solana-rpc"] }
+> zolana-interface = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-program = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-keypair = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-transaction = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-test-utils = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```rust theme={"system"}
+> > > use zolana_client::{SolanaRpc, ZolanaClient};
+> > > use zolana_interface::pda;
+> > >
+> > > let tree = pda::tree(0);
+> > > let url = "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY";
+> > > let client = ZolanaClient::from_urls(SolanaRpc::new(url), url, url)?;
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```rust theme={"system"}
+> > > use zolana_client::{SolanaRpc, ZolanaClient};
+> > > use zolana_interface::pda;
+> > >
+> > > let tree = pda::tree(0);
+> > > let client = ZolanaClient::from_urls(
+> > >     SolanaRpc::new("http://127.0.0.1:8899"),
+> > >     "http://127.0.0.1:8784",
+> > >     "http://127.0.0.1:3001",
+> > > )?;
+> > > ```
+>
+> **Step 2**
+>
+> ### Derive the View Tag
+>
+> ```rust theme={"system"}
+> use zolana_client::Rpc;
+>
+> let sender_tag = sender_shielded_address.confidential_view_tag()?;
+> ```
+>
+> * `sender_tag` is `sender_shielded_address.confidential_view_tag()`, the sender's Solana public key in confidential rings. The indexer uses it to return matching encrypted outputs.
+>
+> **Step 3**
+>
+> ### Fetch Transaction Outputs from the Indexer
+>
+> ```rust theme={"system"}
+> use zolana_client::{IndexerRpcConfig, Rpc};
+>
+> let response = client.get_shielded_transactions_by_tags(
+>     vec![sender_tag],
+>     None,
+>     Some(50),
+>     Some(IndexerRpcConfig::at_slot(slot)),
+> )?;
+> ```
+>
+> * `get_shielded_transactions_by_tags` fetches the encrypted outputs associated with `sender_tag`.
+> * `IndexerRpcConfig::at_slot(slot)` waits until the indexer has the deposit at that slot.
+> * The indexer returns encrypted output data. It does not decrypt the private balance.
+>
+> **Step 4**
+>
+> ### Decrypt to a Private Balance
+>
+> ```rust theme={"system"}
+> use anyhow::anyhow;
+> use zolana_transaction::{decrypt_spendable, SOL_MINT};
+>
+> let balances = decrypt_spendable(&sender, &response.transactions, &assets)
+>     .map_err(|e| anyhow!("decrypt sender transactions: {e:?}"))?
+>     .balances;
+> let sender_balance = balances.get_balance(SOL_MINT);
+> ```
+>
+> * `sender` supplies the sender's viewing key for local decryption.
+> * `decrypt_spendable` decrypts and verifies matching outputs. Its `.balances` field contains the sender's balances for those outputs.
+> * `get_balance(SOL_MINT)` reads the private SOL balance.
+>
+> ### Full Code Example
+>
+> Clone and run the example:
+>
+> ```bash theme={"system"}
+> git clone https://github.com/helius-labs/zolana-examples.git
+> cd zolana-examples/rust-client
+> cargo run -p rust-client-example --example sync_balance
+> ```
+>
+> > [!NOTE]
+> >
+> > The examples use a confidential Ring on local/devnet [here](https://github.com/helius-labs/zolana-examples/blob/main/rust-client/examples/sync_balance.rs).
+
+## Related Guides
+
+> [card] [Create a Private Wallet](https://www.helius.dev/docs/privacy/integration/wallet.md#create-private-wallet)
+
+> [card] [Deposit](https://www.helius.dev/docs/privacy/guides/deposit.md)
+
+> [card] [Transfer](https://www.helius.dev/docs/privacy/guides/transfer.md)
+
+> [card] [Withdraw](https://www.helius.dev/docs/privacy/guides/withdraw.md)
+
+> [card] [Read Private History](https://www.helius.dev/docs/privacy/guides/read-history.md)
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy/guides/read-history.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Read Private History
+
+> Guide to read a wallet's private transaction history from the indexer with a full code example.
+
+1. Read fetches encrypted transactions from the indexer with dedicated RPC methods.
+2. Only the user, or anyone the user authorizes, can decrypt history with their viewing key.
+3. Use it wherever the wallet runs backfills: on wallet unlock, private wallet open, app resume, network reconnect, stream gap, or wallet restore.
+
+```mermaid theme={"system"}
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'lineColor':           '#FF6B35',
+    'primaryTextColor':    '#737373',
+    'primaryBorderColor':  '#9CA3AF',
+    'actorBkg':            '#FFFFFF',
+    'actorBorder':         '#9CA3AF',
+    'actorTextColor':      '#737373',
+    'signalColor':         '#FF6B35',
+    'signalTextColor':     '#737373',
+    'labelBoxBkgColor':    '#FF6B351F',
+    'labelBoxBorderColor': '#FF6B35',
+    'noteBkgColor':        '#F5F5F5',
+    'noteTextColor':       '#737373',
+    'noteBorderColor':     '#9CA3AF'
+  }
+}}%%
+sequenceDiagram
+    participant Wallet
+    participant RPC as RPC Provider
+
+    Wallet->>RPC: getShieldedTransactionsByTags
+    RPC-->>Wallet: Encrypted transactions
+    Note over Wallet: Decrypt
+    Note over Wallet: Decrypt to private history
+```
+
+> [accordion] Compare to getSignaturesForAddress
+>
+> 1. `getSignaturesForAddress` returns public signatures.
+> 2. The RPC returns the public history.
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'lineColor':           '#FF6B35',
+>     'primaryTextColor':    '#737373',
+>     'primaryBorderColor':  '#9CA3AF',
+>     'actorBkg':            '#FFFFFF',
+>     'actorBorder':         '#9CA3AF',
+>     'actorTextColor':      '#737373',
+>     'signalColor':         '#FF6B35',
+>     'signalTextColor':     '#737373',
+>     'labelBoxBkgColor':    '#FF6B351F',
+>     'labelBoxBorderColor': '#FF6B35',
+>     'noteBkgColor':        '#F5F5F5',
+>     'noteTextColor':       '#737373',
+>     'noteBorderColor':     '#9CA3AF'
+>   }
+> }}%%
+> sequenceDiagram
+>     participant Wallet
+>     participant RPC
+>
+>     Wallet->>RPC: getSignaturesForAddress
+>     RPC-->>Wallet: Public signatures
+> ```
+
+## Get Started
+
+> [tab] TypeScript Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The TypeScript examples require Node.js 24 or later, pnpm 11.18.0, and the Solana CLI.
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > ```bash theme={"system"}
+> > > pnpm install
+> > > cp .env.example .env
+> > > ```
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({
+> > >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > > });
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > On localnet, the SDK starts the local test validator (`:8899`), Photon indexer (`:8784`), and prover (`:3001`), and the
+> > > client connects to them automatically without needing endpoint configuration.
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({});
+> > > ```
+>
+> **Step 2**
+>
+> ### Derive the View Tag
+>
+> ```typescript theme={"system"}
+> import { createSprClient } from "@heliuslabs/spr";
+>
+> // The view tag is the sender's Solana public key in confidential rings.
+> // Used by the indexer to fetch the sender's UTXOs.
+> const senderViewTag =
+>   senderAddress.confidentialViewTag();
+> ```
+>
+> * `senderViewTag` is `senderAddress.confidentialViewTag()`, the sender's Solana public key in confidential rings. The indexer uses it to return matching encrypted outputs.
+>
+> **Step 3**
+>
+> ### Fetch Transaction Outputs from the Indexer
+>
+> ```typescript theme={"system"}
+> import { atSlot } from "@heliuslabs/spr/client";
+>
+> const depositResponse =
+>   await client.getShieldedTransactionsByTags(
+>     { tags: [senderViewTag] },
+>     atSlot(depositTx.slot),
+>   );
+> ```
+>
+> * `getShieldedTransactionsByTags` fetches the encrypted outputs associated with `senderViewTag`.
+> * `atSlot(depositTx.slot)` waits until the indexer has the deposit at that slot.
+> * The indexer returns encrypted output data. It does not decrypt the private history.
+>
+> **Step 4**
+>
+> ### Decrypt to Private History
+>
+> ```typescript theme={"system"}
+> import { Wallet } from "@heliuslabs/spr";
+> import { decryptTransactions, LocalShieldedKeys } from "@heliuslabs/spr/transaction";
+>
+> const wallet = new Wallet({
+>   identity: senderAddress,
+>   registry: assets,
+> });
+> await decryptTransactions({
+>   wallet,
+>   keys: LocalShieldedKeys.fromKeypair(sender),
+>   transactions: depositResponse.transactions,
+> });
+> const history = wallet.privateTransactions();
+> ```
+>
+> * `LocalShieldedKeys.fromKeypair(sender)` supplies the sender's keys for local decryption.
+> * `decryptTransactions` decrypts matching outputs and writes history onto `Wallet`.
+> * `wallet.privateTransactions()` reads the decrypted history.
+> * `decryptToBalances` returns balances only.
+>
+> **Example Response:**
+>
+> ```ts theme={"system"}
+> [
+>   {
+>     id: { signature: "5x…", slot: 291044100n, index: 0n },
+>     kind: "deposit",
+>     direction: "inbound",
+>     status: "confirmed",
+>     asset: SOL_MINT,
+>     amount: 100_000_000n,
+>     counterpartyViewingPublicKey: undefined,
+>   },
+> ]
+> ```
+>
+> > [!NOTE]
+> >
+> > See [Private State and UTXOs](https://www.helius.dev/docs/privacy/concepts/utxo.md) for how owner tagging and Private Solana Token Accounts work.
+>
+> ### Full Code Example
+>
+> Clone and run the example:
+>
+> ```bash theme={"system"}
+> git clone https://github.com/helius-labs/zolana-examples.git
+> cd zolana-examples/typescript-client
+> pnpm install
+> pnpm example examples/read_history.ts
+> ```
+>
+> > [!NOTE]
+> >
+> > The examples use a confidential Ring on local/devnet [here](https://github.com/helius-labs/zolana-examples/blob/main/typescript-client/examples/read_history.ts).
+
+> [tab] Rust Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The Rust examples require Rust 1.98.1 and the Solana CLI v4.0.2. See the [Solana installation guide](https://solana.com/docs/intro/installation).
+>
+> ```toml Cargo.toml theme={"system"}
+> [dependencies]
+> zolana-client = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha", features = ["solana-rpc"] }
+> zolana-interface = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-program = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-keypair = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-transaction = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-test-utils = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```rust theme={"system"}
+> > > use zolana_client::{SolanaRpc, ZolanaClient};
+> > > use zolana_interface::pda;
+> > >
+> > > let tree = pda::tree(0);
+> > > let url = "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY";
+> > > let client = ZolanaClient::from_urls(SolanaRpc::new(url), url, url)?;
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```rust theme={"system"}
+> > > use zolana_client::{SolanaRpc, ZolanaClient};
+> > > use zolana_interface::pda;
+> > >
+> > > let tree = pda::tree(0);
+> > > let client = ZolanaClient::from_urls(
+> > >     SolanaRpc::new("http://127.0.0.1:8899"),
+> > >     "http://127.0.0.1:8784",
+> > >     "http://127.0.0.1:3001",
+> > > )?;
+> > > ```
+>
+> **Step 2**
+>
+> ### Derive the View Tag
+>
+> ```rust theme={"system"}
+> use zolana_client::Rpc;
+>
+> let sender_tag = sender_shielded_address.confidential_view_tag()?;
+> ```
+>
+> * `sender_tag` is `sender_shielded_address.confidential_view_tag()`, the sender's Solana public key in confidential rings. The indexer uses it to return matching encrypted outputs.
+>
+> **Step 3**
+>
+> ### Fetch Transaction Outputs from the Indexer
+>
+> ```rust theme={"system"}
+> use zolana_client::{IndexerRpcConfig, Rpc};
+>
+> let response = client.get_shielded_transactions_by_tags(
+>     vec![sender_tag],
+>     None,
+>     Some(50),
+>     Some(IndexerRpcConfig::at_slot(slot)),
+> )?;
+> ```
+>
+> * `get_shielded_transactions_by_tags` fetches the encrypted outputs associated with `sender_tag`.
+> * `IndexerRpcConfig::at_slot(slot)` waits until the indexer has the deposit at that slot.
+> * The indexer returns encrypted output data. It does not decrypt the private history.
+>
+> **Step 4**
+>
+> ### Decrypt to Private History
+>
+> ```rust theme={"system"}
+> use anyhow::anyhow;
+> use zolana_test_utils::wallet::{sync_wallet_with_config, SyncWalletConfig, Wallet};
+>
+> let mut wallet = Wallet::new(sender.shielded_address()?, assets)
+>     .map_err(|e| anyhow!("create wallet: {e:?}"))?;
+> let report = sync_wallet_with_config(
+>     &mut wallet,
+>     &sender,
+>     &client,
+>     SyncWalletConfig {
+>         page_limit: 50,
+>         ..SyncWalletConfig::default()
+>     },
+> )?;
+> anyhow::ensure!(
+>     report.unknown_asset_ids.is_empty() && report.unknown_mints.is_empty(),
+>     "could not resolve SPL asset registrations"
+> );
+> let history = wallet.private_transactions();
+> ```
+>
+> * `sender` supplies the sender's viewing key for local decryption.
+> * `Wallet::sync` decrypts matching outputs and writes history onto `Wallet`.
+> * `wallet.private_transactions()` reads the decrypted history.
+> * `decrypt_spendable` returns verified balances and UTXOs with data, not transaction history.
+>
+> **Example Response:**
+>
+> ```rust theme={"system"}
+> [
+>     PrivateTransaction {
+>         id: PrivateTransactionId {
+>             signature: "5x…".into(),
+>             slot: 291044100,
+>             index: 0,
+>         },
+>         kind: PrivateTransactionKind::Deposit,
+>         direction: PrivateTransactionDirection::Inbound,
+>         status: PrivateTransactionStatus::Confirmed,
+>         asset: SOL_MINT,
+>         amount: 100_000_000,
+>         counterparty_viewing_pubkey: None,
+>     },
+> ]
+> ```
+>
+> ### Full Code Example
+>
+> Clone and run the example:
+>
+> ```bash theme={"system"}
+> git clone https://github.com/helius-labs/zolana-examples.git
+> cd zolana-examples/rust-client
+> cargo run -p rust-client-example --example read_history
+> ```
+>
+> > [!NOTE]
+> >
+> > The examples use a confidential Ring on local/devnet [here](https://github.com/helius-labs/zolana-examples/blob/main/rust-client/examples/read_history.rs).
+
+## Related Guides
+
+> [card] [Read a Private Balance](https://www.helius.dev/docs/privacy/guides/read-balance.md)
+
+> [card] [Deposit](https://www.helius.dev/docs/privacy/guides/deposit.md)
+
+> [card] [Transfer](https://www.helius.dev/docs/privacy/guides/transfer.md)
+
+> [card] [Withdraw](https://www.helius.dev/docs/privacy/guides/withdraw.md)
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
+
+========== https://www.helius.dev/docs/privacy/guides/transfer.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Transfer
+
+> Guide to transfer SOL, SPL, or Token 2022 assets between private balances with a full code example.
+
+1. A private transfer moves tokens in a ring between private wallets.
+2. Private transfers are sent in a single Solana transaction to a Solana wallet address.
+
+#### Transfer: What Is Private
+
+> [tab] Default Ring
+>
+> | Field | Visibility |
+> | - | - |
+> | Asset | Private. Encrypted onchain. |
+> | Amount | Private. Encrypted onchain. |
+> | Sender | Public. The Default Ring is confidential. |
+> | Recipient | Public. The Default Ring is confidential. |
+> | Memo (optional) | Private. Encrypted onchain. |
+
+> [tab] Custom Rings
+>
+> | Transfer | Asset | Amount | Sender | Recipient | Memo (optional) |
+> | - | - | - | - | - | - |
+> | Within a Custom confidential Ring | Private | Private | Public | Public | Private |
+> | Within a Custom anonymous Ring | Private | Private | Private | Private | Private |
+> | Default Ring to or from a Custom confidential Ring | Private | Private | Public | Public | Private |
+> | Confidential Ring to a Custom anonymous Ring | Private | Private | Public | Private | Private |
+> | Custom anonymous Ring to a confidential Ring | Private | Private | Private | Public | Private |
+>
+> A relayer submits transfers from anonymous Rings, so the public ledger does not reveal the source private wallet. The Custom Ring program ID remains public.
+>
+> Transfers between Rings must follow the source Ring's policy. One transaction can combine balances from the Default Ring and one Custom Ring. A transfer between two Custom Rings routes through the Default Ring.
+
+> [!NOTE]
+>
+> The permissionless Ring is confidential with encrypted amount and asset.
+> A custom Ring can be configured as confidential or anonymous (encrypted sender, recipient, asset, and amount).
+
+## How a Transfer Works
+
+A private transfer behaves similarly to a public Solana transfer:
+
+1. The user's SOL or SPL balance is encrypted onchain.
+
+2. The user decrypts private state, the wallet builds a transfer, and the owner signs.
+
+   * Fetch encrypted state with dedicated RPC methods. Only the user can decrypt balances locally.
+   * The wallet sets amount and recipient, then requests a ZK proof. The RPC provider generates the ZK proof by default and returns it.
+
+3. The Solana runtime verifies the signatures and invokes the Solana Privacy Program, which verifies the ZK proof without revealing the encrypted state.
+
+4. The app tracks status via the Solana transaction hash.
+
+```mermaid theme={"system"}
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'lineColor':           '#FF6B35',
+    'primaryTextColor':    '#737373',
+    'primaryBorderColor':  '#9CA3AF',
+    'actorBkg':            '#FFFFFF',
+    'actorBorder':         '#9CA3AF',
+    'actorTextColor':      '#737373',
+    'signalColor':         '#FF6B35',
+    'signalTextColor':     '#737373',
+    'labelBoxBkgColor':    '#FF6B351F',
+    'labelBoxBorderColor': '#FF6B35',
+    'noteBkgColor':        '#F5F5F5',
+    'noteTextColor':       '#737373',
+    'noteBorderColor':     '#9CA3AF'
+  }
+}}%%
+sequenceDiagram
+    participant Wallet
+    participant RPC as RPC Provider
+    participant Solana
+
+    Wallet->>RPC: Fetch encrypted state
+    RPC-->>Wallet: Encrypted state
+    Note over Wallet: Decrypt
+
+    Note over Wallet: Set amount and recipient
+    Wallet->>RPC: Request ZK proof
+    Note over RPC: Generate ZK proof
+    RPC-->>Wallet: ZK proof
+    Note over Wallet: Build transaction, sign
+
+    Wallet->>RPC: Submit Transaction
+    RPC->>Solana: Forward transaction
+    Note over Solana: Verify signatures
+    Note over Solana: CPI Solana Privacy Program
+    Note over Solana: Verify ZK proof
+    RPC-->>Wallet: Transaction signature
+```
+
+> [accordion] Compare to Solana Transfer
+>
+> 1. The user's SOL or SPL balance is public onchain.
+> 2. The wallet reads public state, builds a transfer, and the owner signs.
+> 3. The Solana runtime verifies the signatures and invokes the System Program or Token Program, which updates the public balance.
+> 4. The app tracks status via the Solana transaction hash.
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'lineColor':           '#FF6B35',
+>     'primaryTextColor':    '#737373',
+>     'primaryBorderColor':  '#9CA3AF',
+>     'actorBkg':            '#FFFFFF',
+>     'actorBorder':         '#9CA3AF',
+>     'actorTextColor':      '#737373',
+>     'signalColor':         '#FF6B35',
+>     'signalTextColor':     '#737373',
+>     'labelBoxBkgColor':    '#FF6B351F',
+>     'labelBoxBorderColor': '#FF6B35',
+>     'noteBkgColor':        '#F5F5F5',
+>     'noteTextColor':       '#737373',
+>     'noteBorderColor':     '#9CA3AF'
+>   }
+> }}%%
+> sequenceDiagram
+>     participant Wallet
+>     participant RPC
+>     participant Solana
+>
+>     Wallet->>RPC: Get public balance
+>     RPC-->>Wallet: Public state
+>     Note over Wallet: Build transfer, owner signs
+>     Wallet->>RPC: sendTransaction
+>     RPC->>Solana: Forward transaction
+>     Note over Solana: Verify signatures
+>     Note over Solana: CPI System / Token Program
+>     Note over Solana: Update balance
+>     RPC-->>Wallet: Transaction signature
+> ```
+
+> [!NOTE]
+>
+> This is the high-level transaction flow for the permissionless confidential Ring.
+> Compare to custom Rings in [High-Level Transaction Flow](https://www.helius.dev/docs/privacy/concepts/overview.md#high-level-transaction-flow).
+
+## Get Started
+
+> [tab] TypeScript Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The TypeScript examples require Node.js 24 or later, pnpm 11.18.0, and the Solana CLI.
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > ```bash theme={"system"}
+> > > pnpm install
+> > > cp .env.example .env
+> > > ```
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({
+> > >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > > });
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > On localnet, the SDK starts the local test validator (`:8899`), Photon indexer (`:8784`), and prover (`:3001`), and the
+> > > client connects to them automatically without needing endpoint configuration.
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({});
+> > > ```
+>
+> **Step 2**
+>
+> ### Transfer to a Private Balance
+>
+> > [accordion] Solana Kit send helper
+> >
+> > ```typescript theme={"system"}
+> > import {
+> >   appendTransactionMessageInstructions,
+> >   assertIsTransactionWithBlockhashLifetime,
+> >   createTransactionMessage,
+> >   getSignatureFromTransaction,
+> >   pipe,
+> >   sendTransactionWithoutConfirmingFactory,
+> >   setTransactionMessageConfig,
+> >   setTransactionMessageFeePayerSigner,
+> >   setTransactionMessageLifetimeUsingBlockhash,
+> >   signTransactionMessageWithSigners,
+> >   type Instruction,
+> >   type Signature,
+> >   type TransactionSigner,
+> > } from "@solana/kit";
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > type Client = Awaited<ReturnType<typeof createSprClient>>;
+> >
+> > export interface ConfirmedTransaction {
+> >   readonly signature: Signature;
+> >   readonly slot: bigint;
+> > }
+> >
+> > export function sendAndConfirmFactory(
+> >   client: Client,
+> >   feePayer: TransactionSigner,
+> > ): (instructions: readonly Instruction[]) => Promise<ConfirmedTransaction> {
+> >   const sendTransaction = sendTransactionWithoutConfirmingFactory({
+> >     rpc: client.solanaRpc,
+> >   });
+> >
+> >   return async function sendAndConfirm(
+> >     instructions: readonly Instruction[],
+> >   ): Promise<ConfirmedTransaction> {
+> >     const { value: lifetime } = await client.solanaRpc
+> >       .getLatestBlockhash()
+> >       .send();
+> >     const signed = await signTransactionMessageWithSigners(
+> >       pipe(
+> >         createTransactionMessage({ version: 1 }),
+> >         (message) => setTransactionMessageFeePayerSigner(feePayer, message),
+> >         (message) =>
+> >           setTransactionMessageLifetimeUsingBlockhash(lifetime, message),
+> >         (message) =>
+> >           setTransactionMessageConfig(
+> >             {
+> >               computeUnitLimit: 450_000,
+> >               loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+> >             },
+> >             message,
+> >           ),
+> >         (message) =>
+> >           appendTransactionMessageInstructions(instructions, message),
+> >       ),
+> >     );
+> >     assertIsTransactionWithBlockhashLifetime(signed);
+> >     await sendTransaction(signed, { commitment: "confirmed" });
+> >     const signature = getSignatureFromTransaction(signed);
+> >     const slot = await client.confirmTransaction(signature);
+> >     return { signature, slot };
+> >   };
+> > }
+> > ```
+> >
+> > * The SDK returns instructions. The app signs and sends them.
+> > * `sendAndConfirmFactory` builds a Kit transaction, submits it, and returns the signature plus the landed slot.
+>
+> > [tab] SOL
+> >
+> > ```typescript theme={"system"}
+> > import { LocalKeys } from "@heliuslabs/spr/client";
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> > import { transactInstruction } from "@heliuslabs/spr/interface";
+> > import {
+> >   ConfidentialTransfer,
+> >   ProofInputUtxo,
+> > } from "@heliuslabs/spr/transaction";
+> > import { sendAndConfirmFactory } from "../src/lib.js";
+> >
+> >
+> >   const sendAndConfirm = sendAndConfirmFactory(
+> >     client,
+> >     senderSigner,
+> >   );
+> >   const transferUtxo = depositBalance.utxos[0]!;
+> >   const transferInput =
+> >     ProofInputUtxo.fromKeypair(
+> >       transferUtxo,
+> >       sender,
+> >     );
+> >   const transfer = new ConfidentialTransfer(
+> >     senderAddress,
+> >     [transferInput],
+> >     senderSigner.address,
+> >   );
+> >   transfer.send(
+> >     recipient.shieldedAddress(),
+> >     SOL_MINT,
+> >     TRANSFER_AMOUNT,
+> >   );
+> >   const transferProofInputs = transfer.sign(
+> >     sender,
+> >     assets,
+> >   );
+> >   const senderKeys = LocalKeys.fromKeypair(sender, client.proofService);
+> >   const transferData = await client.proveTransact(
+> >     transferProofInputs,
+> >     senderKeys,
+> >   );
+> >   const transferInstruction = await transactInstruction(
+> >     {
+> >       payer: senderSigner,
+> >       ownerSigners: [senderSigner],
+> >       inputTree: client.tree,
+> >       outputTree: client.tree,
+> >       data: transferData,
+> >     },
+> >   );
+> >   const transferTx = await sendAndConfirm([
+> >     transferInstruction,
+> >   ]);
+> > ```
+>
+> > [tab] SPL
+> >
+> > ```typescript theme={"system"}
+> > import { LocalKeys } from "@heliuslabs/spr/client";
+> > import { transactInstruction } from "@heliuslabs/spr/interface";
+> > import {
+> >   ConfidentialTransfer,
+> >   ProofInputUtxo,
+> > } from "@heliuslabs/spr/transaction";
+> > import { sendAndConfirmFactory } from "../src/lib.js";
+> >
+> >
+> >   const sendAndConfirm = sendAndConfirmFactory(
+> >     client,
+> >     senderSigner,
+> >   );
+> >   const transferUtxo = depositBalance.utxos[0]!;
+> >   const transferInput =
+> >     ProofInputUtxo.fromKeypair(
+> >       transferUtxo,
+> >       sender,
+> >     );
+> >   const transfer = new ConfidentialTransfer(
+> >     senderAddress,
+> >     [transferInput],
+> >     senderSigner.address,
+> >   );
+> >   transfer.send(
+> >     recipient.shieldedAddress(),
+> >     spl.mint,
+> >     TRANSFER_AMOUNT,
+> >   );
+> >   const transferProofInputs = transfer.sign(
+> >     sender,
+> >     assets,
+> >   );
+> >   const senderKeys = LocalKeys.fromKeypair(sender, client.proofService);
+> >   const transferData = await client.proveTransact(
+> >     transferProofInputs,
+> >     senderKeys,
+> >   );
+> >   const transferInstruction = await transactInstruction(
+> >     {
+> >       payer: senderSigner,
+> >       ownerSigners: [senderSigner],
+> >       inputTree: client.tree,
+> >       outputTree: client.tree,
+> >       data: transferData,
+> >     },
+> >   );
+> >   const transferTx = await sendAndConfirm([
+> >     transferInstruction,
+> >   ]);
+> > ```
+>
+> > [accordion] 1. Select private token accounts to spend
+> >
+> > ```typescript theme={"system"}
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> >
+> > const transferUtxo = depositBalance.utxos[0]!;
+> > ```
+> >
+> > This example selects input UTXOs manually. The SDK’s wallet helpers can select and reserve them for you. See [Selecting UTXOs](https://www.helius.dev/docs/privacy/concepts/utxo.md#utxo-selection) for input selection guidance.
+> >
+> > * The example spends the Private Solana Token Account created by the preceding deposit. A transfer can spend multiple UTXOs.
+> > * `transferUtxo` selects one Private Solana Token Account from that balance.
+>
+> > [accordion] 2. Prepare proof inputs
+> >
+> > ```typescript theme={"system"}
+> > import { ProofInputUtxo } from "@heliuslabs/spr/transaction";
+> >
+> > const transferInput =
+> >   ProofInputUtxo.fromKeypair(
+> >     transferUtxo,
+> >     sender,
+> >   );
+> > ```
+> >
+> > * `ProofInputUtxo.fromKeypair` prepares the selected UTXO as a proof input with the sender's private wallet keypair.
+> > * The keypair derives the nullifier that marks the input UTXO as spent while the asset and amount remain encrypted.
+>
+> > [accordion] 3. Build and sign the confidential transfer
+> >
+> > ```typescript theme={"system"}
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> > import { ConfidentialTransfer } from "@heliuslabs/spr/transaction";
+> >
+> > const transfer = new ConfidentialTransfer(
+> >   senderAddress,
+> >   [transferInput],
+> >   senderSigner.address,
+> > );
+> > transfer.send(
+> >   recipient.shieldedAddress(),
+> >   SOL_MINT,
+> >   TRANSFER_AMOUNT,
+> > );
+> > const transferProofInputs = transfer.sign(
+> >   sender,
+> >   assets,
+> > );
+> > ```
+> >
+> > * `senderAddress` is the sender's Shielded Address (The public key bundle (signing, nullifier, and viewing keys) published in a user's registry record. Not an onchain address.). The transfer spends from this wallet.
+> > * `[transferInput]` lists the sender's selected UTXOs. A transfer can spend multiple UTXOs.
+> > * `senderSigner.address` is the fee payer's Solana address. A gas s
+
+========== https://www.helius.dev/docs/privacy/guides/withdraw.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Withdraw
+
+> Guide to withdraw SOL, SPL, or Token 2022 assets from a private balance to a public Solana account with a full code example.
+
+1. A withdrawal moves tokens from a private balance to a public Solana balance.
+2. Withdrawals are sent in a single Solana transaction to a Solana wallet address.
+
+#### Withdraw: What Is Private
+
+| Field | Visibility |
+| - | - |
+| Asset | Public. Visible in the public withdrawal. |
+| Amount | Public. Visible in the public withdrawal. |
+| Sender | Public in a confidential Ring; private in an anonymous Ring. |
+| Recipient | Public. The destination wallet address is visible in the public withdrawal. |
+| Memo (optional) | Private when attached to an encrypted output. |
+| Resulting public balance | Public. Held in the recipient's public account. |
+| Remaining private balance | Private. Encrypted onchain. |
+
+> [!NOTE]
+>
+> The permissionless Ring is confidential with encrypted amount and asset.
+> A custom Ring can be configured as confidential or anonymous (encrypted sender, recipient, asset, and amount).
+
+## How a Withdrawal Works
+
+A withdrawal behaves similarly to a public Solana transfer:
+
+1. The user's SOL or SPL balance is encrypted onchain.
+
+2. The user decrypts private state, the wallet builds a withdrawal, and the owner signs.
+
+   * Fetch encrypted state with dedicated RPC methods. Only the user can decrypt balances locally.
+   * The wallet sets amount and recipient, then requests a ZK proof. The RPC provider generates the ZK proof by default and returns it.
+
+3. The Solana runtime verifies the signatures and invokes the Solana Privacy Program, which verifies the ZK proof without revealing the encrypted state.
+
+4. The app tracks status via the Solana transaction hash.
+
+```mermaid theme={"system"}
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'lineColor':           '#FF6B35',
+    'primaryTextColor':    '#737373',
+    'primaryBorderColor':  '#9CA3AF',
+    'actorBkg':            '#FFFFFF',
+    'actorBorder':         '#9CA3AF',
+    'actorTextColor':      '#737373',
+    'signalColor':         '#FF6B35',
+    'signalTextColor':     '#737373',
+    'labelBoxBkgColor':    '#FF6B351F',
+    'labelBoxBorderColor': '#FF6B35',
+    'noteBkgColor':        '#F5F5F5',
+    'noteTextColor':       '#737373',
+    'noteBorderColor':     '#9CA3AF'
+  }
+}}%%
+sequenceDiagram
+    participant Wallet
+    participant RPC as RPC Provider
+    participant Solana
+
+    Wallet->>RPC: Fetch encrypted state
+    RPC-->>Wallet: Encrypted state
+    Note over Wallet: Decrypt
+
+    Note over Wallet: Set amount and recipient
+    Wallet->>RPC: Request ZK proof
+    Note over RPC: Generate ZK proof
+    RPC-->>Wallet: ZK proof
+    Note over Wallet: Build transaction, sign
+
+    Wallet->>RPC: Submit Transaction
+    RPC->>Solana: Forward transaction
+    Note over Solana: Verify signatures
+    Note over Solana: CPI Solana Privacy Program
+    Note over Solana: Verify ZK proof
+    RPC-->>Wallet: Transaction signature
+```
+
+> [accordion] Compare to Solana Transfer
+>
+> 1. The user's SOL or SPL balance is public onchain.
+> 2. The wallet reads public state, builds a transfer, and the owner signs.
+> 3. The Solana runtime verifies the signatures and invokes the System Program or Token Program, which updates the public balance.
+> 4. The app tracks status via the Solana transaction hash.
+>
+> ```mermaid theme={"system"}
+> %%{init: {
+>   'theme': 'base',
+>   'themeVariables': {
+>     'lineColor':           '#FF6B35',
+>     'primaryTextColor':    '#737373',
+>     'primaryBorderColor':  '#9CA3AF',
+>     'actorBkg':            '#FFFFFF',
+>     'actorBorder':         '#9CA3AF',
+>     'actorTextColor':      '#737373',
+>     'signalColor':         '#FF6B35',
+>     'signalTextColor':     '#737373',
+>     'labelBoxBkgColor':    '#FF6B351F',
+>     'labelBoxBorderColor': '#FF6B35',
+>     'noteBkgColor':        '#F5F5F5',
+>     'noteTextColor':       '#737373',
+>     'noteBorderColor':     '#9CA3AF'
+>   }
+> }}%%
+> sequenceDiagram
+>     participant Wallet
+>     participant RPC
+>     participant Solana
+>
+>     Wallet->>RPC: Get public balance
+>     RPC-->>Wallet: Public state
+>     Note over Wallet: Build transfer, owner signs
+>     Wallet->>RPC: sendTransaction
+>     RPC->>Solana: Forward transaction
+>     Note over Solana: Verify signatures
+>     Note over Solana: CPI System / Token Program
+>     Note over Solana: Update balance
+>     RPC-->>Wallet: Transaction signature
+> ```
+
+> [!NOTE]
+>
+> This is the high-level transaction flow for the permissionless confidential Ring.
+> Compare to custom Rings in [High-Level Transaction Flow](https://www.helius.dev/docs/privacy/concepts/overview.md#high-level-transaction-flow).
+
+## Get Started
+
+> [tab] TypeScript Client
+>
+> **Step 1**
+>
+> ### Prerequisites
+>
+> > [!NOTE]
+> >
+> > The TypeScript examples require Node.js 24 or later, pnpm 11.18.0, and the Solana CLI.
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+>
+> > [accordion] Connect to Endpoints
+> >
+> > > [tab] Devnet
+> > >
+> > > ```bash theme={"system"}
+> > > pnpm install
+> > > cp .env.example .env
+> > > ```
+> > >
+> > > Add a [Helius API key](https://dashboard.helius.dev/):
+> > >
+> > > ```bash .env theme={"system"}
+> > > API_KEY=YOUR_API_KEY
+> > > ZOLANA_PAYER_KEYPAIR=~/.config/solana/id.json
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({
+> > >   solanaRpcUrl: "https://devnet.helius-rpc.com/?api-key=YOUR_API_KEY",
+> > > });
+> > > ```
+> > >
+> > > The examples use the Solana CLI wallet as the payer by default. The payer must hold devnet SOL. See [How to Get Devnet SOL](https://www.helius.dev/docs/rpc/devnet-sol.md).
+> >
+> > > [tab] Localnet
+> > >
+> > > On localnet, the SDK starts the local test validator (`:8899`), Photon indexer (`:8784`), and prover (`:3001`), and the
+> > > client connects to them automatically without needing endpoint configuration.
+> > >
+> > > ```bash theme={"system"}
+> > > cargo install --git https://github.com/helius-labs/zolana --tag v0.5.0-alpha zolana-cli
+> > > zolana dev start
+> > > ```
+> > >
+> > > ```ts theme={"system"}
+> > > import { createSprClient } from "@heliuslabs/spr";
+> > >
+> > > const client = await createSprClient({});
+> > > ```
+>
+> **Step 2**
+>
+> ### Withdraw to a Public Balance
+>
+> > [accordion] Solana Kit send helper
+> >
+> > ```typescript theme={"system"}
+> > import {
+> >   appendTransactionMessageInstructions,
+> >   assertIsTransactionWithBlockhashLifetime,
+> >   createTransactionMessage,
+> >   getSignatureFromTransaction,
+> >   pipe,
+> >   sendTransactionWithoutConfirmingFactory,
+> >   setTransactionMessageConfig,
+> >   setTransactionMessageFeePayerSigner,
+> >   setTransactionMessageLifetimeUsingBlockhash,
+> >   signTransactionMessageWithSigners,
+> >   type Instruction,
+> >   type Signature,
+> >   type TransactionSigner,
+> > } from "@solana/kit";
+> > import { createSprClient } from "@heliuslabs/spr";
+> >
+> > type Client = Awaited<ReturnType<typeof createSprClient>>;
+> >
+> > export interface ConfirmedTransaction {
+> >   readonly signature: Signature;
+> >   readonly slot: bigint;
+> > }
+> >
+> > export function sendAndConfirmFactory(
+> >   client: Client,
+> >   feePayer: TransactionSigner,
+> > ): (instructions: readonly Instruction[]) => Promise<ConfirmedTransaction> {
+> >   const sendTransaction = sendTransactionWithoutConfirmingFactory({
+> >     rpc: client.solanaRpc,
+> >   });
+> >
+> >   return async function sendAndConfirm(
+> >     instructions: readonly Instruction[],
+> >   ): Promise<ConfirmedTransaction> {
+> >     const { value: lifetime } = await client.solanaRpc
+> >       .getLatestBlockhash()
+> >       .send();
+> >     const signed = await signTransactionMessageWithSigners(
+> >       pipe(
+> >         createTransactionMessage({ version: 1 }),
+> >         (message) => setTransactionMessageFeePayerSigner(feePayer, message),
+> >         (message) =>
+> >           setTransactionMessageLifetimeUsingBlockhash(lifetime, message),
+> >         (message) =>
+> >           setTransactionMessageConfig(
+> >             {
+> >               computeUnitLimit: 450_000,
+> >               loadedAccountsDataSizeLimit: 64 * 1024 * 1024,
+> >             },
+> >             message,
+> >           ),
+> >         (message) =>
+> >           appendTransactionMessageInstructions(instructions, message),
+> >       ),
+> >     );
+> >     assertIsTransactionWithBlockhashLifetime(signed);
+> >     await sendTransaction(signed, { commitment: "confirmed" });
+> >     const signature = getSignatureFromTransaction(signed);
+> >     const slot = await client.confirmTransaction(signature);
+> >     return { signature, slot };
+> >   };
+> > }
+> > ```
+> >
+> > * The SDK returns instructions. The app signs and sends them.
+> > * `sendAndConfirmFactory` builds a Kit transaction, submits it, and returns the signature plus the landed slot.
+>
+> > [tab] SOL
+> >
+> > ```typescript theme={"system"}
+> > import { LocalKeys } from "@heliuslabs/spr/client";
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> > import {
+> >   transactInstruction,
+> >   TransactWithdrawal,
+> > } from "@heliuslabs/spr/interface";
+> > import {
+> >   ConfidentialTransfer,
+> >   ProofInputUtxo,
+> >   WithdrawalTarget,
+> > } from "@heliuslabs/spr/transaction";
+> >
+> > const withdrawalUtxo =
+> >   transferBalance.utxos[0]!;
+> > const withdrawalInput =
+> >   ProofInputUtxo.fromKeypair(
+> >     withdrawalUtxo,
+> >     sender,
+> >   );
+> > const withdrawal = new ConfidentialTransfer(
+> >   senderAddress,
+> >   [withdrawalInput],
+> >   senderSigner.address,
+> > );
+> > withdrawal.withdraw(
+> >   SOL_MINT,
+> >   WITHDRAW_AMOUNT,
+> >   WithdrawalTarget.sol({
+> >     recipient: senderSigner.address,
+> >   }),
+> > );
+> > const withdrawalProofInputs = withdrawal.sign(
+> >   sender,
+> >   assets,
+> > );
+> > const senderKeys = LocalKeys.fromKeypair(sender, client.proofService);
+> > const withdrawalData =
+> >   await client.proveTransact(
+> >     withdrawalProofInputs,
+> >     senderKeys,
+> >   );
+> > const withdrawalInstruction =
+> >   await transactInstruction({
+> >     payer: senderSigner,
+> >     ownerSigners: [senderSigner],
+> >     inputTree: client.tree,
+> >     outputTree: client.tree,
+> >     withdrawal: TransactWithdrawal.sol({
+> >       recipient: senderSigner.address,
+> >     }),
+> >     data: withdrawalData,
+> >   });
+> > const withdrawalTx = await sendAndConfirm([
+> >   withdrawalInstruction,
+> > ]);
+> > ```
+>
+> > [tab] SPL
+> >
+> > ```typescript theme={"system"}
+> > import { LocalKeys } from "@heliuslabs/spr/client";
+> > import {
+> >   transactInstruction,
+> >   TransactWithdrawal,
+> > } from "@heliuslabs/spr/interface";
+> > import {
+> >   ConfidentialTransfer,
+> >   ProofInputUtxo,
+> >   WithdrawalTarget,
+> > } from "@heliuslabs/spr/transaction";
+> >
+> > const withdrawalUtxo =
+> >   transferBalance.utxos[0]!;
+> > const withdrawalInput =
+> >   ProofInputUtxo.fromKeypair(
+> >     withdrawalUtxo,
+> >     sender,
+> >   );
+> > const withdrawal = new ConfidentialTransfer(
+> >   senderAddress,
+> >   [withdrawalInput],
+> >   senderSigner.address,
+> > );
+> > withdrawal.withdraw(
+> >   spl.mint,
+> >   WITHDRAW_AMOUNT,
+> >   WithdrawalTarget.spl({
+> >     recipientTokenAccount: spl.userTokenAccount,
+> >     splTokenInterface: spl.splTokenInterface,
+> >     splInterfaceBump: spl.splInterfaceBump,
+> >   }),
+> > );
+> > const withdrawalProofInputs = withdrawal.sign(
+> >   sender,
+> >   assets,
+> > );
+> > const senderKeys = LocalKeys.fromKeypair(sender, client.proofService);
+> > const withdrawalData =
+> >   await client.proveTransact(
+> >     withdrawalProofInputs,
+> >     senderKeys,
+> >   );
+> > const withdrawalInstruction =
+> >   await transactInstruction({
+> >     payer: senderSigner,
+> >     ownerSigners: [senderSigner],
+> >     inputTree: client.tree,
+> >     outputTree: client.tree,
+> >     withdrawal: TransactWithdrawal.spl({
+> >       mint: spl.mint,
+> >       splTokenInterface: spl.splTokenInterface,
+> >       recipientTokenAccount: spl.userTokenAccount,
+> >       tokenProgram: spl.tokenProgram,
+> >     }),
+> >     data: withdrawalData,
+> >   });
+> > const withdrawalTx = await sendAndConfirm([
+> >   withdrawalInstruction,
+> > ]);
+> > ```
+>
+> > [accordion] 1. Select private token accounts to spend
+> >
+> > ```typescript theme={"system"}
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> >
+> > const withdrawalUtxo =
+> >   transferBalance.utxos[0]!;
+> > ```
+> >
+> > * The example spends the Private Solana Token Account remaining after the preceding transfer. A withdrawal can spend multiple UTXOs.
+> > * `withdrawalUtxo` selects one Private Solana Token Account from that balance.
+>
+> > [accordion] 2. Prepare proof inputs
+> >
+> > ```typescript theme={"system"}
+> > import { ProofInputUtxo } from "@heliuslabs/spr/transaction";
+> >
+> > const withdrawalInput =
+> >   ProofInputUtxo.fromKeypair(
+> >     withdrawalUtxo,
+> >     sender,
+> >   );
+> > ```
+> >
+> > * `ProofInputUtxo.fromKeypair` prepares the selected UTXO as a proof input with the sender's private wallet keypair.
+> > * The keypair derives the nullifier that marks the input UTXO as spent while the input asset and amount remain encrypted.
+>
+> > [accordion] 3. Build and sign the withdrawal
+> >
+> > ```typescript theme={"system"}
+> > import { SOL_MINT } from "@heliuslabs/spr";
+> > import {
+> >   ConfidentialTransfer,
+> >   WithdrawalTarget,
+> > } from "@heliuslabs/spr/transaction";
+> >
+> > const withdrawal = new ConfidentialTransfer(
+> >   senderAddress,
+> >   [withdrawalInput],
+> >   senderSigner.address,
+> > );
+> > withdrawal.withdraw(
+> >   SOL_MINT,
+> >   WITHDRAW_AMOUNT,
+> >   WithdrawalTarget.sol({
+> >     recipient: senderSigner.address,
+> >   }),
+> > );
+> > const withdrawalProofInputs = withdrawal.sign(
+> >   sender,
+> >   assets,
+> > );
+> > ```
+> >
+> > * `senderAddress` is the sender's Shielded Address (The public key bundle (signing, nullifier, and viewing keys) published in a user's registry record. Not an onchain address.). The withdrawal spends from this wallet.
+> > * `[withdrawalInput]` lists the sender's selected UTXOs. A withdrawal can spend multiple UTXOs.
+> > * `senderSigner.address` is the fee payer's Solana address. A gas sponsor can pay the fee.
+> > * `WithdrawalTarget.sol` is the public Solana recipient. The recipient can be the owner or a third party.
+> > * `SOL_MINT` selects SOL. An SPL or Token 2022 withdrawal passes the token mint.
+> > * `WITHDRAW_AMOUNT` is denominated in the asset's base units. SOL uses lamports. SPL and Token 2022 assets use the token's base units.
+> > * `withdrawal.sign` authorizes the state transition, encrypts the remaining private change, and produces the inputs for the zero-knowledge prover.
+> > * `assets` is the asset registry used to resolve supported private assets.
+>
+> > [acc
+
+========== https://www.helius.dev/docs/privacy/llms.txt ==========
+---
+url: https://www.helius.dev/docs/privacy
+last_updated: 2026-09-23
+---
+
+# Helius Privacy (Solana Rings)
+
+Programmable privacy for Solana with native performance: confidential transfers secured by zero-knowledge proofs that settle fully onchain in a single Solana transaction. Built on TSPP, the open-source Solana Privacy Protocol maintained by Helius Labs (https://github.com/helius-labs/zolana).
+
+Status: Beta, devnet only — mainnet has not launched. Programs are live on devnet and under audit by three independent security firms; names, endpoints, and behavior may change.
+
+## Quick Reference
+
+- Core operations: deposit (public → private), transfer (private → private), withdraw (private → public), read private balance, read private history. Assets: SOL, SPL, and Token-2022.
+- Privacy models: confidential (asset and amount private; sender and recipient public) and anonymous Custom Rings (asset, amount, sender, and recipient all private; relayer-submitted). Transaction hashes stay public in both.
+- Self-custodial: in the permissionless Default Ring, spending always requires the owner's signature; Custom Ring policy can add co-signers, freeze/thaw authorities, or a permanent delegate. Helius never receives spending keys.
+- Endpoints (devnet RPC, indexer, prover, localnet): https://www.helius.dev/docs/privacy/endpoints.md
+- Enterprise REST API base: `https://privacy.helius.xyz/v1/` with `Authorization: Bearer $HELIUS_API_KEY` (ring reporting, freeze/thaw, webhooks — part of Custom Rings for enterprises; contact Helius for access)
+- Program IDs and devnet addresses: https://www.helius.dev/docs/privacy/addresses.md
+
+## SDKs
+
+- TypeScript: `@heliuslabs/zolana` (npm) — pair with `@solana/kit`
+- Rust: `zolana-client` plus `zolana-interface`, `zolana-keypair`, `zolana-transaction` (git: https://github.com/helius-labs/zolana)
+- CLI: `zolana-cli`, installed from the zolana git repo (`zolana dev start` runs localnet with RPC, indexer, and prover)
+- Examples: https://github.com/helius-labs/zolana-examples
+- SDK page: https://www.helius.dev/docs/privacy/sdk.md
+
+## Don't Confuse
+
+- A private balance is NOT a Solana token account — it is held as UTXOs (Private Solana Token Accounts) in a shared onchain Merkle tree.
+- A shielded keypair is NOT a Solana keypair — it bundles signing, nullifier, and viewing keys; the Shielded Address is not an onchain address.
+- In local decryption mode, the indexer and RPC serve only encrypted state and never decrypt. In delegated mode, the wallet shares a viewing key so the provider can decrypt balances and history — view access only, never spending authority. Custom Ring auditors may also decrypt per ring policy.
+- A Helius API key authenticates projects; it does NOT authorize spending.
+- A private transfer to a recipient without a Private Wallet resolves to a private-to-public withdrawal — label it as a withdrawal in UIs.
+- No sequencer or sidechain: everything executes natively on Solana (Rings are not a rollup).
+- The Default Ring is permissionless with no authority or auditor; Custom Rings add programmable policy (allowlists, limits, freeze/thaw, auditors) for enterprises. All rings currently share one state Merkle tree.
+
+## Pages
+
+- Overview: https://www.helius.dev/docs/privacy.md
+- Overview (Rings, privacy guarantees, and transaction flow): https://www.helius.dev/docs/privacy/concepts/overview.md
+- Architecture (wallets, RPC services, programs, and proving): https://www.helius.dev/docs/privacy/concepts/architecture.md
+- Private State and UTXOs (balances, spending, and concurrency): https://www.helius.dev/docs/privacy/concepts/utxo.md
+- Shielded Keypair and Encryption (keys and decryption modes): https://www.helius.dev/docs/privacy/concepts/encryption.md
+- Integration — private wallet: https://www.helius.dev/docs/privacy/integration/wallet.md
+- Integration — embedded private wallet (not live yet; will integrate with WaaS): https://www.helius.dev/docs/privacy/integration/embedded-wallet.md
+- Integration — Custom Rings for enterprises: https://www.helius.dev/docs/privacy/integration/enterprise.md
+- Integration — confidential fiat on/off-ramp: https://www.helius.dev/docs/privacy/integration/on-off-ramp.md
+- Guide — deposit: https://www.helius.dev/docs/privacy/guides/deposit.md
+- Guide — transfer: https://www.helius.dev/docs/privacy/guides/transfer.md
+- Guide — withdraw: https://www.helius.dev/docs/privacy/guides/withdraw.md
+- Guide — read a private balance: https://www.helius.dev/docs/privacy/guides/read-balance.md
+- Guide — read private history: https://www.helius.dev/docs/privacy/guides/read-history.md
+- Addresses: https://www.helius.dev/docs/privacy/addresses.md
+- AI tools (docs search, markdown export, MCP): https://www.helius.dev/docs/privacy/ai-tools.md
+- Endpoints: https://www.helius.dev/docs/privacy/endpoints.md
+- SDK: https://www.helius.dev/docs/privacy/sdk.md
+
+## Related
+
+- WaaS embedded wallets: https://www.helius.dev/docs/waas/llms.txt
+- Contact for Custom Rings and enterprise access: https://www.helius.dev/contact
+
+---
+Full documentation index: https://www.helius.dev/docs/llms.txt
+
+
+========== https://www.helius.dev/docs/privacy/sdk.md ==========
+> ## Documentation Index
+> Fetch the complete documentation index at: https://www.helius.dev/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# SDK
+
+> TypeScript and Rust client SDKs for Solana Privacy Rings. Install the zolana packages to work with private balances, transfers, and withdrawals on Solana.
+
+### SDKs
+
+| SDK | Package | Source |
+| - | - | - |
+| TypeScript Client | [@heliuslabs/spr](https://www.npmjs.com/package/@heliuslabs/spr) | [sdk-libs/ts](https://github.com/helius-labs/zolana/tree/ts-sdk-v0.9.0-alpha/sdk-libs/ts) |
+| Rust Client | [spr-client](https://crates.io/crates/spr-client) | [sdk-libs/client](https://github.com/helius-labs/zolana/tree/rust-sdk-v0.8.0/sdk-libs/client) |
+| Program SDK | [spr-program](https://crates.io/crates/spr-program) | [sdk-libs/program](https://github.com/helius-labs/zolana/tree/rust-sdk-v0.8.0/sdk-libs/program) |
+
+> [tab] TypeScript
+>
+> ```bash theme={"system"}
+> pnpm add @heliuslabs/spr@^0.9.0-alpha @solana/kit@^8.3.0
+> ```
+
+> [tab] Rust
+>
+> ```toml Cargo.toml theme={"system"}
+> [dependencies]
+> zolana-client = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha", features = ["solana-rpc"] }
+> zolana-interface = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-program = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-keypair = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-transaction = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> zolana-test-utils = { git = "https://github.com/helius-labs/zolana", tag = "v0.5.0-alpha" }
+> ```
+
+## Related Guides
+
+> [card] [Endpoints](https://www.helius.dev/docs/privacy/endpoints.md)
+
+> [card] [Addresses](https://www.helius.dev/docs/privacy/addresses.md)
+
+## Didn't find what you were looking for?
+
+Reach out! [Telegram](https://t.me/helius_privacy) | [E-Mail](mailto:sales@helius.xyz) | [Contact](https://www.helius.dev/contact)
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
