@@ -1,0 +1,68 @@
+@import '@fontsource-variable/big-shoulders-display';
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
+
+/* Palette is lifted from the illustrations: black void, ink-blue haze, bone-white stipple,
+   and one amber orb. Amber is the only warm color and marks "the payment" everywhere. */
+:root {
+  --void: #05070c;
+  --ink: #0b1018;
+  --ink-2: #121a26;
+  --line: #243044;
+  --mist: #9aa6ba;      /* 8:1 on --void */
+  --bone: #ece8df;      /* 16:1 on --void */
+  --moon: #6f93cf;      /* cool secondary, focus ring and links */
+  --amber: #ffb347;     /* the one accent */
+  --amber-ink: #1b1204; /* text on amber, 11:1 */
+  --alert: #f0705a;     /* functional only: kill switch, errors */
+  --ok: #8fd4a8;        /* functional only: healthy status */
+
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
+
+  --r-sm: 4px;
+  --r-md: 10px;
+  --ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+
+/* R-39: one pointer-cursor rule in the base layer instead of per component */
+a[href], button:not(:disabled), summary, select, label[for], [role='button'], [role='switch'], [role='tab'] { cursor: pointer; }
+button:disabled, [aria-disabled='true'] { cursor: not-allowed; }
+
+:focus-visible { outline: 2px solid var(--moon); outline-offset: 3px; border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.skip {
+  position: fixed; left: 12px; top: -60px; z-index: 100;
+  background: var(--bone); color: var(--void); padding: 10px 14px; border-radius: var(--r-sm);
+  transition: top 0.2s var(--ease);
+}
+.skip:focus { top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}

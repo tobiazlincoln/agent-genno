@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chaff | Private payments for AI agents on Solana</title>
+    <meta name="description" content="Chaff splits one payment into random parts, delays them, and sends them on its own within the limits you set." />
+    <meta name="theme-color" content="#05070c" />
+    <link rel="icon" href="/brand/chaff-logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/chaff-logo.png" />
+    <link rel="stylesheet" href="/src/landing.css" />
+  </head>
+  <body>
+    <a class="skip" href="/app.html">Skip the story, open the app</a>
+
+    <div id="loader" role="status" aria-live="polite">
+      <p class="loader__count"><span id="loader-pct">0</span><small>%</small></p>
+      <p class="loader__label">Loading scenes</p>
+    </div>
+
+    <header class="hud" id="hud">
+      <p class="hud__chapter" id="hud-chapter" aria-live="polite"></p>
+      <a class="hud__brand" href="/" aria-label="Chaff, back to the start">
+        <img class="mark" src="/brand/chaff-mascot.svg" alt="" width="34" height="35" />
+        <span>Chaff</span>
+      </a>
+      <nav class="hud__nav" aria-label="Main">
+        <a class="btn btn--small" href="/app.html">Open the app</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="stage" id="stage" aria-label="The Chaff story in six scenes">
+        <div class="stage__scenes" id="scenes"></div>
+        <p class="stage__count" aria-hidden="true"><b id="count-now">01</b><span>/06</span></p>
+        <p class="stage__hint" id="hint">Scroll to play the story</p>
+      </section>
+    </main>
+
+    <noscript><p style="padding:2rem">This story uses JavaScript for its scroll scenes. <a href="/app.html">Open the app</a> still works.</p></noscript>
+    <script type="module" src="/src/landing.js"></script>
+  </body>
+</html>

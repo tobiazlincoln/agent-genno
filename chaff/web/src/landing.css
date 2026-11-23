@@ -1,0 +1,116 @@
+@import './tokens.css';
+
+/* ---------- shared bits ---------- */
+.orb {
+  display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe2ae, var(--amber) 55%, #b8721d);
+  box-shadow: 0 0 14px rgba(255, 179, 71, 0.55);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 50px;
+  padding: 0 1.8rem; border: 1px solid var(--amber); border-radius: var(--r-sm);
+  background: var(--amber); color: var(--amber-ink); font-weight: 600; font-size: 1.05rem; letter-spacing: 0.01em; text-decoration: none;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.btn:hover { background: #ffc46f; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn--small { min-height: 44px; padding: 0 1.1rem; font-size: 0.95rem; }
+
+/* ---------- loader ---------- */
+#loader {
+  position: fixed; inset: 0; z-index: 200; display: grid; place-content: center; gap: 0.4rem;
+  background: var(--void); text-align: center; transition: opacity 0.7s var(--ease), visibility 0.7s;
+}
+#loader.is-done { opacity: 0; visibility: hidden; }
+.loader__count { margin: 0; font: 700 clamp(4rem, 12vw, 8rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.loader__count small { font-size: 0.35em; color: var(--mist); margin-left: 0.15em; }
+.loader__label { margin: 0; color: var(--mist); font-size: 0.95rem; }
+
+/* ---------- HUD ---------- */
+.hud {
+  position: fixed; inset: 0 0 auto 0; z-index: 50; display: grid; align-items: center;
+  grid-template-columns: 1fr auto 1fr; padding: 0.9rem clamp(1rem, 4vw, 3.5rem);
+  background: linear-gradient(var(--void), rgba(5, 7, 12, 0));
+}
+.hud__chapter { grid-column: 1; margin: 0; font: 700 clamp(1.2rem, 1.9vw, 1.6rem)/1 var(--font-display); letter-spacing: 0.02em; }
+.hud__brand { grid-column: 2; display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; font: 700 1.6rem/1 var(--font-display); letter-spacing: 0.06em; }
+.hud__nav { grid-column: 3; justify-self: end; }
+
+/* ---------- stage ---------- */
+.stage { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--void); }
+.stage__scenes, .scene, .scene__art, .scene__ui { position: absolute; inset: 0; }
+.scene__art { transform-origin: var(--fx, 50%) var(--fy, 50%); will-change: transform, opacity; }
+.scene__art :is(img, video) { width: 100%; height: 100%; object-fit: cover; object-position: var(--fx, 50%) var(--fy, 50%); }
+/* scrims keep the bottom-right text above 4.5:1 without painting a box behind it */
+.scene__art::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(5, 7, 12, 0.7), rgba(5, 7, 12, 0) 18%),
+    linear-gradient(to top, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.42) 22%, rgba(0, 0, 0, 0.14) 44%, rgba(0, 0, 0, 0) 62%);
+}
+.scene__ui { pointer-events: none; }
+.scene__ui :is(a, button) { pointer-events: auto; }
+
+.stage__count {
+  position: absolute; left: clamp(1rem, 4vw, 3.5rem); bottom: clamp(0.8rem, 3vh, 2.2rem); z-index: 5; margin: 0;
+  font: 700 clamp(2.2rem, 4.6vw, 4rem)/0.9 var(--font-display); letter-spacing: 0.01em;
+  display: flex; align-items: flex-end; gap: 0.12em;
+}
+.stage__count span { font-size: 0.3em; color: var(--mist); padding-bottom: 0.3em; }
+.stage__hint {
+  position: absolute; left: 50%; bottom: 2.2rem; translate: -50% 0; z-index: 5; margin: 0; font-size: 0.95rem; color: var(--bone);
+  padding-bottom: 1.6rem; text-shadow: 0 0 8px #000, 0 0 14px rgba(0, 0, 0, 0.9);
+}
+.stage__hint::after {
+  content: ''; position: absolute; left: 50%; bottom: 0; width: 1px; height: 1.2rem; background: var(--mist);
+  animation: hint 1.8s var(--ease) infinite;
+}
+@keyframes hint { 0% { transform: scaleY(0); transform-origin: top; } 60% { transform: scaleY(1); transform-origin: top; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+/* story text: one block, bottom right, right-aligned, same place in every scene */
+.stack {
+  position: absolute; right: clamp(1.2rem, 4vw, 3.5rem); bottom: clamp(1.4rem, 6vh, 3.6rem);
+  width: min(30rem, 44vw); display: grid; justify-items: end; gap: 0.6rem; text-align: right;
+}
+.stag { margin: 0; font: 700 clamp(1.25rem, 1.8vw, 1.7rem)/1 var(--font-display); letter-spacing: 0.03em; color: var(--bone); }
+.vtext { margin: 0; font: 600 clamp(1.05rem, 1.5vw, 1.45rem)/1.2 var(--font-display); letter-spacing: 0.012em; }
+.vline { display: block; }
+.snote { margin: 0.3rem 0 0; font-size: 0.85rem; line-height: 1.4; color: var(--mist); max-width: 30rem; }
+.stack .btn { margin-top: 0.9rem; }
+
+/* scene 1 wordmark: sits in the dark sky of the opening shot and fades out as the orb takes over */
+.title { position: absolute; left: 50%; top: 16%; translate: -50% 0; text-align: center; margin: 0; width: min(90vw, 40rem); }
+.title h1 { margin: 0; font: 800 clamp(3.6rem, 10vw, 8.5rem)/0.85 var(--font-display); letter-spacing: 0.02em; color: var(--bone); }
+.title p { margin: 0.6rem 0 0; font-size: clamp(0.9rem, 1.1vw, 1.05rem); font-weight: 500; color: var(--bone); }
+
+/* reduced motion: scenes stack as plain sections */
+.is-static .stage { height: auto; }
+.is-static .scene { position: relative; height: 100svh; }
+.is-static .stage__count, .is-static .stage__hint { display: none; }
+.is-static .hud__chapter { visibility: hidden; }
+
+@media (max-width: 720px) {
+  .hud { grid-template-columns: auto 1fr auto; gap: 0.6rem; }
+  .hud__brand { grid-column: 1; font-size: 1.3rem; }
+  .hud__chapter { grid-column: 2; grid-row: 1; font-size: 1.15rem; text-align: center; }
+  .stack { left: 1.2rem; right: 1.2rem; width: auto; bottom: 5.2rem; }
+  .vtext { font-size: 1.2rem; }
+  .stage__count { font-size: 2.2rem; bottom: 1rem; }
+  .stage__hint { bottom: 1.2rem; left: auto; right: 1.2rem; translate: 0 0; }
+  .title { top: 13%; }
+  .scene__art::after { background: linear-gradient(to bottom, rgba(5, 7, 12, 0.78), rgba(5, 7, 12, 0) 20%), linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.3) 34%, rgba(0, 0, 0, 0) 58%); }
+}
+
+/* last scene: the sentinel and console fill the right half, so the closing block sits mid-left, left-aligned */
+.scene[data-i='5'] .stack { left: clamp(1.2rem, 4vw, 3.5rem); right: auto; top: 50%; bottom: auto; translate: 0 -50%; justify-items: start; text-align: left; width: min(26rem, 38vw); }
+@media (max-width: 720px) { .scene[data-i='5'] .stack { left: 1.2rem; right: 1.2rem; top: auto; bottom: 5.2rem; translate: 0 0; width: auto; } }
+
+/* contract address button: outlined, because the primary action (Open the app) lives top right */
+.btn--ca { background: transparent; color: var(--bone); border-color: rgba(236, 232, 223, 0.5); gap: 0.6rem; }
+.btn--ca:hover { background: rgba(236, 232, 223, 0.1); transform: none; }
+.btn--ca[aria-disabled='true'] { cursor: not-allowed; }
+.btn--ca .ca__v { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* brand mark: the mascot replaces the plain orb next to the wordmark */
+.hud__brand .mark { width: 34px; height: auto; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)); }

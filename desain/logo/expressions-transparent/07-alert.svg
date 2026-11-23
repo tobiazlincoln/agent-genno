@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Chaff mascot</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF8418"/><stop offset="0.5" stop-color="#FF7A12"/><stop offset="1" stop-color="#DC2E0A"/>
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="0.5" cy="0.4" r="0.55">
+      <stop offset="0" stop-color="#FFB030" stop-opacity="0.95"/><stop offset="1" stop-color="#FFB030" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hood" x1="0.12" y1="0.02" x2="0.82" y2="0.98">
+      <stop offset="0" stop-color="#5E6B86"/><stop offset="0.32" stop-color="#2E3647"/><stop offset="1" stop-color="#0F131B"/>
+    </linearGradient>
+    <radialGradient id="hoodHi" cx="0.33" cy="0.2" r="0.5">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.32"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rimIn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7C88A2"/><stop offset="0.45" stop-color="#2B3241"/><stop offset="1" stop-color="#3B4458"/>
+    </linearGradient>
+    <radialGradient id="face" cx="0.5" cy="0.64" r="0.62">
+      <stop offset="0" stop-color="#030405"/><stop offset="1" stop-color="#13171F"/>
+    </radialGradient>
+    <linearGradient id="faceTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0.85"/><stop offset="0.36" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="faceClip"><path d="M366 438 C398 372 646 366 680 438 C706 490 696 566 664 624 C634 682 558 728 520 728 C482 728 406 682 376 624 C344 566 336 490 366 438 Z"/></clipPath>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="20"/></filter>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  
+  <path d="M276 340 C278 292 340 262 412 256 C566 246 696 306 742 426 C778 512 770 594 724 664 C682 732 568 778 518 778 C468 778 354 732 312 664 C266 596 262 506 292 446 C302 424 314 404 334 388 C308 382 276 368 276 340 Z" transform="translate(6 26)" fill="#000" opacity="0.38" filter="url(#shadow)"/>
+  <path d="M276 340 C278 292 340 262 412 256 C566 246 696 306 742 426 C778 512 770 594 724 664 C682 732 568 778 518 778 C468 778 354 732 312 664 C266 596 262 506 292 446 C302 424 314 404 334 388 C308 382 276 368 276 340 Z" fill="url(#hood)" stroke="#090C12" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M276 340 C278 292 340 262 412 256 C566 246 696 306 742 426 C778 512 770 594 724 664 C682 732 568 778 518 778 C468 778 354 732 312 664 C266 596 262 506 292 446 C302 424 314 404 334 388 C308 382 276 368 276 340 Z" fill="url(#hoodHi)"/>
+  <path d="M334 374 C366 304 452 274 548 280" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="13" stroke-linecap="round" filter="url(#soft)"/>
+  <path d="M290 334 C300 300 344 280 396 276" fill="none" stroke="#fff" stroke-opacity="0.3" stroke-width="8" stroke-linecap="round" filter="url(#soft)"/>
+  <path d="M708 452 C734 520 730 600 700 652" fill="none" stroke="#9AA6C0" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round" filter="url(#soft)"/>
+  <path d="M366 438 C398 372 646 366 680 438 C706 490 696 566 664 624 C634 682 558 728 520 728 C482 728 406 682 376 624 C344 566 336 490 366 438 Z" fill="url(#face)" stroke="url(#rimIn)" stroke-width="12" stroke-linejoin="round"/>
+  <g clip-path="url(#faceClip)">
+    <path d="M366 438 C398 372 646 366 680 438 C706 490 696 566 664 624 C634 682 558 728 520 728 C482 728 406 682 376 624 C344 566 336 490 366 438 Z" fill="url(#faceTop)"/>
+    <path d="M350 454 Q522 426 700 454" fill="none" stroke="#353D4E" stroke-width="20"/>
+    <path d="M352 445 Q522 417 698 445" fill="none" stroke="#7A8499" stroke-opacity="0.7" stroke-width="3"/>
+  </g>
+  <g filter="url(#glow)"><path d="M440 532 L522 566 L516 592 L446 576 Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/><path d="M662 532 L580 566 L586 592 L656 576 Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/></g>
+</svg>

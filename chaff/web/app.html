@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chaff app | Control your private payment autopilot</title>
+    <meta name="description" content="Schedule private payments, set daily limits and recipient lists, and watch the status of the Chaff daemon." />
+    <meta name="theme-color" content="#05070c" />
+    <link rel="icon" href="/brand/chaff-logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/chaff-logo.png" />
+    <link rel="stylesheet" href="/src/app.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="shell">
+      <aside class="rail" id="rail" aria-label="App navigation">
+        <div class="rail__head">
+          <a class="brand" href="/" aria-label="Chaff, back to the story"><img class="mark" src="/brand/chaff-mascot.svg" alt="" width="42" height="43" /><span class="brand__t">Chaff</span></a>
+          <button class="rail__close" id="rail-close" type="button" aria-label="Close menu">Close</button>
+        </div>
+
+        <nav class="nav" aria-label="Pages">
+          <a href="#/home" data-route="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 4l8 7.5V20h-5.5v-5h-5v5H4z"/></svg><span>Home</span></a>
+          <a href="#/send" data-route="send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-4.5 16-3.5-6.5z"/><path d="m12 13.5 8-9.5"/></svg><span>Send privately</span></a>
+          <a href="#/schedule" data-route="schedule"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg><span>Schedule</span><b class="nav__count" id="count-schedule" hidden></b></a>
+          <a href="#/history" data-route="history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 10h14M5 15h9M5 20h6"/></svg><span>History</span></a>
+          <a href="#/policy" data-route="policy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6v5.5c0 4.2-2.8 7.2-7 9-4.2-1.8-7-4.8-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg><span>Policy</span></a>
+          <a href="#/system" data-route="system"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><span>System status</span></a>
+        </nav>
+
+        <div class="rail__foot">
+          <p class="chip chip--net"><span class="dot dot--ok" aria-hidden="true"></span><span class="chip__t">Mainnet</span></p>
+        </div>
+      </aside>
+      <div class="scrim" id="scrim" hidden></div>
+
+      <div class="col">
+        <header class="top">
+          <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="rail">Menu</button>
+          <div class="top__title">
+            <h1 id="page-title" tabindex="-1"></h1>
+            <p class="top__sub" id="page-sub"></p>
+          </div>
+          <div class="top__ctl">
+            <p class="chip chip--demo" title="The numbers and addresses on this screen are sample data until the local daemon is connected.">Sample data</p>
+            <p class="status" id="status"></p>
+            <button class="btn btn--danger" id="kill-btn" type="button"></button>
+            <p class="owner" title="Owner address (sample)"><span class="owner__av" aria-hidden="true"></span><span id="wallet-addr"></span></p>
+          </div>
+        </header>
+        <main id="main"></main>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+    <dialog class="dlg" id="dlg" aria-labelledby="dlg-title">
+      <form method="dialog">
+        <h2 id="dlg-title"></h2>
+        <p id="dlg-body"></p>
+        <div class="dlg__act">
+          <button class="btn btn--ghost" value="cancel" id="dlg-cancel">Go back</button>
+          <button class="btn" value="ok" id="dlg-ok"></button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
